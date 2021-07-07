@@ -23,12 +23,12 @@ class ApiController extends ApiBaseController
      * @param last_name: last name
      * @param address: address
      * @param nationality: nationality-id
-     * @param age: date
+     * @param dob: date
      * @param gender: 0 for male , 1 for female , 2 for transgender
      * @param postion: position-id
      * @param height: height in cm
      * @param weight: Weight in kg
-     * @param for: 0 for player, 1 for coach
+     * @param role: 0 for player, 1 for coach
      * @param email_id: email_id
      * @param password: password
      */
@@ -37,14 +37,14 @@ class ApiController extends ApiBaseController
         if($this->authenticate_api())
         {   
             $response = array( "status" => "error" );
-            $required_fields = array("first_name", "last_name", 'address', 'nationality', 'age', 'gender', 'for', 'email_id', 'password');
+            $required_fields = array("first_name", "last_name", 'address', 'nationality', 'dob', 'gender', 'role', 'email_id', 'password');
             $status = $this->verifyRequiredParams($required_fields);
-            $for = $this->request->getVar("for");
+            $role = $this->request->getVar("role");
             $first_name = $this->request->getVar("first_name");
             $last_name = $this->request->getVar("last_name");
             $address = $this->request->getVar("address");
             $nationality = $this->request->getVar("nationality");
-            $age = $this->request->getVar("age");
+            $dob = $this->request->getVar("dob");
             $position = $this->request->getVar("position");
             $gender = $this->request->getVar("gender");
             $email_id = $this->request->getVar("email_id");
@@ -52,7 +52,7 @@ class ApiController extends ApiBaseController
             $height = $this->request->getVar('height');
             $weight = $this->request->getVar('weight');
            
-            if(!in_array($for, array(0, 1))){
+            if(!in_array($role, array(0, 1))){
                 $response['message'] = "Please enter for value 0 for player or 1 for coach.";
                 $this->sendResponse($response);
             }
@@ -73,8 +73,8 @@ class ApiController extends ApiBaseController
                 $response['message'] = "Please enter valid nationality.";
                 $this->sendResponse($response);
             }
-            if($this->ifempty($age, "Age")!== true){
-                $response['message'] = $this->ifempty($age, "Age");
+            if($this->ifempty($dob, "dob")!== true){
+                $response['message'] = $this->ifempty($dob, "dob");
                 $this->sendResponse($response);
             }
           
@@ -108,7 +108,7 @@ class ApiController extends ApiBaseController
                 $this->sendResponse($response);
             }
             
-            if($for == 0){
+            if($role == 0){
                 if($this->ifempty($position, "Position")!== true){
                 $response['message'] = $this->ifempty($position, "Position");
                 $this->sendResponse($response);
@@ -124,13 +124,13 @@ class ApiController extends ApiBaseController
                 "last_name"    =>   $last_name,
                 "address"      =>   $address,
                 "nationality"  =>   $nationality,
-                "age"          =>   $this->get_date($age),
+                "age"          =>   $this->get_date($dob),
                 "gender"       =>   $gender,
-                "user_type"    =>   $for,
+                "user_type"    =>   $role,
                 "height"       =>   $height,
                 "weight"       =>   $weight 
             );
-            if($for == 0){
+            if($role == 0){
                 $insertdata['position'] = $position;
             }
             $result = $this->db->table('tbl_user')->insert($insertdata);
@@ -235,7 +235,7 @@ class ApiController extends ApiBaseController
             $user_login = $this->db->table('tbl_user_login')->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')->where(array('email' => trim($email_id), 'password' => md5(trim($password))));
             if ( $user_login->countAllResults() > 0)
             {
-                $result = $user_login->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')->select('tbl_user.user_id, tbl_user.user_type')->get()->getRowArray();
+                $result = $user_login->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')->select('tbl_user.user_id, tbl_user.user_type')->where(array('email' => trim($email_id), 'password' => md5(trim($password))))->get()->getRowArray();
                 if(!empty($result)){
                     $response['status'] = "success";
                     $response['message'] = 'Successfully logged in.';
@@ -278,7 +278,7 @@ class ApiController extends ApiBaseController
                                 ->where(array('tbl_user.user_id' => trim($user_id)));
             if ( $user_details->countAllResults() > 0)
             {
-                $result = $this->db->table('tbl_user_login')->select('first_name, last_name, address, tbl_nationality.nationality as nationality, age, position, gender, email, height, weight' )
+                $result = $this->db->table('tbl_user_login')->select('first_name, last_name, address, tbl_nationality.nationality as nationality,tbl_nationality.id as nation_id, flag_image, age, position, gender,image, email, height, weight' )
                                         ->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')
                                         ->join('tbl_nationality', 'tbl_nationality.id = tbl_user.nationality')                        
                                         ->where(array('tbl_user.user_id' => trim($user_id)))->get()->getRowArray();
@@ -299,12 +299,19 @@ class ApiController extends ApiBaseController
                             $result['position'] = null;
                         }
                     }
+                    $result['flag_image']= WRITEPATH."\uploads\\flags\\"."\\".$result["nation_id"]."\\".$result['flag_image'];
+                    
                     if($result['gender'] == 0){
                         $result['gender'] = "Male";
                     } elseif($result['gender'] == 1){
                         $result['gender'] = "Female";
                     } elseif($result['gender'] == 1){
                         $result['gender'] = "Transgender";
+                    }
+                    if(!empty($result['image']))
+                    {
+                        $imagepath = base_url() . "/public/uploads/profile_images/". $user_id."/" . $result['image'];
+                        $result['image'] = $imagepath;
                     }
                     $response['status'] = "success";
                     $response['message'] = 'Successfully retrived  user data.';
@@ -329,29 +336,30 @@ class ApiController extends ApiBaseController
      * @param last_name: last name
      * @param address: address
      * @param nationality: nationality-id
-     * @param age: date
+     * @param dob: date
      * @param gender: 0 for male , 1 for female , 2 for transgender
      * @param postion: position-id
      * @param height: height in cm
      * @param weight: Weight in kg
-     * @param for: 0 for player, 1 for coach
+     * @param role: 0 for player, 1 for coach
      * @param email_id: email_id
      * @param password: password
      * @param user_id : user_id
+     * @param profile_image : file
      */
     public function update_user()
     {
         if($this->authenticate_api())
         {   
             $response = array( "status" => "error" );
-            $required_fields = array("first_name", "last_name", 'address', 'nationality', 'age', 'gender', 'for', 'email_id', 'password');
+            $required_fields = array("first_name", "last_name", 'address', 'nationality', 'dob', 'gender', 'role', 'email_id', 'password');
             $status = $this->verifyRequiredParams($required_fields);
-            $for = $this->request->getVar("for");
+            $role = $this->request->getVar("role");
             $first_name = $this->request->getVar("first_name");
             $last_name = $this->request->getVar("last_name");
             $address = $this->request->getVar("address");
             $nationality = $this->request->getVar("nationality");
-            $age = $this->request->getVar("age");
+            $dob = $this->request->getVar("dob");
             $position = $this->request->getVar("position");
             $gender = $this->request->getVar("gender");
             $email_id = $this->request->getVar("email_id");
@@ -364,7 +372,12 @@ class ApiController extends ApiBaseController
                 $response['message'] = $this->ifempty($user_id, "User Id");
                 $this->sendResponse($response);
             }
-            if(!in_array($for, array(0, 1))){
+            if($this->ifexists('tbl_user', $user_id, 'user_id') != true)
+            {
+                $response['message'] = "Please enter valid user id.";
+                $this->sendResponse($response);
+            }
+            if(!in_array($role, array(0, 1))){
                 $response['message'] = "Please enter for value 0 for player or 1 for coach.";
                 $this->sendResponse($response);
             }
@@ -385,8 +398,8 @@ class ApiController extends ApiBaseController
                 $response['message'] = "Please enter valid nationality.";
                 $this->sendResponse($response);
             }
-            if($this->ifempty($age, "Age")!== true){
-                $response['message'] = $this->ifempty($age, "Age");
+            if($this->ifempty($dob, "dob")!== true){
+                $response['message'] = $this->ifempty($dob, "dob");
                 $this->sendResponse($response);
             }
           
@@ -419,8 +432,22 @@ class ApiController extends ApiBaseController
                 $response['message'] = $this->ifempty($weight, "weight");
                 $this->sendResponse($response);
             }
-            
-            if($for == 0){
+            $response = $this->uploadFilefunc('profile_image', 'image',  $user_id);
+            if (!empty($response['status']) && $response['status'] == "success") {
+                        $filename_single = $response['filename'];
+                        $save = $this->db->table('tbl_user')->where('user_id', $user_id)->update(array('image' => $filename_single));
+						if ($save) {
+							$response['status'] = 'success';
+							$response['message'] = 'Files uploaded successfully.';
+						} else {
+							$response['status'] = 'error';
+							$response['message'] = 'cannot update profile image';
+						}
+            } else {
+						$response['status'] = 'error';
+						$response['message'] = 'File cannot be uploaded.';
+			}
+            if($role == 0){
                 if($this->ifempty($position, "Position")!== true){
                 $response['message'] = $this->ifempty($position, "Position");
                 $this->sendResponse($response);
@@ -436,13 +463,13 @@ class ApiController extends ApiBaseController
                 "last_name"    =>   $last_name,
                 "address"      =>   $address,
                 "nationality"  =>   $nationality,
-                "age"          =>   $this->get_date($age),
+                "age"          =>   $this->get_date($dob),
                 "gender"       =>   $gender,
-                "user_type"    =>   $for,
+                "user_type"    =>   $role,
                 "height"       =>   $height,
                 "weight"       =>   $weight 
             );
-            if($for == 0){
+            if($role == 0){
                 $insertdata['position'] = $position;
             }
             $result = $this->db->table('tbl_user')->where('user_id', $user_id)->update($insertdata);
@@ -469,6 +496,14 @@ class ApiController extends ApiBaseController
             }
            
         } 
+    }
+    /**
+     * Get-Club-Team-List
+     * @endpoint get-club-teams-list
+     * @url: http://yourdomain.com/api/get-club-teams-list
+     */
+    public function get_club_team_list(){
+
     }
    
 }

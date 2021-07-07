@@ -40,6 +40,13 @@ $routes->add('/api/register', 'ApiController::register');
 $routes->add('/api/user-login', 'ApiController::user_login');
 $routes->add('/api/user-info', 'ApiController::user_info');
 $routes->add('/api/update-user', 'ApiController::update_user');
+
+/**
+ * Club Apis
+ */
+$routes->add('/api/club', 'ClubsApiController::index');
+$routes->add('/api/join-team', 'ClubsApiController::join_team');
+$routes->add('/api/verify-team', 'ClubsApiController::verify_team');
 /*
  * --------------------------------------------------------------------
  * Additional Routing

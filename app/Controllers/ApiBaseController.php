@@ -133,4 +133,58 @@ class ApiBaseController extends BaseController
         $diff = date_diff(date_create($dob), date_create($today));
         return $diff->format('%y');
     }
+    	/**
+	 * Use for upload file for case in the perticuler location
+	 */
+	public function uploadFilefunc($key, $type = 'image', $user_id)
+	{
+		$response = array("status" => "error");
+		if (!empty($_FILES[$key]["name"])) {
+			//$this->load->library('upload');
+
+			$folder =  ROOTPATH . 'public/uploads/profile_images/' . $user_id;
+
+			if (!is_dir($folder)) {
+				mkdir($folder, 0777, TRUE);
+			}
+
+			$uid = uniqid();
+			$ext = pathinfo($_FILES[$key]["name"], PATHINFO_EXTENSION);
+
+			$filename = 'profileimage' . $uid . '.' . $ext;
+			//$config['file_name'] = $filename;
+			//$config['overwrite'] = TRUE;
+
+			//$this->upload->initialize($config);
+
+			if ($filedata = $this->request->getFiles()) {
+				if ($file = $filedata[$key]) {
+
+					if ($file->isValid() && !$file->hasMoved()) {
+						//$newName = $file->getRandomName(); //This is if you want to change the file name to encrypted name
+						$file->move($folder, $filename);
+
+						// You can continue here to write a code to save the name to database
+						// db_connect() or model format
+						$response['status']  = 'success';
+						$response['message'] = 'File successfully uploaded';
+						$response['filename'] = $filename;
+					} else {
+						$response['status']  = 'error';
+						$response['message'] = 'File could not be uploaded!. Please try again';
+					}
+				} else {
+					$response['status']  = 'error';
+					$response['message'] = 'File could not be uploaded!. Please try again';
+				}
+			} else {
+				$response['status']  = 'error';
+				$response['message'] = 'File could not be uploaded!. Please try again';
+			}
+		} else {
+			$response['status']  = 'error';
+			$response['message'] = 'Please select autograph file for upload';
+		}
+		return $response;
+	}
 }
