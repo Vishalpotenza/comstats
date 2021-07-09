@@ -124,3 +124,83 @@ $( function ()
     }
 } );
 
+
+$( function ()
+{
+    $( window ).on( "load", function ()
+    {
+        var url = sports.config.countries
+        jQuery.ajax( {
+            url: url,
+            type: 'GET',
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( result )
+            {
+                console.log( result );
+                result.forEach( function ( data, index )
+                {
+                    //id
+                    //name
+                    $( '#inputcountry' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                } );
+            }
+        } );
+    } );
+} );
+
+$( function ()
+{
+    $( '#inputcountry' ).on( "change", function ()
+    {
+        var countryid = $( this ).val();
+        var url = sports.config.state
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { id: $( this ).val() },
+            success: function ( result )
+            {
+                $( '#inputState' ).empty();
+                $( '#inputState' ).append( "<option selected>Choose State</option>" );
+                result.forEach( function ( data, index )
+                {
+
+                    $( '#inputState' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                } );
+            },
+            error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
+
+        } );
+    } );
+} );
+$( function ()
+{
+    $( '#inputState' ).on( "change", function ()
+    {
+
+        var url = sports.config.city
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { id: $( this ).val() },
+            success: function ( result )
+            {
+                $( '#inputcity' ).empty();
+                $( '#inputcity' ).append( "<option selected>Choose City</option>" );
+                result.forEach( function ( data, index )
+                {
+
+                    $( '#inputcity' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                } );
+            },
+            error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
+
+        } );
+    } );
+} );

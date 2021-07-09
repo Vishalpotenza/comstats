@@ -13,6 +13,9 @@
   <!-- Template CSS -->
   <link rel="stylesheet" href="<?= base_url().CSSPATH ?>/style.css">
   <link rel="stylesheet" href="<?= base_url().CSSPATH ?>/components.css">
+  
+  <link rel="stylesheet" href="<?= base_url().JSLIB ?>/datatables/datatables.min.css">
+  <link rel="stylesheet" href="<?= base_url().JSLIB ?>/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
   <!-- Custom style CSS -->
   <link rel="stylesheet" href="<?= base_url().CSSPATH ?>/custom.css">
   <link rel='shortcut icon' type='image/x-icon' href="<?= base_url().IMGPATH ?>/favicon.ico" />

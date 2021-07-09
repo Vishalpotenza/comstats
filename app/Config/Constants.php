@@ -82,4 +82,6 @@ defined('EXIT__AUTO_MAX')      || define('EXIT__AUTO_MAX', 125); // highest auto
 defined('CSSPATH')      || define('CSSPATH', "/public/assets/css"); // CSS PATH
 defined('JSPATH')      || define('JSPATH', "/public/assets/js"); // JS PATH
 defined('IMGPATH')      || define('IMGPATH', "/public/assets/img"); // IMG PATH
+defined('JSLIB')      || define('JSLIB', "/public/assets/bundles"); // IMG PATH
+defined('ADMIN')      || define('ADMIN', "/admin");
 // defined('JSPATH')      || define('JSPATH', "public/assets/js"); // JS PATH
