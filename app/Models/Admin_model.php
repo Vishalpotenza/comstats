@@ -14,6 +14,17 @@ class Admin_model extends Model {
         'password'
     ];
 
+    public function authenticate($email, $password)
+    {
+        $query = $this->db->table($this->table)->where(array("email" => $email, "password" => $password));
+        if ($query->countAllResults() > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
    
 }
 ?>

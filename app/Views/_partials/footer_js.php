@@ -11,6 +11,7 @@
     var sports = {
         config: {
         register: "<?php echo base_url("/home/registeradmin"); ?>",
+        login: "<?php echo base_url("/home/autenticate"); ?>",
         base_url: "<?php echo base_url(); ?>"
         }
     }

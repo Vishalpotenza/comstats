@@ -4,15 +4,17 @@
  * because it will make it harder for you to update.
  * 
  */
+/**
+ * =======================================================================
+ * Register Admin ajax
+ * =======================================================================
+ */
 $( function ()
 {
     $( '#register_form' ).on( 'submit', function ( e )
     {
         e.preventDefault();
-        alert( 'hello' );
         var formData = new FormData( $( '#register_form' )[0] );
-        console.log( formData );
-
         url = sports.config.register;
         jQuery.ajax( {
             url: url,
@@ -35,6 +37,61 @@ $( function ()
                     window.location = sports.config.base_url;
                 } else
                 {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+
+                }
+
+            }
+        } );
+
+
+    } );
+} );
+/**
+ * =======================================================================
+ *  Admin login ajax
+ * =======================================================================
+ */
+$( function ()
+{
+    $( '#login_form' ).on( 'submit', function ( e )
+    {
+        e.preventDefault();
+        alert( 'hello' );
+        var formData = new FormData( $( '#login_form' )[0] );
+        console.log( formData );
+
+        url = sports.config.login;
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( data.message );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    setTimeout( function ()
+                    {
+                        window.location.href = sports.config.base_url;
+                    }, 5000 );
+                } else
+                {
+                    if ( data.message != null )
+                    {
+                        toastr['error']( data.message );
+                    }
+
                     console.log( data.error );
                     toastr['error']( data.error );
 

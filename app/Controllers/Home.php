@@ -14,6 +14,47 @@ class Home extends ApiBaseController
 		return view('login');
 	}
 	/**
+	 * Autentication callback
+	 *
+	 * @return json
+	 */
+	public function autenticate()
+	{
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+    
+        helper(['form', 'url']);
+		$validation=array(
+			
+			"email"=>array(
+				"label"=>"Email Id",
+				"rules"=>'required'
+			),
+			"password"=>array(
+				"label"=>"Password",
+				"rules"=>'required'
+			)
+
+		);
+	
+        if ($this->validate($validation)) {
+            $error = null;
+			$admin_model = new Admin_model();
+            if($admin_model->authenticate($email, md5($password)) == true) {
+				$message = "Successfully logged in";
+				$this->session->set('admin_email', $email);
+				echo $this->sendResponse(array('success' => true, 'message' => $message,'error'=>$error));
+			}
+			else{
+				$message = "Please input valid cridentails";
+				echo $this->sendResponse(array('success' => false, 'message' => $message,'error'=>$error));
+			}
+           
+        }else{
+            echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+        }
+	}
+	/**
 	 * Load register function
 	 *
 	 * @return view
@@ -70,7 +111,6 @@ class Home extends ApiBaseController
             echo $this->sendResponse(array('success' => true, 'id'=>$id, 'error'=>$error));
         }else{
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
-
         }
 	}
 	
