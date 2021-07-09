@@ -50,7 +50,9 @@ class BaseController extends Controller
 		// Do Not Edit This Line
 		parent::initController($request, $response, $logger);
 		$this->db= \Config\Database::connect();
-
+		$this->email = \Config\Services::email();
+		$this->validation =  \Config\Services::validation();
+		$this->session = \Config\Services::session();
 		//--------------------------------------------------------------------
 		// Preload any models, libraries, etc, here.
 		//--------------------------------------------------------------------
