@@ -235,7 +235,7 @@ class ApiController extends ApiBaseController
             $user_login = $this->db->table('tbl_user_login')->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')->where(array('email' => trim($email_id), 'password' => md5(trim($password))));
             if ( $user_login->countAllResults() > 0)
             {
-                $result = $user_login->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')->select('tbl_user.user_id, tbl_user.user_type')->where(array('email' => trim($email_id), 'password' => md5(trim($password))))->get()->getRowArray();
+                $result = $user_login->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')->select('tbl_user.user_id, tbl_user.user_type, tbl_user_login.email')->where(array('email' => trim($email_id), 'password' => md5(trim($password))))->get()->getRowArray();
                 if(!empty($result)){
                     $response['status'] = "success";
                     $response['message'] = 'Successfully logged in.';
@@ -290,9 +290,10 @@ class ApiController extends ApiBaseController
                     $result['age'] = $this->calculate_age($result['age']);
                     $result['total_game'] = 5;
                     if($result['position']!== 0){
-                        $position = $this->db->table('tbl_position')->select('position')->where('p_id',$result['position'])->get()->getRowArray();
+                        $position = $this->db->table('tbl_position')->select('position, p_id')->where('p_id',$result['position'])->get()->getRowArray();
                         
                         if(!empty($position)){
+                            $result['p_id'] = $position['p_id'];
                             $result['position'] = $position['position'];
                         }
                         else{
@@ -352,7 +353,7 @@ class ApiController extends ApiBaseController
         if($this->authenticate_api())
         {   
             $response = array( "status" => "error" );
-            $required_fields = array("first_name", "last_name", 'address', 'nationality', 'dob', 'gender', 'role', 'email_id', 'password');
+            $required_fields = array("first_name", "last_name", 'address', 'nationality', 'dob', 'gender', 'role', 'email_id');
             $status = $this->verifyRequiredParams($required_fields);
             $role = $this->request->getVar("role");
             $first_name = $this->request->getVar("first_name");
@@ -363,7 +364,6 @@ class ApiController extends ApiBaseController
             $position = $this->request->getVar("position");
             $gender = $this->request->getVar("gender");
             $email_id = $this->request->getVar("email_id");
-            $password = $this->request->getVar("password");
             $height = $this->request->getVar('height');
             $weight = $this->request->getVar('weight');
             $user_id = $this->request->getVar('user_id');
@@ -420,10 +420,6 @@ class ApiController extends ApiBaseController
                 $response['message'] = "Email Id already exists.";
                 $this->sendResponse($response);
             }
-            if($this->ifempty($password, "password")!== true){
-                $response['message'] = $this->ifempty($password, "password");
-                $this->sendResponse($response);
-            }
             if($this->ifempty($height, "height")!== true){
                 $response['message'] = $this->ifempty($height, "height");
                 $this->sendResponse($response);
@@ -476,8 +472,7 @@ class ApiController extends ApiBaseController
             if(!empty($result))
             {
                 $user_login = array(
-                    "email"      =>   $email_id,
-                    "password"   =>   md5($password) 
+                    "email"      =>   $email_id 
                 );
                 $result = $this->db->table('tbl_user_login')->where('user_id', $user_id)->update($user_login);
                 if(!empty($result)){
