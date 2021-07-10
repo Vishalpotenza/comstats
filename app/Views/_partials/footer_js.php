@@ -24,6 +24,7 @@
         countries: "<?php echo base_url("/admin/locationscontroller/getallcountry") ?>",
         state: "<?php echo base_url("/admin/locationscontroller/getallstate") ?>",
         city: "<?php echo base_url("/admin/locationscontroller/getallcity") ?>",
+        add_club : "<?php echo base_url("/admin/clubs/add_club") ?>", 
         base_url: "<?php echo base_url(); ?>"
         }
     }

@@ -58,7 +58,6 @@ $( function ()
     $( '#login_form' ).on( 'submit', function ( e )
     {
         e.preventDefault();
-        alert( 'hello' );
         var formData = new FormData( $( '#login_form' )[0] );
         console.log( formData );
 
@@ -83,8 +82,8 @@ $( function ()
                     }
                     setTimeout( function ()
                     {
-                        window.location.href = sports.config.base_url;
-                    }, 5000 );
+                        window.location.href = sports.config.base_url + "/admin/dashboard";
+                    }, 2000 );
                 } else
                 {
                     if ( data.message != null )
@@ -151,7 +150,6 @@ $( function ()
         } );
     } );
 } );
-
 $( function ()
 {
     $( '#inputcountry' ).on( "change", function ()
@@ -202,5 +200,50 @@ $( function ()
             error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
 
         } );
+    } );
+} );
+/**
+ * =======================================================================
+ *  Add Club ajax
+ * =======================================================================
+ */
+$( function ()
+{
+    alert( 'hello' );
+    $( '#add_club' ).on( 'submit', function ( e )
+    {
+        e.preventDefault();
+        var formData = new FormData( $( '#add_club' )[0] );
+        url = sports.config.add_club;
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Added" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    window.location = sports.config.base_url;
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+
+                }
+
+            }
+        } );
+
+
     } );
 } );

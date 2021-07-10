@@ -17,7 +17,7 @@ $view = array('title' => "Login");
         <?= view('_partials/sidebar'); ?>
         
         <div class="main-content">
-            <?= view($content); ?>
+            <?= view($content, $data); ?>
             <?= view('_partials/layout_setting'); ?>
       </div>
      <?= view('_partials/footer'); ?>
