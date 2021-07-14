@@ -89,15 +89,35 @@ class ClubsApiController extends ApiBaseController
                 $response['message'] = "Please enter valid user id.";
                 $this->sendResponse($response);
             }
+            if( $designation != 1 ) {
+                if($this->checkpositionoccupied('tbl_team_member_relation', $user_id, $team_id, $designation ) == true){
+                    $response['message'] = "Sorry this designation is occupied.";
+                    $this->sendResponse($response);
+                }
+            }
            
-            $insertdata = array( 
-                "team_id"       =>   $team_id,
-                "user_id"       =>   $user_id,
-                "designation"   =>   $designation
-              
-            );
-          
-            $result = $this->db->table('tbl_team_member_relation')->insert($insertdata);
+            $result = null;
+            // if user exists in team older than
+            if($this->ifexists('tbl_team_member_relation', $user_id, 'user_id') == true)
+            {
+                $insertdata = array( 
+                        "team_id"       =>   $team_id,
+                        "designation"   =>   $designation,
+                        "deletestatus"  =>   0
+                     );
+                
+                $result = $this->db->table('tbl_team_member_relation')->where("user_id", $user_id)->update($insertdata);
+            } else {
+                    $insertdata = array( 
+                        "team_id"       =>   $team_id,
+                        "user_id"       =>   $user_id,
+                        "designation"   =>   $designation
+                     );
+                
+                     $result = $this->db->table('tbl_team_member_relation')->insert($insertdata);
+            }
+            
+            
             if(!empty($result))
             {
                 $response['status'] = "success";
@@ -136,8 +156,8 @@ class ClubsApiController extends ApiBaseController
                 $this->sendResponse($response);
             }
            
-            if($this->ifexists('tbl_team_member_relation', $user_id, 'user_id') == true)
-            {   
+           if($this->checkteamexists('tbl_team_member_relation', $user_id, 'user_id','deletestatus', 1) == true) 
+           {   
                 $response['status'] = "success";
                 $response['team_status'] = true; 
                 $response['data'] = array();
@@ -152,6 +172,50 @@ class ClubsApiController extends ApiBaseController
                 $this->sendResponse($response);
             }
           
+           
+        } 
+    }
+    /**
+     * Leave-team
+     * @endpoint leave-team
+     * @url https://yourdomain.com/api/leave-team_status
+     * @param user_id : user_id
+     */
+    public function leave_team()
+    {
+          if($this->authenticate_api())
+        {   
+            $response = array( "status" => "error" );
+            $required_fields = array( "user_id");
+            $status = $this->verifyRequiredParams($required_fields);
+            $user_id = $this->request->getVar("user_id");
+            
+            if($this->ifempty($user_id, "user id")!== true){
+                $response['message'] = $this->ifempty($user_id, "user id");
+                $this->sendResponse($response);
+            }
+            if($this->ifexists('tbl_user', $user_id, 'user_id') != true)
+            {
+                $response['message'] = "Please enter valid user id.";
+                $this->sendResponse($response);
+            }
+           
+            $update = array( 
+                "deletestatus"   =>   1
+              
+            );
+          
+            $result = $this->db->table('tbl_team_member_relation')->where(array(  "user_id"  =>   $user_id))->update($update);
+            if(!empty($result))
+            {
+                $response['status'] = "success";
+                $response['message'] = 'Successfully leaved team.';
+                $this->sendResponse($response); 
+            }
+            else{
+                 $response['message'] = 'Not able to leave team.';
+                 $this->sendResponse($response);
+            }
            
         } 
     }

@@ -93,7 +93,37 @@ class ApiBaseController extends BaseController
             return false;
         }
     }
-    
+    /**
+     * exculde id function
+     *
+     * @param [type] $table_name
+     * @param [type] $value
+     * @param [type] $field
+     * @param [type] $exclude_field
+     * @param [type] $exvalue
+     * @return void
+     */
+    public function checkteamexists($table_name, $value, $field, $exclude_field, $exvalue)
+    {
+        $query = $this->db->table($table_name)->where(array($field => $value, $exclude_field."<>" => $exvalue));
+        if ($query->countAllResults() > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function checkpositionoccupied($table_name, $user_id, $team_id, $designation)
+    {
+        $query = $this->db->table($table_name)->where(array("user_id" => $user_id, "team_id" => $team_id, 'designation' => $designation));
+        if ($query->countAllResults() > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     /**
      * Check if empty
      */

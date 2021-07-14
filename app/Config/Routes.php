@@ -47,6 +47,7 @@ $routes->add('/api/update-user', 'ApiController::update_user');
 $routes->add('/api/club', 'ClubsApiController::index');
 $routes->add('/api/join-team', 'ClubsApiController::join_team');
 $routes->add('/api/verify-team', 'ClubsApiController::verify_team');
+$routes->add('/api/leave-team', 'ClubsApiController::leave_team');
 /*
  * --------------------------------------------------------------------
  * Additional Routing
