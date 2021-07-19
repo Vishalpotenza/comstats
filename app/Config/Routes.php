@@ -48,6 +48,17 @@ $routes->add('/api/club', 'ClubsApiController::index');
 $routes->add('/api/join-team', 'ClubsApiController::join_team');
 $routes->add('/api/verify-team', 'ClubsApiController::verify_team');
 $routes->add('/api/leave-team', 'ClubsApiController::leave_team');
+/**
+ * Player Apis
+ */
+$routes->add('/api/players-to-add', 'PlayerApiController::players_to_add');
+$routes->add('/api/add-players-team', 'PlayerApiController::add_players_team');
+/**
+ * Tournament Api
+ */
+$routes->add('/api/match-lists', 'TournamentApiController::match_lists');
+$routes->add('/api/schedule-match', 'TournamentApiController::schedule_match');
+//players-to-add
 /*
  * --------------------------------------------------------------------
  * Additional Routing

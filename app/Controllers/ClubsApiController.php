@@ -183,7 +183,7 @@ class ClubsApiController extends ApiBaseController
      */
     public function leave_team()
     {
-          if($this->authenticate_api())
+        if($this->authenticate_api())
         {   
             $response = array( "status" => "error" );
             $required_fields = array( "user_id");

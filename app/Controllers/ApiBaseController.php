@@ -93,6 +93,15 @@ class ApiBaseController extends BaseController
             return false;
         }
     }
+    public function ifexistscustom($table_name, $condition){
+        $query = $this->db->table($table_name)->where($condition);
+        if ($query->countAllResults() > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     /**
      * exculde id function
      *
@@ -113,10 +122,18 @@ class ApiBaseController extends BaseController
             return false;
         }
     }
-
-    public function checkpositionoccupied($table_name, $user_id, $team_id, $designation)
+    /**
+     * checkpositionoccupied function
+     *
+     * @param [type] $table_name
+     * @param [type] $user_id
+     * @param [type] $team_id
+     * @param [type] $designation
+     * @return void
+     */
+    public function checkpositionoccupied($table_name, $team_id, $designation)
     {
-        $query = $this->db->table($table_name)->where(array("user_id" => $user_id, "team_id" => $team_id, 'designation' => $designation));
+        $query = $this->db->table($table_name)->where(array( "team_id" => $team_id, 'designation' => $designation));
         if ($query->countAllResults() > 0){
             return true;
         }
@@ -217,4 +234,46 @@ class ApiBaseController extends BaseController
 		}
 		return $response;
 	}
+
+    /**
+     * Get user info
+     */
+    public function getUserInfo($user_id) {
+        $result = $this->db->table('tbl_user_login')->select('first_name, last_name, address, tbl_nationality.nationality as nationality,tbl_nationality.id as nation_id, flag_image, age, position, gender,image, email, height, weight' )
+                                        ->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')
+                                        ->join('tbl_nationality', 'tbl_nationality.id = tbl_user.nationality')                        
+                                        ->where(array('tbl_user.user_id' => trim($user_id)))->get()->getRowArray();       
+        if(!empty($result)){
+            $result['dob'] = $result['age'];
+            $result['age'] = $this->calculate_age($result['age']);
+            $result['total_game'] = 5;
+            if($result['position']!== 0){
+                $position = $this->db->table('tbl_position')->select('position, p_id')->where('p_id',$result['position'])->get()->getRowArray();
+                
+                if(!empty($position)){
+                    $result['p_id'] = $position['p_id'];
+                    $result['position'] = $position['position'];
+                }
+                else{
+                    $result['position'] = null;
+                }
+            }
+            $result['flag_image']= base_url()."/public/uploads/flags/".$result["nation_id"]."/".$result['flag_image'];
+            
+            if($result['gender'] == 0){
+                $result['gender'] = "Male";
+            } elseif($result['gender'] == 1){
+                $result['gender'] = "Female";
+            } elseif($result['gender'] == 1){
+                $result['gender'] = "Transgender";
+            }
+            if(!empty($result['image']))
+            {
+                $imagepath = base_url() . "/public/uploads/profile_images/". $user_id."/" . $result['image'];
+                $result['image'] = $imagepath;
+            }
+            return $result;
+        }
+        return false;
+    }
 }

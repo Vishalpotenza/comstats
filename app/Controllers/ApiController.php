@@ -498,7 +498,6 @@ class ApiController extends ApiBaseController
      * @url: http://yourdomain.com/api/get-club-teams-list
      */
     public function get_club_team_list(){
-
     }
    
 }
