@@ -13,7 +13,8 @@ class Dashboard extends ApiBaseController
 	public function index()
 	{
         $view['content'] = "dashboard/index";
+		$view['data'] = array();
 		return view('default', $view);
 	}
-
+	
 }

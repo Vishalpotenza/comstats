@@ -82,7 +82,7 @@ $( function ()
                     }
                     setTimeout( function ()
                     {
-                        window.location.href = sports.config.base_url + "/admin/dashboard";
+                        window.location.href = sports.config.base_url + "/admin/clubs";
                     }, 2000 );
                 } else
                 {
@@ -126,7 +126,7 @@ $( function ()
 
 $( function ()
 {
-    $( window ).on( "load", function ()
+    $( 'window' ).on( "load", function ()
     {
         var url = sports.config.countries
         jQuery.ajax( {
@@ -178,6 +178,32 @@ $( function ()
 } );
 $( function ()
 {
+    $( '#inputcountry1' ).on( "change", function ()
+    {
+        var countryid = $( this ).val();
+        var url = sports.config.state
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { id: $( this ).val() },
+            success: function ( result )
+            {
+                $( '#inputState1' ).empty();
+                $( '#inputState1' ).append( "<option selected>Choose State</option>" );
+                result.forEach( function ( data, index )
+                {
+
+                    $( '#inputState1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                } );
+            },
+            error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
+
+        } );
+    } );
+} );
+$( function ()
+{
     $( '#inputState' ).on( "change", function ()
     {
 
@@ -202,6 +228,32 @@ $( function ()
         } );
     } );
 } );
+$( function ()
+{
+    $( '#inputState1' ).on( "change", function ()
+    {
+
+        var url = sports.config.city
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { id: $( this ).val() },
+            success: function ( result )
+            {
+                $( '#inputcity1' ).empty();
+                $( '#inputcity1' ).append( "<option selected>Choose City</option>" );
+                result.forEach( function ( data, index )
+                {
+
+                    $( '#inputcity1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                } );
+            },
+            error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
+
+        } );
+    } );
+} );
 /**
  * =======================================================================
  *  Add Club ajax
@@ -209,12 +261,210 @@ $( function ()
  */
 $( function ()
 {
-    alert( 'hello' );
     $( '#add_club' ).on( 'submit', function ( e )
     {
         e.preventDefault();
         var formData = new FormData( $( '#add_club' )[0] );
         url = sports.config.add_club;
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Added" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    window.location = sports.config.base_url;
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+
+                }
+
+            }
+        } );
+
+
+    } );
+} );
+/**
+ * ==========================================================
+ * Delete Club
+ * ================================================================
+ */
+$( function ()
+{
+    $( '.deleteclub' ).on( 'click', function ( e )
+    {
+        e.preventDefault();
+        console.log( $( this ).attr( 'id' ) );
+        // alert( $( this ).attr( 'id' ) );
+        var club_id = $( this ).attr( 'id' );
+        url = sports.config.delete_club;
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { club_id: club_id },
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Club Deleted Successfully" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    window.location = sports.config.base_url + "/admin/clubs";
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+
+                }
+
+            }
+        } );
+
+
+    } );
+} );
+/**
+ * =========================================
+ * Edit Club
+ * ============================================
+ */
+$( function ()
+{
+    $( '.edit_club' ).on( 'click', function ( e )
+    {
+        e.preventDefault();
+        // $( '.bd-edit-club-lg' ).hide();
+        console.log( $( this ).attr( 'id' ) );
+        var club_id = $( this ).attr( 'id' );
+        url = sports.config.get_club;
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { club_id: club_id },
+            success: function ( data )
+            {
+                console.log( data );
+                if ( data != null )
+                {
+                    $( "#clubname1" ).val( data.club_name );
+                    $( "#contactno1" ).val( data.contact_no );
+                    $( "#inputAddress1" ).val( data.address );
+                    $( "#inputcountry1" ).val( data.country_id );
+                    $( "#inputState1" ).val( data.state_id );
+                    $( "#inputcity1" ).val( data.city_id );
+                    $( "#edit_club_id" ).val( club_id );
+                    var url = sports.config.countries
+                    jQuery.ajax( {
+                        url: url,
+                        type: 'GET',
+                        dataType: "json",
+                        async: false,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function ( result )
+                        {
+                            console.log( result );
+                            result.forEach( function ( data, index )
+                            {
+                                if ( data.id == data.country_id )
+                                {
+                                    $( '#inputcountry1' ).append( "<option value=" + data.id + " selected>" + data.name + "</option>" )
+                                } else
+                                {
+                                    $( '#inputcountry1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                                }
+
+                            } );
+                        }
+                    } );
+                    var url = sports.config.state
+                    jQuery.ajax( {
+                        url: url,
+                        type: 'POST',
+                        dataType: "json",
+                        data: { id: data.country_id },
+                        success: function ( result )
+                        {
+                            $( '#inputState1' ).empty();
+                            $( '#inputState1' ).append( "<option selected>Choose State</option>" );
+                            result.forEach( function ( data, index )
+                            {
+                                if ( data.id == data.state_id )
+                                {
+                                    $( '#inputState1' ).append( "<option value=" + data.id + " selected>" + data.name + "</option>" )
+                                }
+                                else
+                                {
+                                    $( '#inputState1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                                }
+                            } );
+                        },
+                        error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
+
+                    } );
+                    var url = sports.config.city
+                    jQuery.ajax( {
+                        url: url,
+                        type: 'POST',
+                        dataType: "json",
+                        data: { id: data.state_id },
+                        success: function ( result )
+                        {
+                            $( '#inputcity' ).empty();
+                            $( '#inputcity' ).append( "<option selected>Choose City</option>" );
+                            result.forEach( function ( data, index )
+                            {
+                                if ( data.id == data.city )
+                                {
+                                    $( '#inputcity' ).append( "<option value=" + data.id + " selected>" + data.name + "</option>" )
+                                }
+                                else
+                                {
+                                    $( '#inputcity' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                                }
+
+                            } );
+                        },
+                        error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
+
+                    } );
+                    $( '.bd-edit-club-lg' ).modal( 'show' );
+
+                }
+
+            }
+        } );
+    } );
+} );
+
+$( function ()
+{
+    $( '#edit_club_form' ).on( 'submit', function ( e )
+    {
+        e.preventDefault();
+        var formData = new FormData( $( '#edit_club_form' )[0] );
+        console.log( formData );
+        url = sports.config.edit_club;
         jQuery.ajax( {
             url: url,
             type: 'POST',

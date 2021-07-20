@@ -219,4 +219,58 @@ class ClubsApiController extends ApiBaseController
            
         } 
     }
+
+ 
+    /**
+     * leave-team-multiple
+     * @endpoint leave-team-multiple
+     * @url: http://yourdomain.com/api/leave-team-multiple
+     * @param "players" :[{"player_id":1},{"player_id":1},{"player_id":1}]
+     */
+    public function leave_team_multiple()
+    {
+        if($this->authenticate_api())
+        {   
+            $response = array( "status" => "error" );
+            $required_fields = array( "players");
+            $status = $this->verifyRequiredParams($required_fields);
+            $players = $this->request->getVar("players");
+            
+            if($this->ifempty($players, "players")!== true){
+                $response['message'] = $this->ifempty($players, "players");
+                $this->sendResponse($response);
+            }
+            $player_ids = json_decode($players, true);
+            $i=0;
+            foreach($player_ids as $player_id){
+                if($this->ifexists('tbl_user', $player_id['player_id'], 'user_id') != true)
+                {
+                    $response['message'] = "Please enter valid player id.";
+                    $this->sendResponse($response);
+                }
+            
+                $update = array( 
+                    "deletestatus"   =>   1
+                
+                );
+            
+                $result = $this->db->table('tbl_team_member_relation')->where(array(  "user_id"  =>  $player_id['player_id']))->update($update);
+                if($result){
+                    $i++;
+                }
+            }
+            if(count($player_ids) == $i)
+            {
+                $response['status'] = "success";
+                $response['message'] = 'Successfully leaved team.';
+                $this->sendResponse($response); 
+            }
+            else{
+                 $response['message'] = 'Not able to leave team.';
+                 $this->sendResponse($response);
+            }
+           
+        } 
+    }
+
 }

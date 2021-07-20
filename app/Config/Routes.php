@@ -48,6 +48,7 @@ $routes->add('/api/club', 'ClubsApiController::index');
 $routes->add('/api/join-team', 'ClubsApiController::join_team');
 $routes->add('/api/verify-team', 'ClubsApiController::verify_team');
 $routes->add('/api/leave-team', 'ClubsApiController::leave_team');
+$routes->add('/api/leave-team-multiple', 'ClubsApiController::leave_team_multiple');
 /**
  * Player Apis
  */
@@ -58,6 +59,24 @@ $routes->add('/api/add-players-team', 'PlayerApiController::add_players_team');
  */
 $routes->add('/api/match-lists', 'TournamentApiController::match_lists');
 $routes->add('/api/schedule-match', 'TournamentApiController::schedule_match');
+
+/**
+ * Admin
+ */
+
+$routes->add('/admin/dashboard', 'admin/Dashboard::index');
+$routes->add('/admin/clubs', 'admin/Clubs::index');
+$routes->add('/admin/clubs/add_club', 'admin/Clubs::add_club');
+$routes->add('/admin/clubs/delete_club', 'admin/Clubs::delete_club');
+$routes->add('/admin/clubs/get_club_details', 'admin/Clubs::get_club_details');
+$routes->add('/admin/clubs/edit_club', 'admin/Clubs::edit_club');
+/**
+ * Country
+ */
+$routes->add('/admin/locationscontroller/getallcountry', 'admin/LocationsController::getallcountry');
+$routes->add('/admin/locationscontroller/getallstate', 'admin/LocationsController::getallstate');
+$routes->add('/admin/locationscontroller/getallcity', 'admin/LocationsController::getallcity');
+
 //players-to-add
 /*
  * --------------------------------------------------------------------
