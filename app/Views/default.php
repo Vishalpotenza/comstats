@@ -3,9 +3,7 @@
 
 
 <!-- index.html  21 Nov 2019 03:44:50 GMT -->
-<?php
-$view = array('title' => "Login");
-?>
+
 <?= view('_partials/head',$view); ?>
 
 <body>

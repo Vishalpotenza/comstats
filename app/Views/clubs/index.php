@@ -51,10 +51,14 @@
                               <?= $clubs['state_name'] ?>
                             </td>
                             <td>
-                              <div class="badge badge-success badge-shadow">2</div>
+                              <?php  if($clubs['request'] == 0) {   ?>
+                                <div class="badge badge-success badge-shadow"><?= $clubs['request']  ?></div>
+                              <?php  } else {  ?>
+                                 <div class="badge badge-info badge-shadow"><?= $clubs['request']  ?></div>
+                              <?php  } ?>
                             </td>
                             <td>
-                                <!-- <a href="#" class="btn btn-info">View Requests</a> -->
+                                <a href="<?= base_url()."/admin/clubs/join-request/?club_id=".$clubs['club_id']   ?>" class="btn btn-info" id=<?= $clubs['club_id'] ?>>View Requests</a>
                                 <a href="#" class="btn btn-primary edit_club" id=<?= $clubs['club_id'] ?>  >Edit</a>
                                 <a href="#" class="btn btn-danger deleteclub" id=<?= $clubs['club_id'] ?> >Delete</a>
                           </td>

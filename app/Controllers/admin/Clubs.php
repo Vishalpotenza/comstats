@@ -14,6 +14,7 @@ class Clubs extends ApiBaseController
 	public function index()
 	{
 		$club_model = new Club_model();
+		$view['view'] = array('title'=>"Club Details");
         $view['content'] = "clubs/index";
 		$view['data'] = array("club_details" => $club_model->getallclubs());
 		return view('default', $view);
@@ -181,6 +182,18 @@ class Clubs extends ApiBaseController
 			echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
 		}
 		}
+	}
+	/**
+	 * Join request
+	 * @param club_id : club_id
+	 */
+	public function join_request(){
+		$club_id = $this->request->getVar('club_id');
+		$club_model = new Club_model();
+		$view['view'] = array('title'=>"View request");
+		$view['content'] = "clubs/view-request";
+		$view['data'] = array("team_requests" => $club_model->getallclubsbyid($club_id));
+		return view('default', $view);
 	}
 
 }
