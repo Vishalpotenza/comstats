@@ -44,7 +44,7 @@ class ClubsApiController extends ApiBaseController
             }
         } 
     }
-    /**
+     /**
      * join-team
      * @endpoint join-team
      * @url: http://yourdomain.com/api/join-team
@@ -90,7 +90,8 @@ class ClubsApiController extends ApiBaseController
                 $this->sendResponse($response);
             }
             if( $designation != 1 ) {
-                if($this->checkpositionoccupied('tbl_team_member_relation', $user_id, $team_id, $designation ) == true){
+                
+                if($this->checkpositionoccupied('tbl_team_member_relation', $team_id, $designation ) == true){
                     $response['message'] = "Sorry this designation is occupied.";
                     $this->sendResponse($response);
                 }
@@ -183,7 +184,7 @@ class ClubsApiController extends ApiBaseController
      */
     public function leave_team()
     {
-        if($this->authenticate_api())
+          if($this->authenticate_api())
         {   
             $response = array( "status" => "error" );
             $required_fields = array( "user_id");
@@ -220,8 +221,7 @@ class ClubsApiController extends ApiBaseController
         } 
     }
 
- 
-    /**
+        /**
      * leave-team-multiple
      * @endpoint leave-team-multiple
      * @url: http://yourdomain.com/api/leave-team-multiple
@@ -272,5 +272,4 @@ class ClubsApiController extends ApiBaseController
            
         } 
     }
-
 }

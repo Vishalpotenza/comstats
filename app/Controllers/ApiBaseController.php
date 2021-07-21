@@ -93,16 +93,7 @@ class ApiBaseController extends BaseController
             return false;
         }
     }
-    public function ifexistscustom($table_name, $condition){
-        $query = $this->db->table($table_name)->where($condition);
-        if ($query->countAllResults() > 0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-    /**
+     /**
      * exculde id function
      *
      * @param [type] $table_name
@@ -133,7 +124,7 @@ class ApiBaseController extends BaseController
      */
     public function checkpositionoccupied($table_name, $team_id, $designation)
     {
-        $query = $this->db->table($table_name)->where(array( "team_id" => $team_id, 'designation' => $designation));
+        $query = $this->db->table($table_name)->where(array( "team_id" => $team_id, 'designation' => $designation, 'deletestatus<>'=> 1));
         if ($query->countAllResults() > 0){
             return true;
         }
@@ -141,6 +132,7 @@ class ApiBaseController extends BaseController
             return false;
         }
     }
+    
     /**
      * Check if empty
      */
@@ -173,6 +165,55 @@ class ApiBaseController extends BaseController
         return $format;
     }
     /**
+     * Get mobile  date
+     */
+    public function get_mobile_date($date){
+        //Creating a DateTime object
+        $date_time_Obj = date_create($date);
+        //formatting the date/time object
+        $format = date_format($date_time_Obj, "d-m-Y");
+        return $format;
+    }
+    /**
+     * format_datetime
+     *
+     * @param [type] $datetime
+     * @return void
+     */
+    public function format_datetime($datetime){
+         //Creating a DateTime object
+        $date_time_Obj = date_create($datetime);
+        //formatting the date/time object
+        $format = date_format($date_time_Obj, "Y-m-d H:i:s ");
+        return $format;
+    }
+     /**
+     * date_format_list function
+     *
+     * @param [type] $date
+     * @return void
+     */
+    public function date_format_list($date){
+         //Creating a DateTime object
+        $date_time_Obj = date_create($date);
+        //formatting the date/time object
+        $format = date_format($date_time_Obj, "l d,F");
+        return $format;
+    }
+     /**
+     * date_format_list function
+     *
+     * @param [type] $date
+     * @return void
+     */
+    public function time_format_list($date){
+         //Creating a DateTime object
+        $date_time_Obj = date_create($date);
+        //formatting the date/time object
+        $format = date_format($date_time_Obj, "ha");
+        return $format;
+    }
+    /**
      * Calculate age
      */
     public function calculate_age($dob){
@@ -180,7 +221,7 @@ class ApiBaseController extends BaseController
         $diff = date_diff(date_create($dob), date_create($today));
         return $diff->format('%y');
     }
-    	/**
+    /**
 	 * Use for upload file for case in the perticuler location
 	 */
 	public function uploadFilefunc($key, $type = 'image', $user_id)
@@ -275,5 +316,14 @@ class ApiBaseController extends BaseController
             return $result;
         }
         return false;
+    }
+    public function ifexistscustom($table_name, $condition){
+        $query = $this->db->table($table_name)->where($condition);
+        if ($query->countAllResults() > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

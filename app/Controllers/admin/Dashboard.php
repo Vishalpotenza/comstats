@@ -16,5 +16,5 @@ class Dashboard extends ApiBaseController
 		$view['data'] = array();
 		return view('default', $view);
 	}
-	
+
 }

@@ -286,7 +286,7 @@ class ApiController extends ApiBaseController
                 
                
                 if(!empty($result)){
-                    $result['dob'] = $result['age'];
+                    $result['dob'] = $this->get_mobile_date($result['age']);
                     $result['age'] = $this->calculate_age($result['age']);
                     $result['total_game'] = 5;
                     if($result['position']!== 0){
@@ -300,7 +300,7 @@ class ApiController extends ApiBaseController
                             $result['position'] = null;
                         }
                     }
-                    $result['flag_image']= WRITEPATH."\uploads\\flags\\"."\\".$result["nation_id"]."\\".$result['flag_image'];
+                    $result['flag_image']= base_url()."/public/uploads/flags/".$result["nation_id"]."/".$result['flag_image'];
                     
                     if($result['gender'] == 0){
                         $result['gender'] = "Male";
@@ -498,6 +498,7 @@ class ApiController extends ApiBaseController
      * @url: http://yourdomain.com/api/get-club-teams-list
      */
     public function get_club_team_list(){
+
     }
    
 }

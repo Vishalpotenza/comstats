@@ -126,9 +126,10 @@ $( function ()
 
 $( function ()
 {
-    $( 'window' ).on( "load", function ()
+    $( '#btnaddclub' ).on( "click", function ()
     {
         var url = sports.config.countries
+
         jQuery.ajax( {
             url: url,
             type: 'GET',
@@ -178,32 +179,6 @@ $( function ()
 } );
 $( function ()
 {
-    $( '#inputcountry1' ).on( "change", function ()
-    {
-        var countryid = $( this ).val();
-        var url = sports.config.state
-        jQuery.ajax( {
-            url: url,
-            type: 'POST',
-            dataType: "json",
-            data: { id: $( this ).val() },
-            success: function ( result )
-            {
-                $( '#inputState1' ).empty();
-                $( '#inputState1' ).append( "<option selected>Choose State</option>" );
-                result.forEach( function ( data, index )
-                {
-
-                    $( '#inputState1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
-                } );
-            },
-            error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
-
-        } );
-    } );
-} );
-$( function ()
-{
     $( '#inputState' ).on( "change", function ()
     {
 
@@ -228,6 +203,9 @@ $( function ()
         } );
     } );
 } );
+/**
+ * Edit
+ */
 $( function ()
 {
     $( '#inputState1' ).on( "change", function ()
@@ -247,6 +225,32 @@ $( function ()
                 {
 
                     $( '#inputcity1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                } );
+            },
+            error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
+
+        } );
+    } );
+} );
+$( function ()
+{
+    $( '#inputcountry1' ).on( "change", function ()
+    {
+        var countryid = $( this ).val();
+        var url = sports.config.state
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { id: $( this ).val() },
+            success: function ( result )
+            {
+                $( '#inputState1' ).empty();
+                $( '#inputState1' ).append( "<option selected>Choose State</option>" );
+                result.forEach( function ( data, index )
+                {
+
+                    $( '#inputState1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
                 } );
             },
             error: function ( jqXHR, textStatus, errorThrown ) { console.log( textStatus ) }
@@ -351,7 +355,6 @@ $( function ()
     $( '.edit_club' ).on( 'click', function ( e )
     {
         e.preventDefault();
-        // $( '.bd-edit-club-lg' ).hide();
         console.log( $( this ).attr( 'id' ) );
         var club_id = $( this ).attr( 'id' );
         url = sports.config.get_club;
@@ -384,14 +387,16 @@ $( function ()
                         success: function ( result )
                         {
                             console.log( result );
-                            result.forEach( function ( data, index )
+                            result.forEach( function ( country, index )
                             {
-                                if ( data.id == data.country_id )
+                                if ( country.id == data.country_id )
                                 {
-                                    $( '#inputcountry1' ).append( "<option value=" + data.id + " selected>" + data.name + "</option>" )
-                                } else
+                                    console.log( country.id );
+                                    $( '#inputcountry1' ).append( "<option value=" + country.id + " selected>" + country.name + "</option>" )
+                                }
+                                else
                                 {
-                                    $( '#inputcountry1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                                    $( '#inputcountry1' ).append( "<option value=" + country.id + ">" + country.name + "</option>" )
                                 }
 
                             } );
@@ -407,15 +412,15 @@ $( function ()
                         {
                             $( '#inputState1' ).empty();
                             $( '#inputState1' ).append( "<option selected>Choose State</option>" );
-                            result.forEach( function ( data, index )
+                            result.forEach( function ( state, index )
                             {
-                                if ( data.id == data.state_id )
+                                if ( state.id == data.state_id )
                                 {
-                                    $( '#inputState1' ).append( "<option value=" + data.id + " selected>" + data.name + "</option>" )
+                                    $( '#inputState1' ).append( "<option value=" + state.id + " selected>" + state.name + "</option>" )
                                 }
                                 else
                                 {
-                                    $( '#inputState1' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                                    $( '#inputState1' ).append( "<option value=" + state.id + ">" + state.name + "</option>" )
                                 }
                             } );
                         },
@@ -430,17 +435,17 @@ $( function ()
                         data: { id: data.state_id },
                         success: function ( result )
                         {
-                            $( '#inputcity' ).empty();
-                            $( '#inputcity' ).append( "<option selected>Choose City</option>" );
-                            result.forEach( function ( data, index )
+                            $( '#inputcity1' ).empty();
+                            $( '#inputcity1' ).append( "<option selected>Choose City</option>" );
+                            result.forEach( function ( city, index )
                             {
-                                if ( data.id == data.city )
+                                if ( city.id == data.city_id )
                                 {
-                                    $( '#inputcity' ).append( "<option value=" + data.id + " selected>" + data.name + "</option>" )
+                                    $( '#inputcity1' ).append( "<option value=" + city.id + " selected>" + city.name + "</option>" )
                                 }
                                 else
                                 {
-                                    $( '#inputcity' ).append( "<option value=" + data.id + ">" + data.name + "</option>" )
+                                    $( '#inputcity1' ).append( "<option value=" + city.id + ">" + city.name + "</option>" )
                                 }
 
                             } );
@@ -449,7 +454,6 @@ $( function ()
 
                     } );
                     $( '.bd-edit-club-lg' ).modal( 'show' );
-
                 }
 
             }
@@ -483,7 +487,7 @@ $( function ()
                         console.log( data.error );
                         toastr['error']( data.error );
                     }
-                    window.location = sports.config.base_url;
+                    window.location = sports.config.base_url+'/admin/clubs';
                 } else
                 {
                     console.log( data.error );

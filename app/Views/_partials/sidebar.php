@@ -6,9 +6,9 @@
           </div>
           <ul class="sidebar-menu">
             <li class="menu-header">Main</li>
-            <li class="dropdown active">
+            <!-- <li class="dropdown active">
               <a href= "<?= base_url().ADMIN ?>/dashboard" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
-            </li>
+            </li> -->
              <li class="dropdown">
               <a href="#" class="menu-toggle nav-link has-dropdown"><i
                   class="fas fa-futbol"></i><span>Clubs</span></a>

@@ -9,7 +9,7 @@ $view = array('title' => "Login");
 <?= view('_partials/head',$view); ?>
 
 <body>
-  <!-- <div class="loader"></div> -->
+  <div class="loader"></div>
   <div id="app">
     <div class="main-wrapper main-wrapper-1">
       <div class="navbar-bg"></div>

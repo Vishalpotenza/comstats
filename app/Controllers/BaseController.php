@@ -53,6 +53,7 @@ class BaseController extends Controller
 		$this->email = \Config\Services::email();
 		$this->validation =  \Config\Services::validation();
 		$this->session = \Config\Services::session();
+
 		//--------------------------------------------------------------------
 		// Preload any models, libraries, etc, here.
 		//--------------------------------------------------------------------

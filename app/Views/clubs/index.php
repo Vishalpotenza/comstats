@@ -3,14 +3,13 @@
             <div class="row">
               <div class="col-12 col-md-2 col-lg-2">
                 <div class="card">
-                <button type="button" class="btn btn-primary" data-toggle="modal"
+                <button type="button" class="btn btn-primary" id="btnaddclub" data-toggle="modal"
                       data-target=".bd-example-modal-lg">Add Club
                       </button>
                 </div>
               </div>
            
             </div>
-            <?=  print_r($club_details); ?>
           <div class="row">
               <div class="col-12">
                 <div class="card">
@@ -35,12 +34,14 @@
                         <tbody>
                       
                           <?php
+                           $i=0;
                             foreach ($club_details as $clubs):
-                              $i=1;
+                             
                           ?>
                               <tr>
-                            <td>
-                              <?= $i ?>
+                            <td class="align-middle">
+                              <?= ++$i ?>
+
                             </td>
                             <td><?= $clubs['club_name'] ?></td>
                             <td class="align-middle">
@@ -52,9 +53,8 @@
                             <td>
                               <div class="badge badge-success badge-shadow">2</div>
                             </td>
-                            <td><a href="#" class="btn btn-info">View Requests</a>
-                            <!-- data-toggle="modal"
-                      data-target=".bd-edit-club-lg" -->
+                            <td>
+                                <!-- <a href="#" class="btn btn-info">View Requests</a> -->
                                 <a href="#" class="btn btn-primary edit_club" id=<?= $clubs['club_id'] ?>  >Edit</a>
                                 <a href="#" class="btn btn-danger deleteclub" id=<?= $clubs['club_id'] ?> >Delete</a>
                           </td>
