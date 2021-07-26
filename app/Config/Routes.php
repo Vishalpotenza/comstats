@@ -59,7 +59,10 @@ $routes->add('/api/add-players-team', 'PlayerApiController::add_players_team');
  */
 $routes->add('/api/match-lists', 'TournamentApiController::match_lists');
 $routes->add('/api/schedule-match', 'TournamentApiController::schedule_match');
-
+/**
+ * Traning api
+ */
+$routes->add('/api/player-attendance', 'TraningApiController::players_attendance');
 /**
  * Admin
  */
@@ -77,7 +80,7 @@ $routes->add('/admin/clubs/join-request', 'admin/Clubs::join_request');
 $routes->add('/admin/locationscontroller/getallcountry', 'admin/LocationsController::getallcountry');
 $routes->add('/admin/locationscontroller/getallstate', 'admin/LocationsController::getallstate');
 $routes->add('/admin/locationscontroller/getallcity', 'admin/LocationsController::getallcity');
-
+/*
 //players-to-add
 /*
  * --------------------------------------------------------------------

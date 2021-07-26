@@ -25,7 +25,7 @@ class PlayerApiController extends ApiBaseController
                 $this->sendResponse($response);
             }
             if($this->ifexistscustom('tbl_team_member_relation', array('user_id' => $user_id, 'deletestatus'=> 0))!= true){
-                $response['message'] = "Please select your team";
+                $response['message'] = "No team data available";
                 $this->sendResponse($response);
             }
             $user_details = $this->db->table('tbl_user_login')

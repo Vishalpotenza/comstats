@@ -38,6 +38,11 @@ class TournamentApiController extends ApiBaseController
              */
             $tournament = $this->db->table('tbl_tournament')->get()->getResultArray();
             $coachs = $this->db->table('tbl_team_member_relation')->select('team_id')->where(array('user_id'=> $user_id))->get()->getRowArray();
+            if(empty($coachs))
+            {
+                $response['message'] = "No team data available.";
+                $this->sendResponse($response);
+            } 
             $result['tournament'] = $tournament;
             
             /**
@@ -50,7 +55,8 @@ class TournamentApiController extends ApiBaseController
              * Teams List
              */
             $teams = $this->db->table('tbl_team')->select('team_id, team_name')->where('team_id<>', $coachs['team_id'])->get()->getResultArray();
-            $result['teams'] = $teams;
+            if(!empty($teams))
+                $result['teams'] = $teams;
             /**
              * Future matches
              */
