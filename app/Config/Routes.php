@@ -59,6 +59,8 @@ $routes->add('/api/add-players-team', 'PlayerApiController::add_players_team');
  */
 $routes->add('/api/match-lists', 'TournamentApiController::match_lists');
 $routes->add('/api/schedule-match', 'TournamentApiController::schedule_match');
+$routes->add('/api/add-player-to-match', 'TournamentApiController::add_player_to_match');
+$routes->add('/api/get-match-players', 'TournamentApiController::get_match_players');
 /**
  * Traning api
  */

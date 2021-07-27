@@ -73,6 +73,8 @@ class TournamentApiController extends ApiBaseController
                 $match['tournament_name'] = $this->db->table('tbl_tournament')->select('name')->where('id', $match['tournament_id'])->get()->getRowArray()['name'];
                 $match['date'] = $this->date_format_list($match['date']);
                 $match['time'] = $this->time_format_list($match['datetime']);
+                $match['match_id'] = $match['id'];
+                unset($match['id']);
                 if($match['datetime'] > date('Y-m-d H:i:s') && $match['match_end_status'] == 0){
                     array_push($future_match, $match);
                 } else {
@@ -93,6 +95,11 @@ class TournamentApiController extends ApiBaseController
                
                 $trannie["tournament_id"] =  $this->db->table('tbl_tournament')->select('id')->where('slug', "traning")->get()->getRowArray()['id'];
                 $trannie['time'] = $this->time_format_list($trannie['traningdatetime']);
+                if($this->ifexistscustom('tbl_traning_attendance', array($trannie['id'], $user_id))){
+                    $trannie['attandance_status'] = true;
+                } else {
+                    $trannie['attandance_status'] = false;
+                }
                 $trannie['attendance'] = array();
                 $attendence=$this->db->table('tbl_team_member_relation')->select('tbl_team_member_relation.user_id, first_name, last_name, tbl_position.position')->join('tbl_user', 'tbl_user.user_id = tbl_team_member_relation.user_id')->join('tbl_position', 'tbl_position.p_id=tbl_user.position')->where( array('team_id'=> $trannie['team_id'], 'designation'=> 1, 'deletestatus' => 0))->get()->getResultArray();
                 foreach($attendence as $key => $attend){
@@ -211,7 +218,7 @@ class TournamentApiController extends ApiBaseController
                 $response['message'] = "Please Select future date";
                 $this->sendResponse($response);
             }
-           
+            
            
              /**
              * Check tournament
@@ -308,6 +315,167 @@ class TournamentApiController extends ApiBaseController
             } 
         }
     }
-   
+    /**
+     * Add player to match
+     * @endpoint add-player-to-match
+     * @url: http://yourdomain.com/api/add-player-to-match
+     * @param match_id :match_id
+     * @param players: json ([{"player_id":1,"jursey_no":3},{"player_id":1,"jursey_no":3}])
+     * 
+     * @return void
+     */
+    public function add_player_to_match(){
+        if($this->authenticate_api())
+        {   
+            $response = array( "status" => "error" );
+            $required_fields = array("match_id", "players");
+            $status = $this->verifyRequiredParams($required_fields);
+            $match_id = $this->request->getVar("match_id");
+            $players = $this->request->getVar("players");
+            //user
+            if($this->ifempty($match_id, "match id")!== true){
+                $response['message'] = $this->ifempty($match_id, "match id");
+                $this->sendResponse($response);
+            }
+            if($this->ifempty($players, "Players")!== true){
+                $response['message'] = $this->ifempty($players, "players");
+                $this->sendResponse($response);
+            }
+            if($this->ifexists('tbl_tournament_match', $match_id, 'id') != true){
+                $response['message'] = "Please enter valid match id";
+                $this->sendResponse($response);
+            }
+            $player_details = json_decode($players, true);
+           
+            $i=0;
+            foreach($player_details as $player){
+                $connection = array(
+                    "user_id"  => $player['player_id'],
+                    "user_type"=> 0
+                );
+                if($this->ifexistscustom("tbl_user",$connection) != true){
+                    $response['message'] = "Please enter valid player id";
+                    $this->sendResponse($response);
+                }
+                /**
+                 * Check jursey_no
+                 */
+                $checkj=array(
+                    "match_id" =>$match_id,
+                    "jursey_no"=>$player['jursey_no']
+                );
+                if($this->ifexistscustom("tbl_match_team",$checkj)){
+                    $response['message'] = "Please enter valid jurseynumber id";
+                    $this->sendResponse($response);
+                }
+                $player_details_match = array(
+                    "match_id" =>$match_id,
+                    "player_id"=>$player['player_id'],
+                    "jursey_no"=>$player['jursey_no']
+                );
+                $check_team = array(
+                    "match_id" =>$match_id,
+                    "player_id"=>$player['player_id']
+                );
+                $add_player=null;
+                if($this->ifexistscustom("tbl_match_team", $check_team)){
+                    $add_player = $this->db->table('tbl_match_team')->where($check_team)->set($player_details_match)->update();
+                } else {
+                    $add_player = $this->db->table('tbl_match_team')->insert($player_details_match);
+                }
+                if(!empty($add_player)){
+                    $i++;
+                }
+            }
+            if($i===count($player_details)){
+                $response['status']="success";
+                $response['message'] = "All players added in team";
+                $this->sendResponse($response);
+            }else{
+                $response['message'] = "something went wrong";
+                $this->sendResponse($response);
+            }
+            
+        }
+    }
+    /**
+     * Get match players
+     * @endpoint get-match-players 
+     * @url: http://yourdomain.com/api/get-match-players
+     * @param match_id : match_id
+     * @param coach_id : coach_id
+     */
+    public function get_match_players(){
+        if($this->authenticate_api())
+        {
+            $response = array( "status" => "error" );
+            $required_fields = array("match_id", "coach_id");
+            $status = $this->verifyRequiredParams($required_fields);
+            $match_id= $this->request->getVar("match_id");
+            $coach_id = $this->request->getVar("coach_id");
+            $connection = array(
+                    "user_id"  => $coach_id,
+                    "user_type"=> 1
+                );
+            if($this->ifexistscustom("tbl_user",$connection) != true){
+                $response['message'] = "Please enter valid coach id";
+                $this->sendResponse($response);
+            }
+            if($this->ifempty($match_id, "match id")!== true){
+                $response['message'] = $this->ifempty($match_id, "match id");
+                $this->sendResponse($response);
+            }
+            if($this->ifexists('tbl_tournament_match', $match_id, 'id') != true){
+                $response['message'] = "Please enter valid match id";
+                $this->sendResponse($response);
+            }
+            /**
+             * all players in team"
+             */
+            //get team of coach
+            $team = $this->db->table('tbl_team_member_relation')->where(array("user_id"=> $coach_id, "designation<>"=>1, "deletestatus"=>0))->get()->getRowArray();
+            if(empty($team)){
+                $response['message'] = "team not found";
+                $this->sendResponse($response);
+            }
+            
+            /**
+             * get team players
+             */
+            $players = $this->db->table('tbl_team_member_relation')->where(array("team_id"=> $team['team_id'], "designation"=>1, "deletestatus"=>0))->get()->getResultArray();
+            $result = array();
+            $result['in_match']=array();
+            $result['not_in_match']=array();
+            foreach ($players as $player){
+                $details = $this->getUserInfo($player['user_id']);
+                unset($details['position']);
+                unset($details['height']);
+                unset($details['weight']);
+                unset($details['total_game']);
+                unset($details['nation_id']);
+                $details["dob"] = $this->get_mobile_date($details["dob"]);
+                $details['designation'] = $player['designation'];
+                $conditions = array(
+                    "match_id"=> $match_id,
+                    "player_id"=> $player['user_id'],
+                );
+                if($this->ifexistscustom("tbl_match_team",$conditions)){
+
+                    array_push($result['in_match'],$details);
+                }
+                else{
+                    array_push($result['not_in_match'],$details);
+                }
+            }
+            if(!empty($result)){
+                $response['status']  ="success";
+                $response['message'] = "successfully got all players";
+                $response['data']    = $result;
+                $this->sendResponse($response);
+            }
+
+
+        } 
+    }
    
 }

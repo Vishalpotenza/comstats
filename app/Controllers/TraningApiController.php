@@ -41,6 +41,15 @@ class TraningApiController extends ApiBaseController
                 $response['message'] = "player does not exist.";
                 $this->sendResponse($response);
             }
+            $check = array(
+                "traning_id"   =>   $traning,
+                "player_id"    =>   $player_id,
+                "attendence_status" => 1
+            );
+            if($this->ifexistscustom('tbl_traning_attendance', $check)){
+                $response['message'] = "player has already marked present.";
+                $this->sendResponse($response);
+            }
             if(!in_array($availability, array(0, 1))){
                 $response['message'] = "Please enter valid availability value.";
                 $this->sendResponse($response);
@@ -61,9 +70,21 @@ class TraningApiController extends ApiBaseController
                     $this->sendResponse($response);
                 }
             } else {
-                $response['status'] = "success.";
-                $response['message'] = "Player marked absent.";
-                $this->sendResponse($response);
+                $attend = array(
+                'traning_id'        => $traning,
+                'player_id'         => $player_id,
+                "attendence_status" => 0,
+                );
+                $attendrecord = $this->db->table('tbl_traning_attendance')->insert($attend);
+                if(!empty($attendrecord)){
+                    $response['status'] = "success.";
+                    $response['message'] = "Player marked absent.";
+                    $this->sendResponse($response);
+                } else {
+                    $response['message'] = "something went wrong.";
+                    $this->sendResponse($response);
+                }
+             
             } 
         }
     }
