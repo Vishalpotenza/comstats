@@ -551,7 +551,7 @@ class TournamentApiController extends ApiBaseController
 	/**
      * Update kit color formation
      * @endpoint update-kit-color-formation
-     * @url: http://yourdomain.com/api/get-match-players
+     * @url: http://yourdomain.com/api/update-kit-color
      * @param match_id : match_id
      * @param kit_color : kit_color
      * @param formation : formation
