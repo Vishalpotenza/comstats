@@ -356,8 +356,8 @@ class TournamentApiController extends ApiBaseController
 			// print_r($kit_color);
 			// die();
 			if(!in_array($kit_color, array(1, 2))){
-                    $response['message'] = "Please select valid color";
-                    $this->sendResponse($response);
+                    // $response['message'] = "Please select valid color";
+                    // $this->sendResponse($response);
 			}else{			
 				$color_update = array("kit_color" =>$kit_color);
 				$this->db->table('tbl_tournament_match')->where('id',$match_id)->set($color_update)->update();
@@ -537,6 +537,7 @@ class TournamentApiController extends ApiBaseController
 					$response['data']    = $result_match;
 					$this->sendResponse($response);				
 				}
+				
 			}
             if(!empty($result)){
                 $response['status']  ="success";
@@ -553,8 +554,8 @@ class TournamentApiController extends ApiBaseController
      * @endpoint update-kit-color-formation
      * @url: http://yourdomain.com/api/update-kit-color
      * @param match_id : match_id
-     * @param kit_color : kit_color
-     * @param formation : formation
+     * @param kit_color : kit_color => 1 for blue, 2 for red
+     * @param formation : formation => 4-2-2
 	*/
 	
     public function update_kit_color_formation(){
@@ -567,7 +568,8 @@ class TournamentApiController extends ApiBaseController
 			$kit_color = $this->request->getVar("kit_color");    
 			$match_id= $this->request->getVar("match_id");
 			
-			 if($this->ifempty($match_id, "match id")!== true){
+			
+			if($this->ifempty($match_id, "match id")!== true){
                 $response['message'] = $this->ifempty($match_id, "match id");
                 $this->sendResponse($response);
             }
@@ -576,11 +578,79 @@ class TournamentApiController extends ApiBaseController
                 $this->sendResponse($response);
             }
 			if(!in_array($kit_color, array(1, 2))){
-				$response['message'] = "Please select valid color";
+				$response['message'] = "Please select valid color";				
+				$this->sendResponse($response);
+			}else{
 				$color_update = array("kit_color" =>$kit_color);
-				$this->db->table('tbl_tournament_match')->where('id',$match_id)->set($color_update)->update();
-                $this->sendResponse($response);
+				$update_kit_color = $this->db->table('tbl_tournament_match')->where('id',$match_id)->set($color_update)->update();
+				$response['status'] = "success";
+				$response['message'] = "Somthing wrong kit color not Updated";
+				if($update_kit_color)
+					$response['message'] = "Update kit color Successfully";
+				$this->sendResponse($response);
+                
 			}
+			
+		}
+	}
+	/**
+     * update score
+     * @endpoint update-score
+     * @url: http://yourdomain.com/api/update-score
+     * @param match_id : match_id
+     * @param yc : yc => 1,2...
+     * @param rc : rc => 1,2...
+     * @param g : g => 1,2...
+     * @param a : a => 1,2...
+     * @param player_id : player_id => 1,2...
+    */
+	public function update_score(){
+		if($this->authenticate_api())
+        {
+			
+			$response = array( "status" => "error" );
+			$response['message'] = "Somthing Wrong";
+            $required_fields = array("match_id", "players_id");
+            $status = $this->verifyRequiredParams($required_fields);
+			$match_id= $this->request->getVar("match_id");
+			$players_id= $this->request->getVar("players_id");
+			$yc = $this->request->getVar("yc") ? $this->request->getVar("yc") : '';    
+			$rc = $this->request->getVar("rc") ? $this->request->getVar("rc") : '';    
+			$g = $this->request->getVar("g") ? $this->request->getVar("g") : '';    
+			$a = $this->request->getVar("a") ? $this->request->getVar("a") : '';    
+			
+			
+			if($this->ifempty($match_id, "match id")!== true){
+                $response['message'] = $this->ifempty($match_id, "match id");
+                $this->sendResponse($response);
+            }
+            if($this->ifexists('tbl_tournament_match', $match_id, 'id') != true){
+                $response['message'] = "Please enter valid match id";
+                $this->sendResponse($response);
+            }
+			
+			
+			$whare = array('player_id' => $players_id,'match_id' =>$match_id );
+			$update_match_score = $this->db->table('tbl_match_team')->where($whare)->get()->getRowArray();
+			if($update_match_score){
+				
+				if($yc){
+					$response['status'] = "success";				
+					$response['message'] = "Yellow card Updated";			
+					
+					// $update_kit_color = $this->db->table('tbl_tournament_match')->where('id',$match_id)->set($color_update)->update();
+					
+					$this->sendResponse($response);
+				}
+				
+				
+			}
+			
+			
+			
+			
+			$this->sendResponse($response);
+			
 			
 		}
 	}

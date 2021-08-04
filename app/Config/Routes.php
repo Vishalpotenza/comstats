@@ -61,7 +61,8 @@ $routes->add('/api/match-lists', 'TournamentApiController::match_lists');
 $routes->add('/api/schedule-match', 'TournamentApiController::schedule_match');
 $routes->add('/api/add-player-to-match', 'TournamentApiController::add_player_to_match');
 $routes->add('/api/get-match-players', 'TournamentApiController::get_match_players');
-$routes->add('/api/update-kit-color', 'TournamentApiController::update_kit_color_formation');
+$routes->add('/api/update-kit-color-formation', 'TournamentApiController::update_kit_color_formation');
+$routes->add('/api/update-score', 'TournamentApiController::update_score');
 /**
  * Traning api
  */
