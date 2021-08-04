@@ -348,6 +348,7 @@ class TournamentApiController extends ApiBaseController
             $match_id = $this->request->getVar("match_id");
             $players = $this->request->getVar("players");
             $kit_color = $this->request->getVar("kit_color");
+			
 			// if(!empty($kit_color) || $kit_color == 0){
 				// $response['kit_color'] = $kit_color;
 				// $color_update = array("kit_color" =>$kit_color);
@@ -452,7 +453,7 @@ class TournamentApiController extends ApiBaseController
             $status = $this->verifyRequiredParams($required_fields);
             $match_id= $this->request->getVar("match_id");
             $coach_id = $this->request->getVar("coach_id");
-			// $response['match_start_flag'] = 0;
+			
 			
             $connection = array(
                     "user_id"  => $coach_id,
@@ -485,8 +486,15 @@ class TournamentApiController extends ApiBaseController
              */
             $players = $this->db->table('tbl_team_member_relation')->where(array("team_id"=> $team['team_id'], "designation"=>1, "deletestatus"=>0))->get()->getResultArray();
             $result = array();
+			$result['match_start_flag'] = 0;
             $result['in_match']=array();
             $result['not_in_match']=array();
+			
+			$match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
+			$result['kit_color'] = $match_tournament['kit_color'];
+			$result_match['kit_color'] = $match_tournament['kit_color'];
+			// $result_match['team_size'] = $this->match_team_size($match_id);
+			$result['team_size'] = $this->match_team_size($match_id);
             foreach ($players as $player){
                 $details = $this->getUserInfo($player['user_id'], $match_id);
                 $details["players_id"]=$player['user_id'];
@@ -575,9 +583,9 @@ class TournamentApiController extends ApiBaseController
 				$color_update = array("kit_color" =>$kit_color);
 				$update_kit_color = $this->db->table('tbl_tournament_match')->where('id',$match_id)->set($color_update)->update();
 				$response['status'] = "success";
-				$response['message'] = "Somthing wrong kit color not Updated";
+				$response['message'] = "Somthing wrong Data not Updated";
 				if($update_kit_color)
-					$response['message'] = "Update kit color Successfully";
+					$response['message'] = "Data Update Successfully";
 				$this->sendResponse($response);
                 
 			}

@@ -307,12 +307,7 @@ class ApiBaseController extends BaseController
 				foreach($match_players as $m_player){
 					$result['jursey_no'] = $m_player['jursey_no'];
 				  
-				}
-				$match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getResultArray();
-				foreach($match_tournament as $data){
-					$result['kit_color'] = $data['kit_color'];
-				  
-				}
+				}				
 			}		
             
             if($result['gender'] == 0){
@@ -364,6 +359,10 @@ class ApiBaseController extends BaseController
 		}else{
 			return false; 
 		}			
+	}
+	public function match_team_size($match_id){
+		$query = $this->db->table('tbl_match_team')->where('match_id',$match_id);		
+		return $query->countAllResults();
 	}
 	// public function get_player_list($match_id){
 		// $query = $this->db->table('tbl_match_team')->select('first_name, last_name, position, gender, image, g, a, yc, rc' )->join('tbl_user', 'tbl_user.id = tbl_match_team.player_id')->where('tbl_match_team.match_id',$match_id)->getResultArray();
