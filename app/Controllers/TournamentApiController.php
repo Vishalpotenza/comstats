@@ -452,8 +452,7 @@ class TournamentApiController extends ApiBaseController
             $status = $this->verifyRequiredParams($required_fields);
             $match_id= $this->request->getVar("match_id");
             $coach_id = $this->request->getVar("coach_id");
-			
-			
+			// $response['match_start_flag'] = 0;
 			
             $connection = array(
                     "user_id"  => $coach_id,
@@ -489,7 +488,7 @@ class TournamentApiController extends ApiBaseController
             $result['in_match']=array();
             $result['not_in_match']=array();
             foreach ($players as $player){
-                $details = $this->getUserInfo($player['user_id'], $match_id, "kit_color");
+                $details = $this->getUserInfo($player['user_id'], $match_id);
                 $details["players_id"]=$player['user_id'];
                 unset($details['position']);
                 unset($details['height']);
@@ -498,15 +497,11 @@ class TournamentApiController extends ApiBaseController
                 unset($details['nation_id']);
                 $details["dob"] = $this->get_mobile_date($details["dob"]);
                 $details['designation'] = $player['designation'];
-				
-				
                 $conditions = array(
                     "match_id"=> $match_id,
                     "player_id"=> $player['user_id'],
                 );
                 if($this->ifexistscustom("tbl_match_team",$conditions)){
-					
-					
 
                     array_push($result['in_match'],$details);
                 }
@@ -515,19 +510,16 @@ class TournamentApiController extends ApiBaseController
                 }
             }
 			if($this->ifteamfull($match_id)){
-				$result_match = array();
 				if($this->match_time($match_id)){
 					foreach($result['in_match'] as $key => $data ){
-						// print_r($data); 
-						// die();
 						$whare = array('player_id' => $data['players_id'],'match_id' =>$data['match_id'] );
 						$g_a_yc_rc = $this->db->table('tbl_match_team')->where($whare);
 						$g_a_yc_rc = $g_a_yc_rc->get()->getRowArray();
 						
-							$result['in_match'][$key]['yc'] = $g_a_yc_rc['yc'];
-							$result['in_match'][$key]['rc'] = $g_a_yc_rc['rc'];
-							$result['in_match'][$key]['g'] = $g_a_yc_rc['g'];
-							$result['in_match'][$key]['a'] = $g_a_yc_rc['a'];
+							$result['in_match'][$key]['yc'] = $g_a_yc_rc['yc'] ? $g_a_yc_rc['yc'] : 0;
+							$result['in_match'][$key]['rc'] = $g_a_yc_rc['rc'] ? $g_a_yc_rc['rc'] : 0;
+							$result['in_match'][$key]['g'] = $g_a_yc_rc['g'] ? $g_a_yc_rc['g'] : 0;
+							$result['in_match'][$key]['a'] = $g_a_yc_rc['a'] ? $g_a_yc_rc['a'] : 0;
 							
 					}
 					$result_match['match_start_flag'] = 1;
@@ -537,7 +529,6 @@ class TournamentApiController extends ApiBaseController
 					$response['data']    = $result_match;
 					$this->sendResponse($response);				
 				}
-				
 			}
             if(!empty($result)){
                 $response['status']  ="success";
@@ -634,21 +625,44 @@ class TournamentApiController extends ApiBaseController
 			$update_match_score = $this->db->table('tbl_match_team')->where($whare)->get()->getRowArray();
 			if($update_match_score){
 				
+				$score = array();
+				$i=0;
 				if($yc){
+					
 					$response['status'] = "success";				
 					$response['message'] = "Yellow card Updated";			
-					
-					// $update_kit_color = $this->db->table('tbl_tournament_match')->where('id',$match_id)->set($color_update)->update();
-					
-					$this->sendResponse($response);
+					$score['yc'] = $yc;
+					$i++;
 				}
-				
-				
-			}
-			
-			
-			
-			
+				if($rc){
+					
+					$response['status'] = "success";				
+					$response['message'] = "Red card card Updated";			
+					$score['rc'] = $rc;
+					$i++;
+				}
+				if($g){
+					
+					$response['status'] = "success";				
+					$response['message'] = "Goal card Updated";			
+					$score['g'] = $g;
+					$i++;
+				}
+				if($a){
+					
+					// $a_data_old = $update_match_score['a'] ? $update_match_score['a'] : 0;
+					// $a_data = $a_data_old + $a;
+					$response['status'] = "success";				
+					$response['message'] = "Assistant card Updated";			
+					// $score = array('a' => $a_data );
+					$score['a'] = $a;
+					$i++;
+				}
+				if($i > 1)
+					$response['message'] = "Score Updated";
+				$this->db->table('tbl_match_team')->where($whare)->set($score)->update();
+				$this->sendResponse($response);
+			}		
 			$this->sendResponse($response);
 			
 			

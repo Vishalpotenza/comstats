@@ -41,7 +41,8 @@ defined('WEEK')   || define('WEEK', 604800);
 defined('MONTH')  || define('MONTH', 2592000);
 defined('YEAR')   || define('YEAR', 31536000);
 defined('DECADE') || define('DECADE', 315360000);
-defined('TEAM_TOTAL_MEMBER')      || define('TEAM_TOTAL_MEMBER', 10);
+defined('TEAM_TOTAL_MEMBER')      || define('TEAM_TOTAL_MEMBER', 3);
+
 /*
  | --------------------------------------------------------------------------
  | Exit Status Codes

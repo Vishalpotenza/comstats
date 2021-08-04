@@ -356,7 +356,10 @@ class ApiBaseController extends BaseController
 	public function match_time($match_id){
 		$match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
 		$result['datetime'] = $match_tournament['datetime'];
-		if(  date("Y-m-d H:i:s") <= $result['datetime']){
+		date_default_timezone_set("Asia/Kolkata");
+		$match_time_date = strtotime($match_tournament['datetime']);
+		$current_time_date = strtotime(date("Y-m-d H:i:s"));
+		if(  $current_time_date >= $match_time_date){
 			return true;
 		}else{
 			return false; 
