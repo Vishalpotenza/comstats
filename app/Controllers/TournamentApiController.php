@@ -676,5 +676,34 @@ class TournamentApiController extends ApiBaseController
 			
 		}
 	}
-   
+	public function finish_match(){
+		if($this->authenticate_api()){
+			
+			$response = array( "status" => "error" );
+			$response['message'] = "Somthing Wrong";
+            $required_fields = array("match_id");
+            $status = $this->verifyRequiredParams($required_fields);
+			$match_id= $this->request->getVar("match_id");
+			
+			if($this->ifempty($match_id, "match id")!== true){
+                $response['message'] = $this->ifempty($match_id, "match id");
+                $this->sendResponse($response);
+            }
+            if($this->ifexists('tbl_tournament_match', $match_id, 'id') != true){
+                $response['message'] = "Please enter valid match id";
+                $this->sendResponse($response);
+            }
+			
+			if($match_id){
+				$where = array('id' => $match_id);
+				$update_data = array('match_end_status' => 1);
+				$update = $this->db->table('tbl_tournament_match')->where($where)->set($update_data)->update();
+				$response['message'] = "Something Wrong Data not updated";
+				if($update)
+					$response['message'] = "Data update Successfully";
+			}
+			$this->sendResponse($response);
+			
+		}
+	}
 }
