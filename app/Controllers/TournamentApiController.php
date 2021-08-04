@@ -556,6 +556,7 @@ class TournamentApiController extends ApiBaseController
      * @param kit_color : kit_color
      * @param formation : formation
 	*/
+	
     public function update_kit_color_formation(){
 		if($this->authenticate_api())
         {
