@@ -41,7 +41,7 @@ defined('WEEK')   || define('WEEK', 604800);
 defined('MONTH')  || define('MONTH', 2592000);
 defined('YEAR')   || define('YEAR', 31536000);
 defined('DECADE') || define('DECADE', 315360000);
-
+defined('TEAM_TOTAL_MEMBER')      || define('TEAM_TOTAL_MEMBER', 10);
 /*
  | --------------------------------------------------------------------------
  | Exit Status Codes
@@ -84,4 +84,5 @@ defined('JSPATH')      || define('JSPATH', "/public/assets/js"); // JS PATH
 defined('IMGPATH')      || define('IMGPATH', "/public/assets/img"); // IMG PATH
 defined('JSLIB')      || define('JSLIB', "/public/assets/bundles"); // IMG PATH
 defined('ADMIN')      || define('ADMIN', "/admin");
+
 // defined('JSPATH')      || define('JSPATH', "public/assets/js"); // JS PATH

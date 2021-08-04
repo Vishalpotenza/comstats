@@ -279,7 +279,7 @@ class ApiBaseController extends BaseController
     /**
      * Get user info
      */
-    public function getUserInfo($user_id) {
+    public function getUserInfo($user_id,$match_id='') {
         $result = $this->db->table('tbl_user_login')->select('first_name, last_name, address, tbl_nationality.nationality as nationality,tbl_nationality.id as nation_id, flag_image, age, position, gender,image, email, height, weight' )
                                         ->join('tbl_user', 'tbl_user.user_id = tbl_user_login.user_id')
                                         ->join('tbl_nationality', 'tbl_nationality.id = tbl_user.nationality')                        
@@ -287,19 +287,33 @@ class ApiBaseController extends BaseController
         if(!empty($result)){
             $result['dob'] = $result['age'];
             $result['age'] = $this->calculate_age($result['age']);
-            $result['total_game'] = 5;
+            $result['total_game'] = 5;						$result['match_id'] = $match_id;
             if($result['position']!== 0){
-                $position = $this->db->table('tbl_position')->select('position, p_id')->where('p_id',$result['position'])->get()->getRowArray();
+                $position = $this->db->table('tbl_position')->select('position, slug, p_id')->where('p_id',$result['position'])->get()->getRowArray();
                 
                 if(!empty($position)){
                     $result['p_id'] = $position['p_id'];
+                    $result['position_slug'] = $position['slug'];
                     $result['position'] = $position['position'];
+					$result['slug'] = $position['slug'];										// $result['team_full_status'] = $match_team['team_full_status'];
                 }
                 else{
-                    $result['position'] = null;
+                    $result['position'] = null;										
+					$result['slug'] = null;
                 }
             }
-            $result['flag_image']= base_url()."/public/uploads/flags/".$result["nation_id"]."/".$result['flag_image'];
+			if($match_id != ''){
+				$match_players = $this->db->table('tbl_match_team')->where('match_id', $match_id)->get()->getResultArray();
+				foreach($match_players as $m_player){
+					$result['jursey_no'] = $m_player['jursey_no'];
+				  
+				}
+				$match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getResultArray();
+				foreach($match_tournament as $data){
+					$result['kit_color'] = $data['kit_color'];
+				  
+				}
+			}		
             
             if($result['gender'] == 0){
                 $result['gender'] = "Male";
@@ -312,7 +326,10 @@ class ApiBaseController extends BaseController
             {
                 $imagepath = base_url() . "/public/uploads/profile_images/". $user_id."/" . $result['image'];
                 $result['image'] = $imagepath;
-            }
+            }else{
+				$imagepath = "";
+                $result['image'] = $imagepath;
+			}
             return $result;
         }
         return false;
@@ -326,4 +343,27 @@ class ApiBaseController extends BaseController
             return false;
         }
     }
+	// CHECK IF team is full  match team full => true,  match team not full => false
+	public function ifteamfull($match_id){        
+		$query = $this->db->table('tbl_match_team')->where('match_id',$match_id);		
+		if ($query->countAllResults() > (TEAM_TOTAL_MEMBER-1)){            
+			return true;        
+		}        
+		else{            
+			return false;        
+		}    
+	}
+	public function match_time($match_id){
+		$match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
+		$result['datetime'] = $match_tournament['datetime'];
+		if(  date("Y-m-d H:i:s") <= $result['datetime']){
+			return true;
+		}else{
+			return false; 
+		}			
+	}
+	// public function get_player_list($match_id){
+		// $query = $this->db->table('tbl_match_team')->select('first_name, last_name, position, gender, image, g, a, yc, rc' )->join('tbl_user', 'tbl_user.id = tbl_match_team.player_id')->where('tbl_match_team.match_id',$match_id)->getResultArray();
+		// return $query;
+	// }
 }
