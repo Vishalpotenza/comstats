@@ -605,19 +605,101 @@ class TournamentApiController extends ApiBaseController
     */
 	public function update_score(){
 		if($this->authenticate_api())
-        {
+        {			
+			$response = array( "status" => "error" );
+			$response['message'] = "Somthing Wrong";
+            $required_fields = array("match_id", "players");
+            $status = $this->verifyRequiredParams($required_fields);
+			$match_id= $this->request->getVar("match_id");
+			$players = $this->request->getVar("players");
+			// $players_id= $this->request->getVar("players_id");
+			
+			if($this->ifempty($match_id, "match id")!== true){
+                $response['message'] = $this->ifempty($match_id, "match id");
+                $this->sendResponse($response);
+            }
+            if($this->ifexists('tbl_tournament_match', $match_id, 'id') != true){
+                $response['message'] = "Please enter valid match id";
+                $this->sendResponse($response);
+            }
+			if($this->ifempty($players, "Players")!== true){
+                $response['message'] = $this->ifempty($players, "players");
+                $this->sendResponse($response);
+            }
+			
+						
+            $player_details = json_decode($players, true);
+			foreach($player_details as $player){			
+				$connection = array(
+                    "user_id"  => $player['players_id'],
+                    "user_type"=> 0
+                );
+                if($this->ifexistscustom("tbl_user",$connection) != true){
+                    $response['message'] = "Please enter valid player id";
+                    $this->sendResponse($response);
+                }
+				
+				$yc = $player['yc'] ? $player['yc'] : 0;    
+				$rc = $player['rc'] ? $player['rc'] : 0;    
+				$g = $player['g'] ? $player['g'] : 0;    
+				$a = $player['a'] ? $player['a'] : 0;				
+				
+				$whare = array('player_id' => $player['players_id'],'match_id' =>$match_id );
+				
+				$update_match_score = $this->db->table('tbl_match_team')->where($whare)->get()->getRowArray();
+				if($update_match_score){
+					$response['status'] = "success";					
+					$score = array();
+					$i=0;
+					if($yc){					
+						$score['yc'] = $yc;
+						$i++;
+					}
+					if($rc){						
+						$score['rc'] = $rc;
+						$i++;
+					}
+					if($g){
+						
+						$score['g'] = $g;
+						$i++;
+					}
+					if($a){
+						// $a_data_old = $update_match_score['a'] ? $update_match_score['a'] : 0;
+						// $a_data = $a_data_old + $a;									
+						// $score = array('a' => $a_data );
+						$score['a'] = $a;
+						$i++;
+					}
+					
+					$response['message'] = "Score Updated";
+					if($i > 0)
+						$this->db->table('tbl_match_team')->where($whare)->set($score)->update();
+					$this->sendResponse($response);
+				}
+			}							
+			$this->sendResponse($response);		
+		}
+	}
+	/**
+     * update Finished Match
+     * @endpoint finish_match
+     * @url: http://yourdomain.com/api/finish_match
+     * @param match_id : match_id
+     * @param coach_id : coach_id => user id
+     * match_end_status 1 => for end match, 0 => match running or remaining
+	 *
+    */
+	public function finish_match(){
+		if($this->authenticate_api()){
 			
 			$response = array( "status" => "error" );
 			$response['message'] = "Somthing Wrong";
-            $required_fields = array("match_id", "players_id");
+            $required_fields = array("match_id", "coach_id");
             $status = $this->verifyRequiredParams($required_fields);
-			$match_id= $this->request->getVar("match_id");
-			$players_id= $this->request->getVar("players_id");
-			$yc = $this->request->getVar("yc") ? $this->request->getVar("yc") : '';    
-			$rc = $this->request->getVar("rc") ? $this->request->getVar("rc") : '';    
-			$g = $this->request->getVar("g") ? $this->request->getVar("g") : '';    
-			$a = $this->request->getVar("a") ? $this->request->getVar("a") : '';    
-			
+			$match_id = $this->request->getVar("match_id");
+			// $team_id = $this->request->getVar("team_id");
+			$coach_id= $this->request->getVar("coach_id");
 			
 			if($this->ifempty($match_id, "match id")!== true){
                 $response['message'] = $this->ifempty($match_id, "match id");
@@ -628,55 +710,36 @@ class TournamentApiController extends ApiBaseController
                 $this->sendResponse($response);
             }
 			
-			
-			$whare = array('player_id' => $players_id,'match_id' =>$match_id );
-			$update_match_score = $this->db->table('tbl_match_team')->where($whare)->get()->getRowArray();
-			if($update_match_score){
-				
-				$score = array();
-				$i=0;
-				if($yc){
-					
-					$response['status'] = "success";				
-					$response['message'] = "Yellow card Updated";			
-					$score['yc'] = $yc;
-					$i++;
-				}
-				if($rc){
-					
-					$response['status'] = "success";				
-					$response['message'] = "Red card card Updated";			
-					$score['rc'] = $rc;
-					$i++;
-				}
-				if($g){
-					
-					$response['status'] = "success";				
-					$response['message'] = "Goal card Updated";			
-					$score['g'] = $g;
-					$i++;
-				}
-				if($a){
-					
-					// $a_data_old = $update_match_score['a'] ? $update_match_score['a'] : 0;
-					// $a_data = $a_data_old + $a;
-					$response['status'] = "success";				
-					$response['message'] = "Assistant card Updated";			
-					// $score = array('a' => $a_data );
-					$score['a'] = $a;
-					$i++;
-				}
-				if($i > 1)
-					$response['message'] = "Score Updated";
-				$this->db->table('tbl_match_team')->where($whare)->set($score)->update();
-				$this->sendResponse($response);
-			}		
+			if($match_id){
+				$where = array('id' => $match_id);
+				$update_data = array('match_end_status' => 1);
+				$update = $this->db->table('tbl_tournament_match')->where($where)->set($update_data)->update();
+				$response['status'] = "Success";
+				$response['message'] = "Something Wrong Data not updated";
+				if($update)
+					$response['message'] = "Data update Successfully";
+			}
 			$this->sendResponse($response);
 			
+			// $insertdata = array( 
+                        // "team_id"       =>   $team_id,
+                        // "user_id"       =>   $user_id,
+                        // "designation"   =>   $designation
+                     // );
+                
+                     // $result = $this->db->table('tbl_team_member_relation')->insert($insertdata);
 			
 		}
 	}
-	public function finish_match(){
+	/**
+     * update Match team score 
+     * @endpoint update_team_score
+     * @url: http://yourdomain.com/api/update_team_score
+     * @param match_id : match_id
+     * match_end_status 1 => for end match, 0 => match running or remaining
+	 *
+    */
+	public function update_team_score(){
 		if($this->authenticate_api()){
 			
 			$response = array( "status" => "error" );
@@ -695,14 +758,63 @@ class TournamentApiController extends ApiBaseController
             }
 			
 			if($match_id){
-				$where = array('id' => $match_id);
-				$update_data = array('match_end_status' => 1);
-				$update = $this->db->table('tbl_tournament_match')->where($where)->set($update_data)->update();
-				$response['message'] = "Something Wrong Data not updated";
-				if($update)
-					$response['message'] = "Data update Successfully";
+				
+				$match_tournament_team = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
+				if($match_tournament_team){
+					$team_id = $match_tournament_team['team_id'];
+					$opponent_team_id = $match_tournament_team['opponent_team_id'];
+					$match_end_status = $match_tournament_team['match_end_status'];
+					if($match_end_status == 1){
+						$where_match_team['match_id'] = $team_id;
+						$where_match_team['g'] = '';
+						$where_match_opponent_team['match_id'] = $opponent_team_id;
+						$where_match_opponent_team['g'] = '';
+						
+						$match_team = $this->db->table('tbl_match_team')->where($where_match_team);
+						$match_opponent_team = $this->db->table('tbl_match_team')->where($where_match_opponent_team);
+						
+						if($match_team->countAllResults() == 0 && $match_opponent_team->countAllResults() == 0){
+							
+						}
+						
+						print_r($match_team->get()->getResultArray());
+						echo "null = ".$match_opponent_team->countAllResults();
+						// echo $match_team->get()->getQuery();
+						// print_r($match_team->getQuery());
+						die();
+						// tbl_match_team
+						
+					}
+				}
+				
+				
+				
+				
+				
+				// tbl_tournament_match
+				
+				
+				
+				
+				
+				
+				// $where = array('id' => $match_id);
+				// $update_data = array('match_end_status' => 1);
+				// $update = $this->db->table('tbl_tournament_match')->where($where)->set($update_data)->update();
+				// $response['status'] = "Success";
+				// $response['message'] = "Something Wrong Data not updated";
+				// if($update)
+					// $response['message'] = "Data update Successfully";
 			}
 			$this->sendResponse($response);
+			
+			// $insertdata = array( 
+                        // "team_id"       =>   $team_id,
+                        // "user_id"       =>   $user_id,
+                        // "designation"   =>   $designation
+                     // );
+                
+                     // $result = $this->db->table('tbl_team_member_relation')->insert($insertdata);
 			
 		}
 	}

@@ -64,6 +64,7 @@ $routes->add('/api/get-match-players', 'TournamentApiController::get_match_playe
 $routes->add('/api/update-kit-color-formation', 'TournamentApiController::update_kit_color_formation');
 $routes->add('/api/update-score', 'TournamentApiController::update_score');
 $routes->add('/api/finish-match', 'TournamentApiController::finish_match');
+$routes->add('/api/update-team-score', 'TournamentApiController::update_team_score');
 /**
  * Traning api
  */
