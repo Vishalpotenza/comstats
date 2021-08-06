@@ -382,4 +382,14 @@ class ApiBaseController extends BaseController
             return false;
         }
 	}
+	public function exist_record($table_name,$id,$fild_to_check){
+		$condition[$fild_to_check] = $id; 
+		$query = $this->db->table($table_name)->where($condition);
+        if ($query->countAllResults() > 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+	}
 }

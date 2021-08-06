@@ -747,7 +747,7 @@ class TournamentApiController extends ApiBaseController
      * @endpoint update_team_score
      * @url: http://yourdomain.com/api/update_team_score
      * @param match_id : match_id
-     * match_end_status 1 => for end match, 0 => match running or remaining
+     * winner_team_id 0 => for match draw , 1,2,.. => tournament match team id
 	 *
     */
 	public function update_team_score(){
@@ -766,10 +766,8 @@ class TournamentApiController extends ApiBaseController
             if($this->ifexists('tbl_tournament_match', $match_id, 'id') != true){
                 $response['message'] = "Please enter valid match id";
                 $this->sendResponse($response);
-            }
-			
-			if($match_id){
-				
+            }			
+			if($match_id){				
 				$match_tournament_team = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
 				if($match_tournament_team){
 					$team_id = $match_tournament_team['team_id'];
@@ -783,64 +781,38 @@ class TournamentApiController extends ApiBaseController
 						$match_team = $this->db->table('tbl_match_team')->where($where_match_team);
 						$match_opponent_team = $this->db->table('tbl_match_team')->where($where_match_opponent_team);
 						
-						// $match_team_score_data = $this->db->select_sum('g')->get('tbl_match_team')->get()->row();
-						// $match_team_score = $match_team_score_data->g;
-						// $result = $this->db->table('tbl_match_team')->select('g');
-						// $result = $result->where($where_match_team)->getSum();  
+						$match_team_goal = $this->db->query("SELECT SUM(g) as Total_g FROM tbl_match_team where match_id = ".$team_id)->getRowArray();
+						$match_opponent_team_goal = $this->db->query("SELECT SUM(g) as Total_g FROM tbl_match_team where match_id = ".$opponent_team_id)->getRowArray();
 						
-		// $db      = \Config\Database::connect();
-						// $query = $db->select(g)
-										  // ->from("tbl_match_team")
-										  // ->get();
-						// $result = $query->result();
+						$match_team_goal['Total_g'] = $match_team_goal['Total_g'] ? $match_team_goal['Total_g'] : 0;
+						$match_team_goal['Total_g'] = $match_opponent_team_goal['Total_g'] ? $match_opponent_team_goal['Total_g'] : 0;
 						
-						$result = $this->db->query("SELECT * FROM tbl_match_team;");
-						// $this->db->select_sum('g', 'total_g');
-						// $result = $this->db->get('tbl_match_team');
-						print_r($result);
-						
-						// if($match_team->countAllResults() == 0 && $match_opponent_team->countAllResults() == 0){
-							
-						// }
-						
-						// print_r($match_team->get()->getResultArray());
-						// echo "total = ".$match_team_score;
-						// echo $match_team->get()->getQuery();
-						// print_r($match_team->getQuery());
-						die();
-						// tbl_match_team
-						
+						if($match_team_goal['Total_g'] > $match_opponent_team_goal['Total_g']){
+							$winner_team_id = $team_id;
+						}else if($match_team_goal['Total_g'] < $match_opponent_team_goal['Total_g']){
+							$winner_team_id = $opponent_team_id;
+						}else{
+							$winner_team_id = 0;
+						}
+						$tbl_tournament_match_result_data['match_id'] = $match_id; 
+						$tbl_tournament_match_result_data['team_id_score'] = $match_team_goal['Total_g']; 
+						$tbl_tournament_match_result_data['opponent_team_id_score'] = $match_opponent_team_goal['Total_g']; 
+						$tbl_tournament_match_result_data['winner_team_id'] = $winner_team_id;
+						$response['status'] = "Success";
+						$table_name = 'tbl_tournament_match_result';
+						$id = $match_id;
+						$fild_to_check = 'match_id';
+						if($this->exist_record($table_name,$id,$fild_to_check)){							
+							$tbl_tournament_match_result = $this->db->table($table_name)->insert($tbl_tournament_match_result_data);
+							if($tbl_tournament_match_result)
+								$response['message'] = "Team score Added Successfully";
+						}else{
+							$response['message'] = "Team score already Added";
+						}
 					}
-				}
-				
-				
-				
-				
-				
-				// tbl_tournament_match
-				
-				
-				
-				
-				
-				
-				// $where = array('id' => $match_id);
-				// $update_data = array('match_end_status' => 1);
-				// $update = $this->db->table('tbl_tournament_match')->where($where)->set($update_data)->update();
-				// $response['status'] = "Success";
-				// $response['message'] = "Something Wrong Data not updated";
-				// if($update)
-					// $response['message'] = "Data update Successfully";
+				}				
 			}
-			$this->sendResponse($response);
-			
-			// $insertdata = array( 
-                        // "team_id"       =>   $team_id,
-                        // "user_id"       =>   $user_id,
-                        // "designation"   =>   $designation
-                     // );
-                
-                     // $result = $this->db->table('tbl_team_member_relation')->insert($insertdata);
+			$this->sendResponse($response);			
 			
 		}
 	}
