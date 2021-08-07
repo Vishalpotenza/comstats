@@ -802,12 +802,13 @@ class TournamentApiController extends ApiBaseController
 						$table_name = 'tbl_tournament_match_result';
 						$id = $match_id;
 						$fild_to_check = 'match_id';
-						if($this->exist_record($table_name,$id,$fild_to_check)){							
+						if($this->ifexists($table_name,$id,$fild_to_check)){							
+							$response['message'] = "Team score already Added";
+						}else{
+							
 							$tbl_tournament_match_result = $this->db->table($table_name)->insert($tbl_tournament_match_result_data);
 							if($tbl_tournament_match_result)
 								$response['message'] = "Team score Added Successfully";
-						}else{
-							$response['message'] = "Team score already Added";
 						}
 					}
 				}				

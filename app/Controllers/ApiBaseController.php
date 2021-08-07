@@ -382,14 +382,31 @@ class ApiBaseController extends BaseController
             return false;
         }
 	}
-	public function exist_record($table_name,$id,$fild_to_check){
-		$condition[$fild_to_check] = $id; 
-		$query = $this->db->table($table_name)->where($condition);
-        if ($query->countAllResults() > 0){
-            return false;
-        }
-        else{
-            return true;
-        }
+	public function year_list_of_match_and_player($feild='',$value=''){		
+		$query = $this->db->table('tbl_match_team');
+		$query = $query->select('DISTINCT YEAR(datetime) as year');
+		$query = $query->join('tbl_tournament_match', 'tbl_tournament_match.id = tbl_match_team.match_id','left');
+		$query = $query->join('tbl_team', 'tbl_team.team_id = tbl_tournament_match.team_id','left');
+		if($value){
+			$where[$feild] = $value;
+			$query = $query->where($where);
+		}
+		$query = $query->get()->getResultArray();
+		return $query;
 	}
+	// public function tournament_team_id(){
+		// $query = $this->db->table('tbl_tournament_match')->select('team_id')->get()->getRowArray();
+		// return $query;
+	// }
+	public function player_match_id_array($player_id){
+		$query = $this->db->table('tbl_match_team')->select('match_id')->where('player_id',$player_id)->get()->getResultArray();
+		return $query;
+	}
+	// public function test(){		
+		// $query = $this->db->table('tbl_match_team')->select('DISTINCT YEAR(datetime) as year');
+		// $query = $query->join('tbl_tournament_match', 'tbl_tournament_match.id = tbl_match_team.match_id','left');
+		// $query = $query->join('tbl_team', 'tbl_team.team_id = tbl_tournament_match.team_id','left');
+		// $query = $query->get()->getResultArray();
+		// return $query;
+	// }	
 }
