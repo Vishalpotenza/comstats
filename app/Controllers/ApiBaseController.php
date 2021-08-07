@@ -287,7 +287,8 @@ class ApiBaseController extends BaseController
         if(!empty($result)){
             $result['dob'] = $result['age'];
             $result['age'] = $this->calculate_age($result['age']);
-            $result['total_game'] = 5;						$result['match_id'] = $match_id;
+            $result['total_game'] = count($this->player_match_id_array($user_id));			
+			$result['match_id'] = $match_id;
             if($result['position']!== 0){
                 $position = $this->db->table('tbl_position')->select('position, slug, p_id')->where('p_id',$result['position'])->get()->getRowArray();
                 
@@ -401,7 +402,7 @@ class ApiBaseController extends BaseController
 	public function player_match_id_array($player_id){
 		$query = $this->db->table('tbl_match_team')->select('match_id');
 		$query = $query->join('tbl_tournament_match', 'tbl_tournament_match.id = tbl_match_team.match_id','left');
-		$query = $query->where('player_id',$player_id)->get()->getResultArray();
+		$query = $query->where('player_id',$player_id)->distinct('match_id')->get()->getResultArray();
 		return $query;
 	}
 	public function player_team_id_array($player_id){
