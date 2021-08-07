@@ -287,7 +287,7 @@ class ApiBaseController extends BaseController
         if(!empty($result)){
             $result['dob'] = $result['age'];
             $result['age'] = $this->calculate_age($result['age']);
-            $result['total_game'] = count($this->player_match_id_array($user_id));			
+            $result['total_game'] = 5;						
 			$result['match_id'] = $match_id;
             if($result['position']!== 0){
                 $position = $this->db->table('tbl_position')->select('position, slug, p_id')->where('p_id',$result['position'])->get()->getRowArray();
@@ -309,9 +309,6 @@ class ApiBaseController extends BaseController
 					$result['jursey_no'] = $m_player['jursey_no'];
 				  
 				}
-				// $match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
-				// $result['kit_color'] = $match_tournament['kit_color'];
-				  
 			}		
             
             if($result['gender'] == 0){
@@ -342,7 +339,10 @@ class ApiBaseController extends BaseController
             return false;
         }
     }
-	// CHECK IF team is full  match team full => true,  match team not full => false
+	/**
+     * CHECK IF team is full  match team full => true,  match team not full => false
+	 * match_id : match_id
+     */
 	public function ifteamfull($match_id){        
 		$query = $this->db->table('tbl_match_team')->where('match_id',$match_id);		
 		if ($query->countAllResults() > (TEAM_TOTAL_MEMBER-1)){            
@@ -352,6 +352,10 @@ class ApiBaseController extends BaseController
 			return false;        
 		}    
 	}
+	/**
+     * CHECK IF match time current or past :  current or past match time => true,  match future match time => false
+     * match_id : match_id
+     */
 	public function match_time($match_id){
 		$match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
 		$result['datetime'] = $match_tournament['datetime'];
@@ -364,10 +368,20 @@ class ApiBaseController extends BaseController
 			return false; 
 		}			
 	}
+	/**
+     * return team size
+     * match_id : match_id
+     */
 	public function match_team_size($match_id){
 		$query = $this->db->table('tbl_match_team')->where('match_id',$match_id);		
 		return $query->countAllResults();
 	}
+	/**
+     * check coach team or coach opponent team
+     * match_id : match_id
+     * team_id : team_id
+     * team_or_opponent : team_id or opponent_team_id
+     */
 	public function check_coach_team($match_id,$team_id,$team_or_opponent=''){
 		if($team_or_opponent && $team_or_opponent == 'team_id')
 			$where['team_id'] = $team_id;
@@ -383,6 +397,11 @@ class ApiBaseController extends BaseController
             return false;
         }
 	}
+	/**
+     * get List of year
+     * feild : player_id,match_id,team_id => player_id,match_id,team_id
+     * value : player_id,match_id,team_id => 1,2..
+    */
 	public function year_list_of_match_and_player($feild='',$value=''){		
 		$query = $this->db->table('tbl_match_team');
 		$query = $query->select('DISTINCT YEAR(datetime) as year');
@@ -395,27 +414,25 @@ class ApiBaseController extends BaseController
 		$query = $query->get()->getResultArray();
 		return $query;
 	}
-	// public function tournament_team_id(){
-		// $query = $this->db->table('tbl_tournament_match')->select('team_id')->get()->getRowArray();
-		// return $query;
-	// }
+	/**
+     * get List of match_id, that attempt the player
+     * player_id : player_id => 1,2..
+    */
 	public function player_match_id_array($player_id){
 		$query = $this->db->table('tbl_match_team')->select('match_id');
 		$query = $query->join('tbl_tournament_match', 'tbl_tournament_match.id = tbl_match_team.match_id','left');
 		$query = $query->where('player_id',$player_id)->distinct('match_id')->get()->getResultArray();
 		return $query;
 	}
+	/**
+     * get List of team_id, that player participate
+     * player_id : player_id => 1,2..
+    */
 	public function player_team_id_array($player_id){
 		$query = $this->db->table('tbl_match_team')->select('team_id');
 		$query = $query->join('tbl_tournament_match', 'tbl_tournament_match.id = tbl_match_team.match_id','left');
 		$query = $query->where('player_id',$player_id)->distinct('team_id')->get()->getResultArray();
 		return $query;
 	}
-	// public function test(){		
-		// $query = $this->db->table('tbl_match_team')->select('DISTINCT YEAR(datetime) as year');
-		// $query = $query->join('tbl_tournament_match', 'tbl_tournament_match.id = tbl_match_team.match_id','left');
-		// $query = $query->join('tbl_team', 'tbl_team.team_id = tbl_tournament_match.team_id','left');
-		// $query = $query->get()->getResultArray();
-		// return $query;
-	// }	
+	
 }
