@@ -399,7 +399,15 @@ class ApiBaseController extends BaseController
 		// return $query;
 	// }
 	public function player_match_id_array($player_id){
-		$query = $this->db->table('tbl_match_team')->select('match_id')->where('player_id',$player_id)->get()->getResultArray();
+		$query = $this->db->table('tbl_match_team')->select('match_id');
+		$query = $query->join('tbl_tournament_match', 'tbl_tournament_match.id = tbl_match_team.match_id','left');
+		$query = $query->where('player_id',$player_id)->get()->getResultArray();
+		return $query;
+	}
+	public function player_team_id_array($player_id){
+		$query = $this->db->table('tbl_match_team')->select('team_id');
+		$query = $query->join('tbl_tournament_match', 'tbl_tournament_match.id = tbl_match_team.match_id','left');
+		$query = $query->where('player_id',$player_id)->distinct('team_id')->get()->getResultArray();
 		return $query;
 	}
 	// public function test(){		
