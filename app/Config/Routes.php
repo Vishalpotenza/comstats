@@ -54,7 +54,8 @@ $routes->add('/api/leave-team-multiple', 'ClubsApiController::leave_team_multipl
  */
 $routes->add('/api/players-to-add', 'PlayerApiController::players_to_add');
 $routes->add('/api/add-players-team', 'PlayerApiController::add_players_team');
-$routes->add('/api/get_players_detail', 'PlayerApiController::get_players_detail');
+$routes->add('/api/get-players-detail', 'PlayerApiController::get_players_detail');
+$routes->add('/api/get-coach-detail', 'PlayerApiController::get_coach_detail');
 /**
  * Tournament Api
  */
