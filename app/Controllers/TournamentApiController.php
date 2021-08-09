@@ -81,20 +81,47 @@ class TournamentApiController extends ApiBaseController
                 // }
                 $match['match_id'] = $match['id'];
                 $match['players_details']=array();
+				$match['match_result']=array();
                 $match_players = $this->db->table('tbl_match_team')->where('match_id', $match['match_id'])->get()->getResultArray();
+                $match_winning_score = $this->db->table('tbl_tournament_match_result')->where('match_id', $match['match_id'])->get()->getRowArray();
+					if($match_winning_score){
+						$match_winning_score_array['team_id_score'] = $match_winning_score['team_id_score'];
+						$match_winning_score_array['opponent_team_id_score'] = $match_winning_score['opponent_team_id_score'];
+						if($match_winning_score['winner_team_id'] == 0){
+							$match_winning_score_array['match_status'] = "Draw";
+						}else if($match_winning_score['winner_team_id'] == $match['team_id']){
+							$match_winning_score_array['match_status'] = "Win";
+							$match_winning_score_array['winner_team_id'] = $match_winning_score['winner_team_id'];
+						}else{
+							$match_winning_score_array['match_status'] = "lose";
+							$match_winning_score_array['winner_team_id'] = $match_winning_score['winner_team_id'];
+						}
+						$match['match_result'] = $match_winning_score_array;
+					}
+				
                 foreach($match_players as $m_player){
                     $player_details_match = $this->getUserInfo($m_player['player_id']);
                     $player_details_match['jursey_no'] = $m_player['jursey_no'];
+                    $player_details_match1['g'] = $m_player['g'];
+                    $player_details_match1['a'] = $m_player['a'];
+                    $player_details_match1['yc'] = $m_player['yc'];
+                    $player_details_match1['rc'] = $m_player['yc'];
+
+					$player_details_match['score'] = $player_details_match1;
+					// print_r($m_player);
                     array_push( $match['players_details'],$player_details_match);
                 }
-                unset($match['players_details']);
+                // unset($match['players_details']);
                 unset($match['id']);
                 if($match['datetime'] > date('Y-m-d H:i:s') && $match['match_end_status'] == 0){
+					unset($match['players_details']);
                     array_push($future_match, $match);
                 } else {
                     if($match['datetime'] < date('Y-m-d H:i:s') && $match['match_end_status'] == 1){
+						
                         array_push($past_match, $match);
                     } else {
+						unset($match['players_details']);
                         array_push($future_match, $match);
                     }
                 }
