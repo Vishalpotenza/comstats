@@ -80,8 +80,9 @@ class TournamentApiController extends ApiBaseController
                      // $match['team_full_status'] = true;
                 // }
                 $match['match_id'] = $match['id'];
-                $match['players_details']=array();
 				$match['match_result']=array();
+                $match['players_details']=array();
+				
                 $match_players = $this->db->table('tbl_match_team')->where('match_id', $match['match_id'])->get()->getResultArray();
                 $match_winning_score = $this->db->table('tbl_tournament_match_result')->where('match_id', $match['match_id'])->get()->getRowArray();
 					if($match_winning_score){
