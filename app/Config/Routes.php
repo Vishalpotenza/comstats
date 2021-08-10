@@ -40,7 +40,10 @@ $routes->add('/api/register', 'ApiController::register');
 $routes->add('/api/user-login', 'ApiController::user_login');
 $routes->add('/api/user-info', 'ApiController::user_info');
 $routes->add('/api/update-user', 'ApiController::update_user');
-
+/**
+ * Season 
+ */
+$routes->add('/api/user-season-detail', 'ApiController::user_season_info');
 /**
  * Club Apis
  */
