@@ -753,6 +753,11 @@ class TournamentApiController extends ApiBaseController
 						if($this->check_coach_team($match_id,$team_id,"opponent_team_id")){
 							$update_data = array('match_end_status_for_opponent_team' => 1);
 						}
+						$status_team = $this->updated_team_score($match_id);
+						if($status_team['message'] == 'Added Successfully' || $status_team['message'] == 'Already Added'){
+							
+						}
+							
 					}
 					
 				}
@@ -844,6 +849,62 @@ class TournamentApiController extends ApiBaseController
 			$this->sendResponse($response);			
 			
 		}
+	}
+	public function updated_team_score($match_id=''){					
+		if($match_id){				
+			$match_tournament_team = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
+			if($match_tournament_team){
+				$team_id = $match_tournament_team['team_id'];
+				$opponent_team_id = $match_tournament_team['opponent_team_id'];
+				$match_end_status = $match_tournament_team['match_end_status'];
+				$match_end_status_for_opponent_team = $match_tournament_team['match_end_status_for_opponent_team'];
+				if($match_end_status == 1 && $match_end_status_for_opponent_team == 1){
+					$where_match_team['match_id'] = $team_id;
+					$where_match_opponent_team['match_id'] = $opponent_team_id;
+					
+					$match_team = $this->db->table('tbl_match_team')->where($where_match_team);
+					$match_opponent_team = $this->db->table('tbl_match_team')->where($where_match_opponent_team);
+					
+					$match_team_goal = $this->db->query("SELECT SUM(g) as Total_g FROM tbl_match_team where match_id = ".$team_id)->getRowArray();
+					$match_opponent_team_goal = $this->db->query("SELECT SUM(g) as Total_g FROM tbl_match_team where match_id = ".$opponent_team_id)->getRowArray();
+					
+					$match_team_goal['Total_g'] = $match_team_goal['Total_g'] ? $match_team_goal['Total_g'] : 0;
+					$match_team_goal['Total_g'] = $match_opponent_team_goal['Total_g'] ? $match_opponent_team_goal['Total_g'] : 0;
+					
+					if($match_team_goal['Total_g'] > $match_opponent_team_goal['Total_g']){
+						$winner_team_id = $team_id;
+					}else if($match_team_goal['Total_g'] < $match_opponent_team_goal['Total_g']){
+						$winner_team_id = $opponent_team_id;
+					}else{
+						$winner_team_id = 0;
+					}
+					$tbl_tournament_match_result_data['match_id'] = $match_id; 
+					$tbl_tournament_match_result_data['team_id_score'] = $match_team_goal['Total_g']; 
+					$tbl_tournament_match_result_data['opponent_team_id_score'] = $match_opponent_team_goal['Total_g']; 
+					$tbl_tournament_match_result_data['winner_team_id'] = $winner_team_id;
+					$response['status'] = "Success";
+					$table_name = 'tbl_tournament_match_result';
+					$id = $match_id;
+					$fild_to_check = 'match_id';
+					if($this->ifexists($table_name,$id,$fild_to_check)){							
+						// $response['message'] = "Team score already Added";
+						$response['message'] = "Already Added";
+						// return true;
+					}else{
+						
+						$tbl_tournament_match_result = $this->db->table($table_name)->insert($tbl_tournament_match_result_data);
+						if($tbl_tournament_match_result){
+							// $response['message'] = "Team score Added Successfully";
+							$response['message'] = "Added Successfully";
+							// return true;
+						}
+					}
+				}
+			}				
+		}
+		return $response;		
+			
+		
 	}
    
 }
