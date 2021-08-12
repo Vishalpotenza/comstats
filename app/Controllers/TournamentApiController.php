@@ -850,7 +850,9 @@ class TournamentApiController extends ApiBaseController
 			
 		}
 	}
-	public function updated_team_score($match_id=''){					
+	public function updated_team_score($match_id=''){
+		$response['score_update_status'] = "error";
+		$response['message'] = "error";
 		if($match_id){				
 			$match_tournament_team = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
 			if($match_tournament_team){

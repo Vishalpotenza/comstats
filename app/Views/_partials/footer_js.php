@@ -28,6 +28,10 @@
         delete_club : "<?php echo base_url("/admin/clubs/delete_club") ?>", 
         get_club : "<?php echo base_url("/admin/clubs/get_club_details") ?>",
         edit_club : "<?php echo base_url("/admin/clubs/edit_club") ?>", 
+		add_league : "<?php echo base_url("/admin/league/add_league") ?>", 
+        delete_league : "<?php echo base_url("/admin/league/delete_league") ?>", 
+        get_league : "<?php echo base_url("/admin/league/get_league_details") ?>",
+        edit_league : "<?php echo base_url("/admin/league/edit_league") ?>",
         base_url: "<?php echo base_url(); ?>"
         }
     }

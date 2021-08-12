@@ -59,6 +59,7 @@ $routes->add('/api/players-to-add', 'PlayerApiController::players_to_add');
 $routes->add('/api/add-players-team', 'PlayerApiController::add_players_team');
 $routes->add('/api/get-players-detail', 'PlayerApiController::get_players_detail');
 $routes->add('/api/get-coach-detail', 'PlayerApiController::get_coach_detail');
+$routes->add('/api/get-coach-detail', 'PlayerApiController::get_coach_detail');
 /**
  * Tournament Api
  */
@@ -69,7 +70,6 @@ $routes->add('/api/get-match-players', 'TournamentApiController::get_match_playe
 $routes->add('/api/update-kit-color-formation', 'TournamentApiController::update_kit_color_formation');
 $routes->add('/api/update-score', 'TournamentApiController::update_score');
 $routes->add('/api/finish-match', 'TournamentApiController::finish_match');
-$routes->add('/api/update-team-score', 'TournamentApiController::update_team_score');
 /**
  * Traning api
  */
@@ -85,6 +85,11 @@ $routes->add('/admin/clubs/delete_club', 'admin/Clubs::delete_club');
 $routes->add('/admin/clubs/get_club_details', 'admin/Clubs::get_club_details');
 $routes->add('/admin/clubs/edit_club', 'admin/Clubs::edit_club');
 $routes->add('/admin/clubs/join-request', 'admin/Clubs::join_request');
+
+$routes->add('/admin/league/add_league', 'admin/League::add_league');
+$routes->add('/admin/league/delete_league', 'admin/League::delete_league');
+$routes->add('/admin/league/get_league_details', 'admin/League::get_league_details');
+$routes->add('/admin/league/edit_league', 'admin/League::edit_league');
 /**
  * Country
  */
