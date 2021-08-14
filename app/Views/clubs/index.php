@@ -58,6 +58,7 @@
                               <?php  } ?>
                             </td>
                             <td>
+								<a href="#" class="btn btn-warning view_members" id=<?= $clubs['club_id'] ?>>Members</a>
                                 <a href="<?= base_url()."/admin/clubs/join-request/?club_id=".$clubs['club_id']   ?>" class="btn btn-info" id=<?= $clubs['club_id'] ?>>View Requests</a>
                                 <a href="#" class="btn btn-primary edit_club" id=<?= $clubs['club_id'] ?>  >Edit</a>
                                 <a href="#" class="btn btn-danger deleteclub" id=<?= $clubs['club_id'] ?> >Delete</a>
@@ -145,7 +146,7 @@
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="myLargeModalLabel">ADD CLUB</h5>
+                <h5 class="modal-title" id="myLargeModalLabel">EDIT CLUB</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -194,6 +195,42 @@
                     </button>
                   <!-- m-t-15 waves-effect -->
                 </form>
+              </div>
+            </div>
+          </div>
+        </div>
+		
+		<!-- Large modal -->
+        <div class="modal fade bd-view-member-club-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="myLargeModalLabel">CLUB MEMBERS</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                    
+                    <div class="list_of_memer" id="list_of_memer">
+                      <!--<div class="form-group col-md-6">
+                        <label for="clubname1">Clubs Name</label>
+                        <input type="text" class="form-control" id="clubname1" name="clubname1" placeholder="Club Name">
+                      </div>-->
+					  <div class="form-group col-md-4">
+						<label for="clubname1">Clubs Name</label>
+						</div><div class="form-group col-md-4">
+						<label for="clubname1">Clubs Name</label>
+						</div>
+						
+                    </div>
+                    
+
+                    
+                   
+                  <!-- m-t-15 waves-effect -->
+					
               </div>
             </div>
           </div>

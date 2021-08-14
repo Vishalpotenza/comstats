@@ -41,7 +41,12 @@ class Team_model extends Model {
 			return false;
 		}
     }
-   
+	public function view_club_members($club_id=''){
+		if(!empty($club_id)){
+			return $this->db->table($this->table)->where('club_id', $club_id)->where('deletestatus',0)->get()->getResultArray();			
+		}
+		
+	}
 
    
 }

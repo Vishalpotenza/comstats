@@ -84,6 +84,7 @@ $routes->add('/admin/clubs/delete_club', 'admin/Clubs::delete_club');
 $routes->add('/admin/clubs/get_club_details', 'admin/Clubs::get_club_details');
 $routes->add('/admin/clubs/edit_club', 'admin/Clubs::edit_club');
 $routes->add('/admin/clubs/join-request', 'admin/Clubs::join_request');
+$routes->add('/admin/clubs/view_members', 'admin/Clubs::view_members');
 
 $routes->add('/admin/league', 'admin/League::index');
 $routes->add('/admin/league/add_league', 'admin/League::add_league');

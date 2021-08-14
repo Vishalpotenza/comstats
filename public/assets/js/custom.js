@@ -788,6 +788,37 @@ $( document ).ready(function() {
         } );
     } );
 	 
-	 
-	 
+	/*
+	* Club View members
+	*
+	*/
+	$( '.view_members' ).on( 'click', function ( e ){
+        e.preventDefault();
+        // console.log( $( this ).attr( 'id' ) );
+        var club_id = $( this ).attr( 'id' );
+        url = sports.config.view_members;
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { club_id: club_id },
+            success: function ( data )
+            {
+                if ( data != null )
+                {
+					var list='';
+					var i=1;
+					$.each(data.data, function( index, value ) {
+						
+					  // list+='<div class="form-group1 col-md-4">'+(i++)+'<label for="clubname1">'+value.team_name+'</label></div>';
+					  // list+='<label>'+(i++)+'</label><label class="form-group col-md-12" for="clubname1">'+value.team_name+'</label>';
+					  list+='<label class="form-group col-md-12" for="clubname1">'+value.team_name+'</label>';
+					});
+                    $( "#list_of_memer" ).html( list );
+                }
+                $( '.bd-view-member-club-lg' ).modal( 'show' );				
+                
+            }
+        } );
+    } ); 
 });

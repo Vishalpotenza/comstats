@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\ApiBaseController;
 use App\Models\Admin_model;
 use App\Models\Club_model;
+use App\Models\Team_model;
 class Clubs extends ApiBaseController
 {
 	/**
@@ -195,5 +196,16 @@ class Clubs extends ApiBaseController
 		$view['data'] = array("team_requests" => $club_model->getallclubsbyid($club_id));
 		return view('default', $view);
 	}
-
+	public function view_members(){
+		$club_id = $this->request->getVar('club_id');
+		$team_model = new Team_model();
+		if($club_id){
+			$data = $team_model->view_club_members($club_id);
+			if($data)
+				echo $this->sendResponse(array('success' => true, 'error'=>'', 'data' => $data));
+		}
+		
+		echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+		
+	}
 }
