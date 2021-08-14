@@ -94,7 +94,7 @@ class Team extends ApiBaseController
 			
 		);
 		$team_model = new Team_model();
-		$check_team_exist = $team_model->check_slug_exist($team_name);
+		$check_team_exist = $team_model->check_team_exist($team_name);
 		
 		
         if ($this->validate($validation)) {

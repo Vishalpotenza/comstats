@@ -694,13 +694,14 @@ $( document ).ready(function() {
         e.preventDefault();
         console.log( $( this ).attr( 'id' ) );
         // alert( $( this ).attr( 'id' ) );
-        var id = $( this ).attr( 'id' );
+        var team_id = $( this ).attr( 'id' );
         url = sports.config.delete_team;
+		console.log('url = '+url);
         jQuery.ajax( {
             url: url,
             type: 'POST',
             dataType: "json",
-            data: { id: id },
+            data: { team_id: team_id },
             success: function ( data )
             {
                 if ( data.success )
@@ -758,6 +759,7 @@ $( document ).ready(function() {
         var formData = new FormData( $( '#edit_team_form' )[0] );
         console.log( "formdata => "+formData );
         url = sports.config.edit_team;
+		console.log( 'url = '+ url );
         jQuery.ajax( {
             url: url,
             type: 'POST',
