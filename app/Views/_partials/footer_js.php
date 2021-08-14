@@ -32,6 +32,10 @@
         delete_league : "<?php echo base_url("/admin/league/delete_league") ?>", 
         get_league : "<?php echo base_url("/admin/league/get_league_details") ?>",
         edit_league : "<?php echo base_url("/admin/league/edit_league") ?>",
+		add_team : "<?php echo base_url("/admin/team/add_team") ?>", 
+        delete_team : "<?php echo base_url("/admin/team/delete_team") ?>", 
+        get_team : "<?php echo base_url("/admin/team/get_team_details") ?>",
+        edit_team : "<?php echo base_url("/admin/team/edit_team") ?>",
         base_url: "<?php echo base_url(); ?>"
         }
     }

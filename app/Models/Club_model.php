@@ -52,6 +52,16 @@ class Club_model extends Model {
         $result['request'] = $request;
         return $result; 
     }
+	/**
+     * Get clubs list
+     *
+     * @return void
+     */
+	public function getclubslist() {
+        return $this->db->table($this->table)
+                 ->select('club_id, club_slug, club_name')                 
+                 ->get()->getResultArray();
+    }
    
 
    

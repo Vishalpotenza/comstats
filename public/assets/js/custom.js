@@ -288,7 +288,7 @@ $( function ()
                         console.log( data.error );
                         toastr['error']( data.error );
                     }
-                    window.location = sports.config.base_url;
+                    window.location = sports.config.base_url + "/admin/clubs";
                 } else
                 {
                     console.log( data.error );
@@ -503,15 +503,13 @@ $( function ()
     } );
 } );
 
-/**
- * =======================================================================
- *  Add League ajax
- * =======================================================================
- */
-$( function ()
-{
-    $( '#add_league' ).on( 'submit', function ( e )
-    {
+$( document ).ready(function() {
+	/**
+	 * =======================================================================
+	 *  Add League ajax
+	 * =======================================================================
+	 */
+	$( '#add_league' ).on( 'submit', function ( e ){
         e.preventDefault();
         var formData = new FormData( $( '#add_league' )[0] );
         url = sports.config.add_league;
@@ -540,24 +538,18 @@ $( function ()
                 {
                     console.log( data.error );
                     toastr['error']( data.error );
-
                 }
-
             }
         } );
-
-
     } );
-} );
-/**
- * ==========================================================
- * Delete League
- * ================================================================
- */
-$( function ()
-{
-    $( '.deleteleague' ).on( 'click', function ( e )
-    {
+	
+	/**
+	 * ==========================================================
+	 * Delete League
+	 * ================================================================
+	 */
+	 
+	$( '.deleteleague' ).on( 'click', function ( e ){
         e.preventDefault();
         console.log( $( this ).attr( 'id' ) );
         // alert( $( this ).attr( 'id' ) );
@@ -583,24 +575,17 @@ $( function ()
                 {
                     console.log( data.error );
                     toastr['error']( data.error );
-
                 }
-
             }
         } );
-
-
     } );
-} );
-/**
- * =========================================
- * Edit League
- * ============================================
- */
-$( function ()
-{
-    $( '.edit_league' ).on( 'click', function ( e )
-    {
+	
+	/**
+	 * =========================================
+	 * Edit League
+	 * ============================================
+	 */
+	$( '.edit_league' ).on( 'click', function ( e ){
         e.preventDefault();
         // console.log( $( this ).attr( 'id' ) );
         var id = $( this ).attr( 'id' );
@@ -618,18 +603,13 @@ $( function ()
                     $( "#leaguename1" ).val( data.name );
                     $( "#edit_data_id" ).val( data.id );
                 }
-                $( '.bd-edit-League-lg' ).modal( 'show' );
-				
+                $( '.bd-edit-League-lg' ).modal( 'show' );				
                 
-
             }
         } );
     } );
-} );
-
-$( function ()
-{
-    $( '#edit_league_form' ).on( 'submit', function ( e )
+	
+	$( '#edit_league_form' ).on( 'submit', function ( e )
     {
         e.preventDefault();
         var formData = new FormData( $( '#edit_league_form' )[0] );
@@ -658,12 +638,154 @@ $( function ()
                 {
                     console.log( data.error );
                     toastr['error']( data.error );
-
                 }
-
             }
         } );
-
-
     } );
-} );
+	
+	
+	
+	/**
+	 * =======================================================================
+	 *  Add Team ajax
+	 * =======================================================================
+	 */
+	$( '#add_team' ).on( 'submit', function ( e ){
+        e.preventDefault();
+        var formData = new FormData( $( '#add_team' )[0] );
+        url = sports.config.add_team;
+		console.log('formData => '+formData);
+		console.log('add_team => '+url);
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Added" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    window.location = sports.config.base_url + "/admin/team";
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	
+	/**
+	 * ==========================================================
+	 * Delete team
+	 * ================================================================
+	 */
+	 
+	$( '.deleteteam' ).on( 'click', function ( e ){
+        e.preventDefault();
+        console.log( $( this ).attr( 'id' ) );
+        // alert( $( this ).attr( 'id' ) );
+        var id = $( this ).attr( 'id' );
+        url = sports.config.delete_team;
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { id: id },
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "team Deleted Successfully" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    window.location = sports.config.base_url + "/admin/team";
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	
+	/**
+	 * =========================================
+	 * Edit team
+	 * ============================================
+	 */
+	$( '.edit_team' ).on( 'click', function ( e ){
+        e.preventDefault();
+        console.log( $( this ).attr( 'id' ) );
+        var team_id = $( this ).attr( 'id' );
+        url = sports.config.get_team;
+		 console.log( 'url = '+ url );
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { team_id: team_id },
+            success: function ( data )
+            {
+                console.log( "edit show " );
+				 if ( data != null )
+                {
+                    $( "#team_name1" ).val( data.team_name );
+                    $( "#edit_data_id" ).val( data.team_id );
+                    $( "#club_id1" ).val( data.club_id );
+                }
+                $( '.bd-edit-team-lg' ).modal( 'show' );				
+                
+            }
+        } );
+	} );
+	
+	$( '#edit_team_form' ).on( 'submit', function ( e )
+    {
+        e.preventDefault();
+        var formData = new FormData( $( '#edit_team_form' )[0] );
+        console.log( "formdata => "+formData );
+        url = sports.config.edit_team;
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Added" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    window.location = sports.config.base_url+'/admin/team';
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	 
+	 
+	 
+});

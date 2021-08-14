@@ -36,8 +36,10 @@ class TournamentApiController extends ApiBaseController
             /**
              * Tournament list
              */
+			$coachs_where['user_id'] = $user_id;
+			$coachs_where['deletestatus'] = 0;
             $tournament = $this->db->table('tbl_tournament')->get()->getResultArray();
-            $coachs = $this->db->table('tbl_team_member_relation')->select('team_id')->where(array('user_id'=> $user_id))->get()->getRowArray();
+            $coachs = $this->db->table('tbl_team_member_relation')->select('team_id')->where($coachs_where)->get()->getRowArray();
             if(empty($coachs))
             {
                 $response['message'] = "No team data available.";
@@ -129,7 +131,7 @@ class TournamentApiController extends ApiBaseController
             }
             $traning = $this->db->table('tbl_traning')->where('team_id', $coachs['team_id'])->orderBy('date')->get()->getResultArray();
             foreach($traning as $trannie){
-                $trannie['tournament_name'] = $this->db->table('tbl_tournament')->select('name')->where('id', 1)->get()->getRowArray()['name'];
+                $trannie['tournament_name'] = $this->db->table('tbl_tournament')->select('name')->where('id', 1)->get()->getRowArray();
                 $participant_team =  $this->db->table('tbl_team')->select('team_name, team_logo')->where('team_id', $trannie['team_id'])->get()->getRowArray();
                 $trannie['participant_team'] = $participant_team['team_name'];
                 $trannie['participant_team_logo'] = base_url()."/public/uploads/team_images/".$trannie['team_id']."/".$participant_team['team_logo'];

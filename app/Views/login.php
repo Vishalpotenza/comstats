@@ -50,9 +50,7 @@ $view = array('title' => "Login");
                 </form>
               </div>
             </div>
-            <div class="mt-5 text-muted text-center">
-              Don't have an account? <a href="<?=  base_url() ?>/home/register">Create One</a>
-            </div>
+            
           </div>
         </div>
       </div>

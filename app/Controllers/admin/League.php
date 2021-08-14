@@ -4,7 +4,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\ApiBaseController;
 use App\Models\Admin_model;
 use App\Models\League_model;
-use App\Models\Club_model;
+
 class League extends ApiBaseController
 {
 	/**
@@ -115,7 +115,7 @@ class League extends ApiBaseController
 		}
 	}
 	/**
-	 * Get club details
+	 * Get league details
 	 * @param id : id
 	 */
 	public function get_league_details(){

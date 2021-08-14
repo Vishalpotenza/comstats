@@ -14,6 +14,7 @@
                   class="fas fa-futbol"></i><span>Clubs</span></a>
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="<?= base_url().ADMIN ?>/clubs">Manage Clubs</a></li>
+				<li><a class="nav-link" href="<?= base_url().ADMIN ?>/team">Manage Team</a></li>
               </ul>
             </li>
 			<li class="dropdown">
