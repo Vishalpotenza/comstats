@@ -223,14 +223,16 @@ class ApiBaseController extends BaseController
     }
     /**
 	 * Use for upload file for case in the perticuler location
+	 * key : image feild name
+	 * profile_images_or_team_images : team_images
 	 */
-	public function uploadFilefunc($key, $type = 'image', $user_id)
+	public function uploadFilefunc($key, $type = 'image', $user_id,$profile_images_or_team_images='profile_images',$profileimage='profileimage')
 	{
 		$response = array("status" => "error");
 		if (!empty($_FILES[$key]["name"])) {
 			//$this->load->library('upload');
 
-			$folder =  ROOTPATH . 'public/uploads/profile_images/' . $user_id;
+			$folder =  ROOTPATH . 'public/uploads/'.$profile_images_or_team_images.'/' . $user_id;
 
 			if (!is_dir($folder)) {
 				mkdir($folder, 0777, TRUE);
@@ -239,7 +241,7 @@ class ApiBaseController extends BaseController
 			$uid = uniqid();
 			$ext = pathinfo($_FILES[$key]["name"], PATHINFO_EXTENSION);
 
-			$filename = 'profileimage' . $uid . '.' . $ext;
+			$filename = $profileimage . $uid . '.' . $ext;
 			//$config['file_name'] = $filename;
 			//$config['overwrite'] = TRUE;
 
@@ -460,12 +462,14 @@ class ApiBaseController extends BaseController
 	}
 	public function imageUpload($profile_images_or_team_images,$id,$image_input_feild_name){
 		// $target_dir = "uploads/";
-		$file = $image_input_feild_name;
-		return $_FILES["team_logo"]["name"];
 		
-		$target_dir =  ROOTPATH . 'public/uploads/'.$profile_images_or_team_images.'/' . $id;
-		// $target_file = $target_dir . basename($_FILES[$file]["name"]);
-		$target_file = $target_dir . basename($_FILES['team_logo']["name"]);
+		$file = $image_input_feild_name;
+		$target_dir =  ROOTPATH . 'public/uploads/'.$profile_images_or_team_images.'/' . $id.'/';
+		if (!is_dir($target_dir)) {
+			mkdir($target_dir, 0777, TRUE);
+		}
+		$target_file = $target_dir . basename($_FILES[$file]["name"]);
+		// $target_file = $target_dir . basename($_FILES['team_logo']["name"]);
 		$uploadOk = 1;
 		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
@@ -511,6 +515,56 @@ class ApiBaseController extends BaseController
 			echo "Sorry, there was an error uploading your file.";
 		  }
 		}
+	}
+	public function imageUpload1($profile_images_or_team_images,$id,$key){
+		$response = array("status" => "error");
+		if (!empty($_FILES[$key]["name"])) {
+			//$this->load->library('upload');
+
+			$folder =  ROOTPATH . 'public/uploads/profile_images/' . $user_id;
+
+			if (!is_dir($folder)) {
+				mkdir($folder, 0777, TRUE);
+			}
+
+			$uid = uniqid();
+			$ext = pathinfo($_FILES[$key]["name"], PATHINFO_EXTENSION);
+
+			$filename = 'profileimage' . $uid . '.' . $ext;
+			//$config['file_name'] = $filename;
+			//$config['overwrite'] = TRUE;
+
+			//$this->upload->initialize($config);
+
+			if ($filedata = $this->request->getFiles()) {
+				if ($file = $filedata[$key]) {
+
+					if ($file->isValid() && !$file->hasMoved()) {
+						//$newName = $file->getRandomName(); //This is if you want to change the file name to encrypted name
+						$file->move($folder, $filename);
+
+						// You can continue here to write a code to save the name to database
+						// db_connect() or model format
+						$response['status']  = 'success';
+						$response['message'] = 'File successfully uploaded';
+						$response['filename'] = $filename;
+					} else {
+						$response['status']  = 'error';
+						$response['message'] = 'File could not be uploaded!. Please try again';
+					}
+				} else {
+					$response['status']  = 'error';
+					$response['message'] = 'File could not be uploaded!. Please try again';
+				}
+			} else {
+				$response['status']  = 'error';
+				$response['message'] = 'File could not be uploaded!. Please try again';
+			}
+		} else {
+			$response['status']  = 'error';
+			$response['message'] = 'Please select autograph file for upload';
+		}
+		return $response;
 	}
 	
 }

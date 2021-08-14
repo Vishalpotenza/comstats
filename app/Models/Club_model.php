@@ -59,7 +59,8 @@ class Club_model extends Model {
      */
 	public function getclubslist() {
         return $this->db->table($this->table)
-                 ->select('club_id, club_slug, club_name')                 
+                 ->select('club_id, club_slug, club_name')
+				 ->where('deletestatus',0)
                  ->get()->getResultArray();
     }
    

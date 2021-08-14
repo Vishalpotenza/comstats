@@ -32,10 +32,10 @@ class Team extends ApiBaseController
 		$team_model = new Team_model();
 		$club_id = $this->request->getPost('club_id');       
 		$team_logo = $this->request->getFile('team_logo');       
-		$team_name = $this->request->getPost('team_name');       
+		$team_name = $this->request->getPost('team_name');
+		$image_input_feild_name = 'team_logo';
+		$profile_images_or_team_images = 'team_images';
 		$team_name = trim($team_name);
-		// echo "team_logo = ";
-		// echo $team_logo;
 		helper(['form', 'url']);
 		$validation=array(
 			"team_name"=>array(
@@ -57,14 +57,29 @@ class Team extends ApiBaseController
 		}
 		$team_logo = 'null';	
 		if ($this->validate($validation)) {
+			
             $data = array(
 				'club_id'    => $club_id,               
-				'team_logo'    => $team_logo,               
+				'team_logo'    => $team_name,               
 				'team_name'    => $team_name                
             );
 			$error = null;
 			$team_id = $team_model->insert($data);
-            echo $this->sendResponse(array('success' => true, 'id'=>isset($team_id) ? $team_id : '', 'error'=>$data));
+			
+			if($team_id){
+				$team_logo_upload = $this->uploadFilefunc($image_input_feild_name,'image',$team_id,$profile_images_or_team_images,'team_logo');
+				
+				if($team_logo_upload && isset($team_logo_upload['filename'])){
+					$data_image = array(
+						'team_logo'    => $team_logo_upload['filename'],               
+					);
+					
+					$team_model = new Team_model();
+					$update = $team_model->where('team_id',$team_id)->set($data_image)->update();
+				}
+			}
+			
+            echo $this->sendResponse(array('success' => true, 'id'=>isset($team_id) ? $team_id : '', 'error'=>$error, 'image'=>$team_logo_upload));
         }else{
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
         }
@@ -74,10 +89,11 @@ class Team extends ApiBaseController
 	 */
 	public function edit_team()
 	{
-		
 		$club_id = $this->request->getPost('club_id');       
 		$team_logo = $this->request->getFile('team_logo');       
 		$team_name = $this->request->getPost('team_name');
+		$image_input_feild_name = 'team_logo';
+		$profile_images_or_team_images = 'team_images';
 		$team_name = trim($team_name);
 		$team_id = $this->request->getPost('edit_data_id');
 		
@@ -98,18 +114,19 @@ class Team extends ApiBaseController
 		
 		
         if ($this->validate($validation)) {
-			$data = array(
-				// 'club_id'    => $club_id,               
-				// 'team_logo'    => $team_logo,               
-				'team_name'    => $team_name                
-            ); 
+			$team_logo_upload = $this->uploadFilefunc($image_input_feild_name,'image',$team_id,$profile_images_or_team_images,'team_logo');
+			
+			$data['team_name'] = $team_name;
+			if($team_logo_upload && isset($team_logo_upload['filename']))
+				$data['team_logo'] = $team_logo_upload['filename'];
+			
 			$error = null;
 			$update = '';
 			if($team_id){
 				$team_model = new Team_model();
 				$update = $team_model->where('team_id',$team_id)->set($data)->update();
 			}			
-            echo $this->sendResponse(array('success' => true, 'id'=>$update, 'error'=>$error));
+            echo $this->sendResponse(array('success' => true, 'data'=>$data, 'id'=>$update, 'error'=>$error));
         }else{
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
         }

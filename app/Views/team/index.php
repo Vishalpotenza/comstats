@@ -128,10 +128,10 @@
               <div class="modal-body">
                    <form class="edit_team_form" id="edit_team_form" method="POST" enctype="multipart/form-data">
                     
-					<!--<div class="form-group">
+					<div class="form-group">
                       <label>Team Logo</label>
                       <input type="file"id="team_logo1" name="team_logo" class="form-control1">
-                    </div>-->
+                    </div>
                     <div class="form-group">
 						<input type="hidden" id="edit_data_id" name="edit_data_id" value="">
                       <label for="teamname">Team Name</label>
