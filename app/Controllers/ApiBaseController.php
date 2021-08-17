@@ -390,6 +390,8 @@ class ApiBaseController extends BaseController
 		if($team_or_opponent && $team_or_opponent == 'opponent_team_id')
 			$where['opponent_team_id'] = $team_id;
 		$where['id'] = $match_id;
+		// $this->sendResponse($where);
+		// print_r($where);
 		$query = $this->db->table('tbl_tournament_match')->where($where);
 		
 		if ($query->countAllResults() > 0){
@@ -459,5 +461,40 @@ class ApiBaseController extends BaseController
             ];
 		return $data;
 		
-	}	
+	}
+	/**
+    * Sending Push Notification
+   */
+  public function send_notification($registatoin_ids, $notification,$device_type) {
+      $url = 'https://fcm.googleapis.com/fcm/send';
+      if($device_type == "Android"){
+            $fields = array(
+                'to' => $registatoin_ids,
+                'data' => $notification
+            );
+      } else {
+            $fields = array(
+                'to' => $registatoin_ids,
+                'notification' => $notification
+            );
+      }
+      // Firebase API Key
+      $headers = array('Authorization:key=Your Firebase 
+Server API Key Here','Content-Type:application/json');
+     // Open connection
+      $ch = curl_init();
+      // Set the url, number of POST vars, POST data
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_POST, true);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      // Disabling SSL Certificate support temporarly
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+      $result = curl_exec($ch);
+      if ($result === FALSE) {
+          die('Curl failed: ' . curl_error($ch));
+      }
+      curl_close($ch);
+  }
 }

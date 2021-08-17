@@ -43,10 +43,12 @@
                               <?= ++$i ?>
 
                             </td>
-                            <td><?= $clubs['club_name'] ?></td>
+                            
                             <td class="align-middle">
-                              <?= $clubs['country_name'] ?>
+								<a href="<?= base_url()."/admin/team/club_team/?club_id=".$clubs['club_id']   ?>" class="btn1 btn-info1" id=<?= $clubs['club_id'] ?>>
+                              <?= $clubs['club_name'] ?></a>
                             </td>
+							<td><?= $clubs['country_name'] ?></td>
                             <td>
                               <?= $clubs['state_name'] ?>
                             </td>
@@ -54,12 +56,12 @@
                               <?php  if($clubs['request'] == 0) {   ?>
                                 <div class="badge badge-success badge-shadow"><?= $clubs['request']  ?></div>
                               <?php  } else {  ?>
-                                 <div class="badge badge-info badge-shadow"><?= $clubs['request']  ?></div>
+                                 <a href="<?= base_url()."/admin/clubs/join-request/?club_id=".$clubs['club_id']   ?>" class="btn1 btn-info1" id=<?= $clubs['club_id'] ?>><div class="badge badge-info badge-shadow"><?= $clubs['request']  ?></div></a>
                               <?php  } ?>
                             </td>
                             <td>
 								<a href="#" class="btn btn-warning view_members" id=<?= $clubs['club_id'] ?>>Members</a>
-                                <a href="<?= base_url()."/admin/clubs/join-request/?club_id=".$clubs['club_id']   ?>" class="btn btn-info" id=<?= $clubs['club_id'] ?>>View Requests</a>
+                                <!--<a href="<?= base_url()."/admin/clubs/join-request/?club_id=".$clubs['club_id']   ?>" class="btn btn-info" id=<?= $clubs['club_id'] ?>>View Requests</a>-->
                                 <a href="#" class="btn btn-primary edit_club" id=<?= $clubs['club_id'] ?>  >Edit</a>
                                 <a href="#" class="btn btn-danger deleteclub" id=<?= $clubs['club_id'] ?> >Delete</a>
                           </td>

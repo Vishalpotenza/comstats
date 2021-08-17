@@ -188,13 +188,30 @@ class Clubs extends ApiBaseController
 	 * Join request
 	 * @param club_id : club_id
 	 */
-	public function join_request(){
+	public function join_request($club_id=''){		
 		$club_id = $this->request->getVar('club_id');
 		$club_model = new Club_model();
 		$view['view'] = array('title'=>"View request");
 		$view['content'] = "clubs/view-request";
-		$view['data'] = array("team_requests" => $club_model->getallclubsbyid($club_id));
+		$view['data'] = array("team_requests" => $club_model->getclubrequest($club_id));
 		return view('default', $view);
+	}
+	public function join_request_action($tm_id='',$action=''){
+		helper(['form', 'url']);
+		$tm_id = $this->request->getVar("tm_id");
+		$action = $this->request->getVar("action");
+		if(empty($action) && empty($tm_id)){
+			return redirect()->back();
+			
+		}
+		if(!empty($tm_id) && !empty($action)){
+			$club_model = new Club_model();
+			$update = $club_model->join_request_action($tm_id,$action);
+			if($update){				
+				return redirect()->to(site_url("/admin/clubs"));
+			}
+			return redirect()->back();
+		}
 	}
 	public function view_members(){
 		$club_id = $this->request->getVar('club_id');

@@ -206,7 +206,7 @@ class ClubsApiController extends ApiBaseController
               
             );
           
-            $result = $this->db->table('tbl_team_member_relation')->where(array(  "user_id"  =>   $user_id))->update($update);
+            $result = $this->db->table('tbl_team_member_relation')->where(array( "user_id"  =>$user_id))->update($update);
             if(!empty($result))
             {
                 $response['status'] = "success";

@@ -84,6 +84,8 @@ $routes->add('/admin/clubs/delete_club', 'admin/Clubs::delete_club');
 $routes->add('/admin/clubs/get_club_details', 'admin/Clubs::get_club_details');
 $routes->add('/admin/clubs/edit_club', 'admin/Clubs::edit_club');
 $routes->add('/admin/clubs/join-request', 'admin/Clubs::join_request');
+// $routes->add('/admin/clubs/request', 'admin/Clubs::join_request');
+$routes->add('/admin/clubs/request_action', 'admin/Clubs::join_request_action');
 $routes->add('/admin/clubs/view_members', 'admin/Clubs::view_members');
 
 $routes->add('/admin/league', 'admin/League::index');
@@ -97,6 +99,16 @@ $routes->add('/admin/team/add_team', 'admin/Team::add_team');
 $routes->add('/admin/team/delete_team', 'admin/Team::delete_team');
 $routes->add('/admin/team/get_team_details', 'admin/Team::get_team_details');
 $routes->add('/admin/team/edit_team', 'admin/Team::edit_team');
+
+
+/**
+ * Team
+ */
+$routes->add('/admin/team/club_team', 'admin/Team::club_team');
+$routes->add('/admin/team/team_match', 'admin/Team::team_match');
+
+
+
 /**
  * Country
  */

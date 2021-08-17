@@ -165,6 +165,73 @@ class Team extends ApiBaseController
 			}
 		}
 	}
+	public function club_team($club_id=''){
+		$team_model = new Team_model();
+		$view['view'] = array('title'=>"Team List");
+		$view['content'] = "match/team";
+		$club_id = $this->request->getVar('club_id');
+		
+		$where_club_member_team['tbl_team.deletestatus'] = 0;
+		$where_club_member_team['tbl_team.club_id'] = $club_id;
+		$club_member_team = $this->db->table('tbl_team')->where($where_club_member_team)->get()->getResultArray();
+		$result["club_member_team"] = $club_member_team;		
+		// echo "<pre>";
+		// print_r($result);
+		// die();
+		$view['data'] = array("data" => $result);
+		return view('default', $view);
+		
+	}
+	public function team_match($team_id=''){
+		
+		$team_model = new Team_model();
+		$view['view'] = array('title'=>"Match List");
+		$view['content'] = "match/tournaments";
+		$team_id = $this->request->getVar('team_id');
+		
+		$team_match = '';
+		$where_team_match1['deletestatus'] = 0;
+		$where_team_match['team_id'] = $team_id;
+		$team_match = $this->db->table('tbl_tournament_match')->where($where_team_match)->get()->getResultArray();
+		
+		$where_team_match1['designation <>'] = 1; 
+		
+		$team_coach_detail = $this->db->table('tbl_team_member_relation')->join('tbl_user','tbl_user.user_id = tbl_team_member_relation.user_id')->where($where_team_match1)->get()->getRowArray();
+		
+		
+		
+		
+		$result["team_matchs"] = $team_match;
+		$team_match_id_column = array_column($team_match,'id');
+		// $result["team_match_column"] = array_column($team_match,'id');
+		$team_match_id_column_where['match_id'] = $team_match_id_column;
+		$player_list = $this->db->table('tbl_match_team')->select('id, player_id, jursey_no')->whereIn('match_id',$team_match_id_column)->get()->getResultArray();
+		foreach($player_list as $key => $value){
+			$whare = array('player_id' => $value['player_id']);
+			$g_a_yc_rc = $this->db->table('tbl_match_team')->select('SUM(g) as total_g, SUM(a) as total_a, SUM(yc) as total_yc, SUM(rc) as total_rc')->where($whare);
+			$g_a_yc_rc = $g_a_yc_rc->get()->getRowArray();
+						
+			$player_list[$key]['total_yc'] = $g_a_yc_rc['total_yc'] ? $g_a_yc_rc['total_yc'] : 0;
+			$player_list[$key]['total_rc'] = $g_a_yc_rc['total_rc'] ? $g_a_yc_rc['total_rc'] : 0;
+			$player_list[$key]['total_g'] = $g_a_yc_rc['total_g'] ? $g_a_yc_rc['total_g'] : 0;
+			$player_list[$key]['total_a'] = $g_a_yc_rc['total_a'] ? $g_a_yc_rc['total_a'] : 0;
+		}
+		
+		
+		
+		$result["player_list"] = $player_list;
+		$result["team_coach_detail"] = $team_coach_detail;
+		
+		
+		
+		
+		// echo "<pre>";
+		// print_r($result); 
+		// die();
+		$view['data'] = array("data" => $result);
+		return view('default', $view);
+		
+	}
 	
 
 }
