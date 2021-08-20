@@ -179,18 +179,12 @@ class Team extends ApiBaseController
 		return view('default', $view);
 		
 	}
-	public function team_match($team_id='', $feature_past="all"){
+	public function team_match($team_id='', $sort_by="all"){
 		
-// date_default_timezone_set("Asia/Kolkata");
-		// $match_time_date = strtotime($match_tournament['datetime']);
-		// $current_time_date = strtotime(date("Y-m-d H:i:s"));
-		// if(  $current_time_date >= $match_time_date){
-			// return true;
-		// }else{
-			// return false; 
-		// }
+	// date_default_timezone_set("Asia/Kolkata");
 		
-		$feature_past = $this->request->getVar('feature_past');
+		
+		$sort_by = $this->request->getVar('sort_by');
 		$team_model = new Team_model();
 		$view['view'] = array('title'=>"Match List");
 		$view['content'] = "match/tournaments";
@@ -203,13 +197,15 @@ class Team extends ApiBaseController
 		$team_match = $this->db->table('tbl_tournament_match');
 		$team_match = $team_match->select('tbl_tournament_match.id, name, datetime, kit_color, team_id, opponent_team_id');
 		$team_match = $team_match->join('tbl_tournament','tbl_tournament.id = tbl_tournament_match.tournament_id', 'left');
-		if($feature_past == "past"){
+		$team_match = $team_match->orderBy('datetime','DESC');
+		if($sort_by == "past"){
 			$where_team_match['datetime <'] = date("Y-m-d H:i:s");
-		}else if($feature_past == "feature"){
+		}else if($sort_by == "upcoming"){
 			$where_team_match['datetime >'] = date("Y-m-d H:i:s");
 		}else{
 		}
-		$team_match = $team_match->where($where_team_match)->get()->getResultArray();
+		$team_match = $team_match->where($where_team_match);
+		$team_match = $team_match->get()->getResultArray();
 
 		$team_match_detail_array = [];
 		foreach($team_match as $team_match_data){
@@ -220,7 +216,7 @@ class Team extends ApiBaseController
 			if($team_match_data['datetime'] < date("Y-m-d H:i:s")){
 				$team_match_detail['status_time'] = "past";
 			}else{
-				$team_match_detail['status_time'] = "feature";
+				$team_match_detail['status_time'] = "upcoming";
 			}
 			
 			$team_match_detail['kit_color'] = $team_match_data['kit_color'];
@@ -258,15 +254,14 @@ class Team extends ApiBaseController
 			// $result["team_match_column"] = array_column($team_match,'id');
 			$team_match_id_column_where['match_id'] = $team_match_id_column;
 			$player_list = $this->db->table('tbl_match_team')->select('player_id')->whereIn('match_id',$team_match_id_column)->distinct()->get()->getResultArray();
-			// echo "<pre>";
-			// print_r($player_list); 
-			// die();
 			if($player_list){
 				foreach($player_list as $key => $value){
 					$whare = array('player_id' => $value['player_id']);
-					$g_a_yc_rc = $this->db->table('tbl_match_team')->select('last_name, first_name, image, SUM(g) as total_g, SUM(a) as total_a, SUM(yc) as total_yc, SUM(rc) as total_rc')->join('tbl_user','tbl_user.user_id = tbl_match_team.player_id')->where($whare);
+					$g_a_yc_rc = $this->db->table('tbl_match_team')->select('tbl_position.position as position, player_id, last_name, first_name, image, SUM(g) as total_g, SUM(a) as total_a, SUM(yc) as total_yc, SUM(rc) as total_rc')->join('tbl_user','tbl_user.user_id = tbl_match_team.player_id')->join('tbl_position','tbl_position.p_id = tbl_user.position ','left')->where($whare);
 					$g_a_yc_rc = $g_a_yc_rc->get()->getRowArray();
 								
+					$player_list[$key]['position'] = $g_a_yc_rc['position'] ? $g_a_yc_rc['position'] : '';
+					$player_list[$key]['user_id'] = $g_a_yc_rc['player_id'] ? $g_a_yc_rc['player_id'] : '';
 					$player_list[$key]['first_name'] = $g_a_yc_rc['first_name'] ? $g_a_yc_rc['first_name'] : '';
 					$player_list[$key]['last_name'] = $g_a_yc_rc['last_name'] ? $g_a_yc_rc['last_name'] : '';
 					$player_list[$key]['image'] = $g_a_yc_rc['image'] ? $g_a_yc_rc['image'] : '';
@@ -284,14 +279,7 @@ class Team extends ApiBaseController
 			$result["designation"] = $designation;
 			$result["player_list"] = $player_list;
 			$result["team_coach_detail"] = $team_coach_detail;
-		}
-		
-		
-// $fielding_list = $this->db->table("tbl_formation")->get()->getResultArray();
-			// $result['fielding_list'] = array_column($fielding_list, 'formation');
-		// echo "<pre>";
-		// print_r($result); 
-		// die();
+		}	
 		$view['data'] = array("data" => $result);
 		return view('default', $view);
 		
@@ -301,6 +289,47 @@ class Team extends ApiBaseController
 	}
 	public function match_result($match_id){
 		return $this->db->table('tbl_tournament_match_result')->where('match_id',$match_id)->get()->getRowArray();
+	}
+	public function get_user(){
+		$user_id = $this->request->getVar('user_id');
+		if(!empty($user_id)){
+			$error = null;
+			$result = $this->db->table('tbl_user')->select('first_name, last_name, address, tbl_nationality.id as nationality_id, tbl_nationality.nationality as nationality, flag_image, age, gender, user_type, tbl_position.position as position, height, weight, image')->join('tbl_nationality', 'tbl_nationality.id = tbl_user.nationality','left')->join('tbl_position', 'tbl_position.p_id = tbl_user.position','left')->where("user_id", $user_id)->get()->getRowArray();
+			if(!empty($result)){
+				$result_data['user_id'] = $user_id;
+				$result_data['first_name'] = $result['first_name'];
+				$result_data['last_name'] = $result['last_name'];
+				$result_data['address'] = $result['address'];
+				$result_data['nationality_id'] = $result['nationality_id'];
+				$result_data['nationality'] = $result['nationality'];
+				$result_data['flag_image'] = $result['flag_image'];
+				$result_data['age'] = $this->calculate_age($result['age']);
+				if($result['gender'] == 0){
+					$result_data['gender'] = 'Male';
+				}else if($result['gender'] == 1){
+					$result_data['gender'] = 'Female';
+				}else{
+					$result_data['gender'] = 'Transgender';	
+				}
+					
+				if($result['user_type'] = '0'){
+					$result_data['user'] = "Coach";
+					
+					
+				}else{
+					$result_data['user'] = "Player";
+					$result_data['position'] = $result['position'];
+				}
+				$result_data['height'] = $result['height'];
+				$result_data['weight'] = $result['weight'];
+				$result_data['image'] = $result['image'];
+				
+				echo $this->sendResponse(array('success' => true, 'result'=>$result_data));
+			}else{
+				echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+			}
+		}
+		
 	}
 	
 

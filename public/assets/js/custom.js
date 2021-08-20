@@ -504,6 +504,7 @@ $( function ()
 } );
 
 $( document ).ready(function() {
+	var profile_images_path = $( "#profile_images_path" ).val();
 	/**
 	 * =======================================================================
 	 *  Add League ajax
@@ -821,5 +822,47 @@ $( document ).ready(function() {
             }
         } );
     } ); 
+	
+	/**
+	 * =========================================
+	 * View user
+	 * ============================================
+	 */
+	$( '.user_detail_view' ).on( 'click', function ( e ){
+        e.preventDefault();
+        console.log( $( this ).attr( 'id' ) );
+        var user_id = $( this ).attr( 'id' );
+        url = sports.config.get_user;
+		 console.log( 'url = '+ url );
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { user_id: user_id },
+            success: function ( data )
+            {
+                console.log( "edit show " );
+                console.log( data.result );
+				 if ( data.result != null )
+                {
+					console.log("profile_images_path = "+profile_images_path);
+                    $( "#first_name" ).val( data.result.first_name );
+                    $( "#last_name" ).val( data.result.last_name );
+                    $( "#address" ).val( data.result.address );
+                    $( "#nationality" ).val( data.result.nationality );
+                    // $( "#flag_image" ).val( data.result.flag_image );
+                    $( "#flag_image" ).attr( 'src', profile_images_path+'/'+data.result.user_id+'/'+data.result.flag_image );
+                    $( "#age" ).val( data.result.age );
+                    $( "#gender" ).val( data.result.gender );
+                    $( "#height" ).val( data.result.height );
+                    $( "#weight" ).val( data.result.weight );
+                    $( "#img" ).attr( 'src', data.result.img );
+                   
+                }
+                $( '.bd-View-User-lg' ).modal( 'show' );				
+                
+            }
+        } );
+	} );
 	
 });

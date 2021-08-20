@@ -21,4 +21,4 @@
   <link rel='shortcut icon' type='image/x-icon' href="<?= base_url().IMGPATH ?>/favicon.ico" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
+</head><input type="hidden" name="base_url" id="base_url" value="<?php echo base_url(); ?>" />			<input type="hidden" name="profile_images_path" id="profile_images_path" value="<?php echo base_url().'/public/uploads/profile_images/'; ?>" />

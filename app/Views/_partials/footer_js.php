@@ -37,6 +37,7 @@
         delete_team : "<?php echo base_url("/admin/team/delete_team") ?>", 
         get_team : "<?php echo base_url("/admin/team/get_team_details") ?>",
         edit_team : "<?php echo base_url("/admin/team/edit_team") ?>",
+        get_user : "<?php echo base_url("/admin/team/get_user") ?>",
 		btn_forgot_pass : "<?php echo base_url("/admin/forgot-password") ?>",        
         base_url: "<?php echo base_url(); ?>"
         }

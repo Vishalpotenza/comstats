@@ -108,6 +108,7 @@ $routes->add('/admin/team/edit_team', 'admin/Team::edit_team');
  */
 $routes->add('/admin/team/club_team', 'admin/Team::club_team');
 $routes->add('/admin/team/team_match', 'admin/Team::team_match');
+$routes->add('/admin/team/get_user', 'admin/Team::get_user');
 
 /**
  * Country
