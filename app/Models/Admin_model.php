@@ -24,7 +24,14 @@ class Admin_model extends Model {
             return false;
         }
     }
-
+	public function eamil_exist_admin($email){        
+		$query = $this->db->table('tbl_admin')->where(array("email" => $email));
+        if ($query->countAllResults() > 0){
+            return true;
+		}else{
+            return false;        
+		}
+	}
    
 }
 ?>

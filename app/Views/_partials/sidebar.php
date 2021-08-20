@@ -16,14 +16,7 @@
                 <li><a class="nav-link" href="<?= base_url().ADMIN ?>/clubs">Manage Clubs</a></li>
 				<li><a class="nav-link" href="<?= base_url().ADMIN ?>/team">Manage Team</a></li>
               </ul>
-            </li>
-			<li class="dropdown">
-              <a href="#" class="menu-toggle nav-link has-dropdown"><i
-                  class="fas fa-futbol"></i><span>League</span></a>
-              <ul class="dropdown-menu">
-                <li><a class="nav-link" href="<?= base_url().ADMIN ?>/league">Manage League</a></li>
-              </ul>
-            </li>
+            </li>						<li class="dropdown">							<a href="#" class="menu-toggle nav-link has-dropdown"><i                  class="fas fa-futbol"></i><span>League</span></a>				<ul class="dropdown-menu">					<li><a class="nav-link" href="<?= base_url().ADMIN ?>/league">Manage League</a></li>				</ul>				            </li>
           </ul>
         </aside>
       </div>

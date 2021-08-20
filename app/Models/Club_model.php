@@ -23,15 +23,15 @@ class Club_model extends Model {
      *
      * @return void
      */
-   public function getallclubs() {
+    public function getallclubs() {
         return $this->db->table($this->table)
-                 ->select('tbl_team.club_id, club_name, address, contact_no , countries.name as country_name, states.name as state_name,  (select count(*) from tbl_team_member_relation where tbl_team_member_relation.team_id = tbl_team.team_id and tbl_team_member_relation.deletestatus = 0 and tbl_team_member_relation.designation<>1 and tbl_team_member_relation.request_status=0) as request')
-				// ->distinct($this->table.".club_id")
+                 ->select('tbl_team.club_id, club_name, address, contact_no , countries.name as country_name, states.name as state_name,  (select count(*) from tbl_team_member_relation where tbl_team_member_relation.team_id = tbl_team.team_id and tbl_team_member_relation.deletestatus = 0 and tbl_team_member_relation.designation<>1 and tbl_team_member_relation.request_status=0) as request') 
 				->distinct()
 				->where($this->table.'.deletestatus',0)
                  ->join('countries', 'countries.id ='.$this->table.'.country_id')
                  ->join('states', 'states.id ='.$this->table.'.state_id')
                  ->join('tbl_team','tbl_team.club_id ='.$this->table.'.club_id')
+				 // ->where($this->table'.deletestatus',0)
                 //  ->join('cities', 'cities.id ='.$this->table.'.city_id')
                  ->get()->getResultArray();
     }
@@ -40,7 +40,7 @@ class Club_model extends Model {
      */
      public function getallclubsbyid($club_id) {
         $result = $this->db->table($this->table)
-                 ->select('tbl_team.club_id, club_name, address, contact_no , countries.name as country_name, states.name as state_name')				
+                 ->select('tbl_team.club_id, club_name, address, contact_no , countries.name as country_name, states.name as state_name')   
                  ->join('countries', 'countries.id ='.$this->table.'.country_id')
                  ->join('states', 'states.id ='.$this->table.'.state_id')
                  ->join('tbl_team','tbl_team.club_id ='.$this->table.'.club_id')
@@ -104,6 +104,7 @@ class Club_model extends Model {
 		}
 		
 	}
+
    
 }
 ?>

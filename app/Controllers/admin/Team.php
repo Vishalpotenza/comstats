@@ -175,62 +175,132 @@ class Team extends ApiBaseController
 		$where_club_member_team['tbl_team.club_id'] = $club_id;
 		$club_member_team = $this->db->table('tbl_team')->where($where_club_member_team)->get()->getResultArray();
 		$result["club_member_team"] = $club_member_team;		
-		// echo "<pre>";
-		// print_r($result);
-		// die();
 		$view['data'] = array("data" => $result);
 		return view('default', $view);
 		
 	}
-	public function team_match($team_id=''){
+	public function team_match($team_id='', $feature_past="all"){
 		
+// date_default_timezone_set("Asia/Kolkata");
+		// $match_time_date = strtotime($match_tournament['datetime']);
+		// $current_time_date = strtotime(date("Y-m-d H:i:s"));
+		// if(  $current_time_date >= $match_time_date){
+			// return true;
+		// }else{
+			// return false; 
+		// }
+		
+		$feature_past = $this->request->getVar('feature_past');
 		$team_model = new Team_model();
 		$view['view'] = array('title'=>"Match List");
 		$view['content'] = "match/tournaments";
 		$team_id = $this->request->getVar('team_id');
-		
+		$view['data'] = array("data" => array());
 		$team_match = '';
 		$where_team_match1['deletestatus'] = 0;
-		$where_team_match['team_id'] = $team_id;
-		$team_match = $this->db->table('tbl_tournament_match')->where($where_team_match)->get()->getResultArray();
+		$where_team_match['tbl_tournament_match.team_id'] = $team_id;
+
+		$team_match = $this->db->table('tbl_tournament_match');
+		$team_match = $team_match->select('tbl_tournament_match.id, name, datetime, kit_color, team_id, opponent_team_id');
+		$team_match = $team_match->join('tbl_tournament','tbl_tournament.id = tbl_tournament_match.tournament_id', 'left');
+		if($feature_past == "past"){
+			$where_team_match['datetime <'] = date("Y-m-d H:i:s");
+		}else if($feature_past == "feature"){
+			$where_team_match['datetime >'] = date("Y-m-d H:i:s");
+		}else{
+		}
+		$team_match = $team_match->where($where_team_match)->get()->getResultArray();
+
+		$team_match_detail_array = [];
+		foreach($team_match as $team_match_data){
+			$team_match_detail1 = [];
+			$team_match_detail['match_id'] = $team_match_data['id'];
+			$team_match_detail['tournament_name'] = $team_match_data['name'];
+			$team_match_detail['datetime'] = $team_match_data['datetime'];
+			if($team_match_data['datetime'] < date("Y-m-d H:i:s")){
+				$team_match_detail['status_time'] = "past";
+			}else{
+				$team_match_detail['status_time'] = "feature";
+			}
+			
+			$team_match_detail['kit_color'] = $team_match_data['kit_color'];
+			$team_match_detail['team_id'] = $team_match_data['team_id'];
+			$team_match_detail['opponent_team_id'] = $team_match_data['opponent_team_id'];
+			$team_id_to_team_name_team_logo_1 = $this->team_id_to_team_name_team_logo($team_match_data['team_id']);
+			$team_match_detail['team_name'] = $team_id_to_team_name_team_logo_1['team_name'];
+			$team_match_detail['team_logo'] = $team_id_to_team_name_team_logo_1['team_logo'];
+			$team_id_to_team_name_team_logo_2 = $this->team_id_to_team_name_team_logo($team_match_data['opponent_team_id']);
+			$team_match_detail['opponent_team_name'] = $team_id_to_team_name_team_logo_2['team_name'];
+			$team_match_detail['opponent_team_logo'] = $team_id_to_team_name_team_logo_2['team_logo'];
+			
+			$result_score = $this->match_result($team_match_data['id']);
+			if($result_score){
+				$team_match_detail1['team_score'] = $result_score['team_id_score'];
+				$team_match_detail1['opponent_score'] = $result_score['opponent_team_id_score'];
+				$team_match_detail1['winner_team'] = $result_score['winner_team_id'];
+				
+			}
+			$team_match_detail['score'] = $team_match_detail1;
+			$team_match_detail_array[] = $team_match_detail;
+		}
 		
 		$where_team_match1['designation <>'] = 1; 
-		
-		$team_coach_detail = $this->db->table('tbl_team_member_relation')->join('tbl_user','tbl_user.user_id = tbl_team_member_relation.user_id')->where($where_team_match1)->get()->getRowArray();
-		
-		
+		$where_team_match1['tbl_team_member_relation.deletestatus'] = 0; 
+		$team_coach_detail = $this->db->table('tbl_team_member_relation')->join('tbl_user','tbl_user.user_id = tbl_team_member_relation.user_id')->where($where_team_match1)->get()->getResultArray();
 		
 		
-		$result["team_matchs"] = $team_match;
+		
+		
+		$result["team_matchs"] = $team_match_detail_array;
 		$team_match_id_column = array_column($team_match,'id');
-		// $result["team_match_column"] = array_column($team_match,'id');
-		$team_match_id_column_where['match_id'] = $team_match_id_column;
-		$player_list = $this->db->table('tbl_match_team')->select('id, player_id, jursey_no')->whereIn('match_id',$team_match_id_column)->get()->getResultArray();
-		foreach($player_list as $key => $value){
-			$whare = array('player_id' => $value['player_id']);
-			$g_a_yc_rc = $this->db->table('tbl_match_team')->select('SUM(g) as total_g, SUM(a) as total_a, SUM(yc) as total_yc, SUM(rc) as total_rc')->where($whare);
-			$g_a_yc_rc = $g_a_yc_rc->get()->getRowArray();
-						
-			$player_list[$key]['total_yc'] = $g_a_yc_rc['total_yc'] ? $g_a_yc_rc['total_yc'] : 0;
-			$player_list[$key]['total_rc'] = $g_a_yc_rc['total_rc'] ? $g_a_yc_rc['total_rc'] : 0;
-			$player_list[$key]['total_g'] = $g_a_yc_rc['total_g'] ? $g_a_yc_rc['total_g'] : 0;
-			$player_list[$key]['total_a'] = $g_a_yc_rc['total_a'] ? $g_a_yc_rc['total_a'] : 0;
+		
+		if(!empty($team_match_id_column)){
+			// $result["team_match_column"] = array_column($team_match,'id');
+			$team_match_id_column_where['match_id'] = $team_match_id_column;
+			$player_list = $this->db->table('tbl_match_team')->select('player_id')->whereIn('match_id',$team_match_id_column)->distinct()->get()->getResultArray();
+			// echo "<pre>";
+			// print_r($player_list); 
+			// die();
+			if($player_list){
+				foreach($player_list as $key => $value){
+					$whare = array('player_id' => $value['player_id']);
+					$g_a_yc_rc = $this->db->table('tbl_match_team')->select('last_name, first_name, image, SUM(g) as total_g, SUM(a) as total_a, SUM(yc) as total_yc, SUM(rc) as total_rc')->join('tbl_user','tbl_user.user_id = tbl_match_team.player_id')->where($whare);
+					$g_a_yc_rc = $g_a_yc_rc->get()->getRowArray();
+								
+					$player_list[$key]['first_name'] = $g_a_yc_rc['first_name'] ? $g_a_yc_rc['first_name'] : '';
+					$player_list[$key]['last_name'] = $g_a_yc_rc['last_name'] ? $g_a_yc_rc['last_name'] : '';
+					$player_list[$key]['image'] = $g_a_yc_rc['image'] ? $g_a_yc_rc['image'] : '';
+					$player_list[$key]['total_yc'] = $g_a_yc_rc['total_yc'] ? $g_a_yc_rc['total_yc'] : 0;
+					$player_list[$key]['total_rc'] = $g_a_yc_rc['total_rc'] ? $g_a_yc_rc['total_rc'] : 0;
+					$player_list[$key]['total_g'] = $g_a_yc_rc['total_g'] ? $g_a_yc_rc['total_g'] : 0;
+					$player_list[$key]['total_a'] = $g_a_yc_rc['total_a'] ? $g_a_yc_rc['total_a'] : 0;
+				}
+			}
+			
+			
+			$designation['2'] = 'Head Coach';
+			$designation['3'] = 'Assistant coach';
+			$designation['4'] = 'Manager';
+			$result["designation"] = $designation;
+			$result["player_list"] = $player_list;
+			$result["team_coach_detail"] = $team_coach_detail;
 		}
 		
 		
-		
-		$result["player_list"] = $player_list;
-		$result["team_coach_detail"] = $team_coach_detail;
-		
-		
-		
-		
+// $fielding_list = $this->db->table("tbl_formation")->get()->getResultArray();
+			// $result['fielding_list'] = array_column($fielding_list, 'formation');
 		// echo "<pre>";
 		// print_r($result); 
 		// die();
 		$view['data'] = array("data" => $result);
 		return view('default', $view);
 		
+	}
+	public function team_id_to_team_name_team_logo($team_id){
+		return $this->db->table('tbl_team')->where('team_id',$team_id)->get()->getRowArray();
+	}
+	public function match_result($match_id){
+		return $this->db->table('tbl_tournament_match_result')->where('match_id',$match_id)->get()->getRowArray();
 	}
 	
 

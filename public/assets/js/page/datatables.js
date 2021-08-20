@@ -39,9 +39,7 @@ $("#table-2").dataTable({
   ],
   order: [[1, "asc"]] //column indexes is zero based
 
-});
-$("#leaguetable").dataTable();
-$("#teamtable").dataTable();
+});$("#leaguetable").dataTable();$("#teamtable").dataTable();
 $('#save-stage').DataTable({
   "scrollX": true,
   stateSave: true
@@ -52,3 +50,8 @@ $('#tableExport').DataTable({
     'copy', 'csv', 'excel', 'pdf', 'print'
   ]
 });
+$("#table-3").dataTable({});
+$("#table-4").dataTable({});
+$("#table-5").dataTable({});
+$("#table-6").dataTable({});
+$("#table-7").dataTable({});

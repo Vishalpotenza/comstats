@@ -69,6 +69,7 @@ $routes->add('/api/get-match-players', 'TournamentApiController::get_match_playe
 $routes->add('/api/update-kit-color-formation', 'TournamentApiController::update_kit_color_formation');
 $routes->add('/api/update-score', 'TournamentApiController::update_score');
 $routes->add('/api/finish-match', 'TournamentApiController::finish_match');
+$routes->add('/api/update-team-score', 'TournamentApiController::update_team_score');
 /**
  * Traning api
  */
@@ -77,6 +78,10 @@ $routes->add('/api/player-attendance', 'TraningApiController::players_attendance
  * Admin
  */
 
+$routes->add('/admin/forgot-password-view', 'Home::forgot');
+$routes->add('/admin/forgot-password', 'Home::forgot_password');
+$routes->add('/admin/auth-reset-password', 'Home::reset_password');
+$routes->add('/admin/dashboard', 'admin/Dashboard::index');
 $routes->add('/admin/dashboard', 'admin/Dashboard::index');
 $routes->add('/admin/clubs', 'admin/Clubs::index');
 $routes->add('/admin/clubs/add_club', 'admin/Clubs::add_club');
@@ -84,7 +89,6 @@ $routes->add('/admin/clubs/delete_club', 'admin/Clubs::delete_club');
 $routes->add('/admin/clubs/get_club_details', 'admin/Clubs::get_club_details');
 $routes->add('/admin/clubs/edit_club', 'admin/Clubs::edit_club');
 $routes->add('/admin/clubs/join-request', 'admin/Clubs::join_request');
-// $routes->add('/admin/clubs/request', 'admin/Clubs::join_request');
 $routes->add('/admin/clubs/request_action', 'admin/Clubs::join_request_action');
 $routes->add('/admin/clubs/view_members', 'admin/Clubs::view_members');
 
@@ -99,15 +103,11 @@ $routes->add('/admin/team/add_team', 'admin/Team::add_team');
 $routes->add('/admin/team/delete_team', 'admin/Team::delete_team');
 $routes->add('/admin/team/get_team_details', 'admin/Team::get_team_details');
 $routes->add('/admin/team/edit_team', 'admin/Team::edit_team');
-
-
 /**
  * Team
  */
 $routes->add('/admin/team/club_team', 'admin/Team::club_team');
 $routes->add('/admin/team/team_match', 'admin/Team::team_match');
-
-
 
 /**
  * Country
@@ -115,8 +115,7 @@ $routes->add('/admin/team/team_match', 'admin/Team::team_match');
 $routes->add('/admin/locationscontroller/getallcountry', 'admin/LocationsController::getallcountry');
 $routes->add('/admin/locationscontroller/getallstate', 'admin/LocationsController::getallstate');
 $routes->add('/admin/locationscontroller/getallcity', 'admin/LocationsController::getallcity');
-/*
-//players-to-add
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing

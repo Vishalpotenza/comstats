@@ -113,5 +113,67 @@ class Home extends ApiBaseController
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
         }
 	}
+	public function forgot()
+	{		
+        return view('forgot-password');
+	}
+	public function forgot_password()
+	{
+        $email = $this->request->getPost('email');
+        // $email = $this->request->getVar('email');
+       
+        helper(['form', 'url']);
+		$validation=array(
+			
+			"email"=>array(	
+				"label"=>"email",
+				"rules"=>'required'
+			)
+		);
 	
+        if ($this->validate($validation)) {
+            $error = null;
+			$admin_model = new Admin_model();
+            if($admin_model->eamil_exist_admin($email) == true) {
+				
+				$email_send = \Config\Services::email();
+				
+				// $config['SMTPUser'] = 'Vishal.Patel@potenzaglobalsolutions.com';
+				// $config['SMTPPass'] = 'Potenza@123';
+				$config['SMTPUser'] = 'tester123456test123456@gmail.com';
+				$config['SMTPPass'] = 'tester123456test12345647';
+				// $config['SMTPHost'] = 'sendmail';
+				// $config['SMTPPort'] = 'sendmail';
+				$config['protocol'] = 'sendmail';
+$config['mailPath'] = '/usr/sbin/sendmail';
+$config['charset']  = 'iso-8859-1';
+$config['wordWrap'] = true;
+
+$email_send->initialize($config);
+
+$email_send->setFrom('tester123456test123456@gmail.com', 'tester');
+$email_send->setTo($email);
+// $email_send->setCC('another@another-example.com');
+// $email_send->setBCC('them@their-example.com');
+
+$email_send->setSubject('Email Test');
+$email_send->setMessage('Testing the email class.');
+
+$status = $email_send->send();
+
+				$message = "Mail sent";
+				echo $this->sendResponse(array('success' => true, 'responce'=>$status, 'message' => $message,'error'=>$error));
+			}
+			else{
+				$message = "Account does not exist".$email."-";
+				echo $this->sendResponse(array('success' => false, 'responce'=>1, 'message' => $message,'error'=>$error));
+			}
+           
+        }else{
+            echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+        }
+	}
+	public function reset_password(){
+		
+	}
 }

@@ -223,16 +223,14 @@ class ApiBaseController extends BaseController
     }
     /**
 	 * Use for upload file for case in the perticuler location
-	 * key : image feild name
-	 * profile_images_or_team_images : team_images
 	 */
-	public function uploadFilefunc($key, $type = 'image', $user_id,$profile_images_or_team_images='profile_images',$profileimage='profileimage')
+	public function uploadFilefunc($key, $type = 'image', $user_id)
 	{
 		$response = array("status" => "error");
 		if (!empty($_FILES[$key]["name"])) {
 			//$this->load->library('upload');
 
-			$folder =  ROOTPATH . 'public/uploads/'.$profile_images_or_team_images.'/' . $user_id;
+			$folder =  ROOTPATH . 'public/uploads/profile_images/' . $user_id;
 
 			if (!is_dir($folder)) {
 				mkdir($folder, 0777, TRUE);
@@ -241,7 +239,7 @@ class ApiBaseController extends BaseController
 			$uid = uniqid();
 			$ext = pathinfo($_FILES[$key]["name"], PATHINFO_EXTENSION);
 
-			$filename = $profileimage . $uid . '.' . $ext;
+			$filename = 'profileimage' . $uid . '.' . $ext;
 			//$config['file_name'] = $filename;
 			//$config['overwrite'] = TRUE;
 
@@ -417,7 +415,6 @@ class ApiBaseController extends BaseController
 		return $query;
 	}
 	/**
-     * List of matches
      * get List of match_id, that attempt the player
      * player_id : player_id => 1,2..
     */
@@ -437,61 +434,5 @@ class ApiBaseController extends BaseController
 		$query = $query->where('player_id',$player_id)->distinct('team_id')->get()->getResultArray();
 		return $query;
 	}
-	public function upload_image($profile_images_or_team_images = '',$id='',$file){
-		// $img = $this->request->getFile('team_logo');
-		print_r($_FILES["team_logo"]);
-		print_r($file);
-		$file = $_FILES["team_logo"];
-		print_r($file);
-            $folder =  ROOTPATH . 'public/uploads/'.$profile_images_or_team_images.'/' . $id;
-			$uid = uniqid();
-			$ext = pathinfo($_FILES['team_logo']['name'], PATHINFO_EXTENSION);
-			$filename = 'profileimage' . $id . '.' . $ext;
-			if (!is_dir($folder)) {
-				mkdir($folder, 0777, TRUE);
-			}
-            // $img->move(WRITEPATH . 'uploads');
-            $file->move($folder, $filename);
-    
-            $data = [
-               'name' =>  $img->getName(),
-               'type'  => $img->getClientMimeType()
-            ];
-		return $data;
-		
-	}
-        /*
-    For Sending Push Notification
-    */
-    public function send_notification($registatoin_ids, $notification,$device_type) {
-        $url = 'https://fcm.googleapis.com/fcm/send';
-        if($device_type == "Android"){
-        $fields = array(
-            'to' => $registatoin_ids,
-            'data' => $notification
-        );
-        } else {
-        $fields = array(
-            'to' => $registatoin_ids,
-            'notification' => $notification
-        );
-        }
-        // Firebase API Key
-        $headers = array('Authorization:key=cOLPQoT0SzWXz3czKWREax:APA91bE8_iqt1qJ60ncV1chQZENWR4UioCqUNeCRO0yvyCyK_WwSZ8rn2Ztpd9XSUlEWUonIkFJeRsnUlg2m0vzzV7gKVQRKJQ8ecPT0eC-MIcswTz7H6G3LA8p-0HNCsfRLmnbnNhEN','Content-Type:application/json');
-        // Open connection
-        $ch = curl_init();
-        // Set the url, number of POST vars, POST data
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // Disabling SSL Certificate support temporarly
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-        $result = curl_exec($ch);
-        if ($result === FALSE) {
-        die('Curl failed: ' . curl_error($ch));
-        }
-        curl_close($ch);
-    }	
+	
 }

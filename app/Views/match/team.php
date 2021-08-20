@@ -31,7 +31,7 @@
 								  <?= ++$i ?>
 
 								</td>
-								<td><a href="<?= base_url()."/admin/team/team_match/?team_id=".$team['team_id']   ?>" ><?= $team['team_name'] ?></a></td>
+								<td><a href="<?= base_url()."/admin/team/team_match/?team_id=".$team['team_id'] ?>"><?= $team['team_name'] ?></a></td>
 								<td><img alt="image" src="<?= base_url().'/public/uploads/team_images/'.$team['team_id'].'/'.$team['team_logo'] ?>" class="rounded-circle" width="50"
                               data-toggle="tooltip" title="<?= $team['team_name'] ?>"></td>
 								

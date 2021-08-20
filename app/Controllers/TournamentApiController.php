@@ -66,9 +66,12 @@ class TournamentApiController extends ApiBaseController
             $future_match =array();
             $past_match =array();
             foreach($matches as $key => $match){
+				$match_sub_detail = [];
                 $opponent_team = $this->db->table('tbl_team')->select('team_name, team_logo')->where('team_id', $match['opponent_team_id'])->get()->getRowArray();
                 $match['opponent_team'] = $opponent_team['team_name'];
+                $match_sub_detail['opponent_team'] = $opponent_team['team_name'];
                 $match['opponent_team_logo'] = base_url()."/public/uploads/team_images/".$match['opponent_team_id']."/".$opponent_team['team_logo'];
+				$match_sub_detail['opponent_team_logo'] = base_url()."/public/uploads/team_images/".$match['opponent_team_id']."/".$opponent_team['team_logo'];
                 $participant_team =  $this->db->table('tbl_team')->select('team_name, team_logo')->where('team_id', $match['team_id'])->get()->getRowArray();
                 $match['participant_team'] = $participant_team['team_name'];
                 $match['participant_team_logo'] = base_url()."/public/uploads/team_images/".$match['team_id']."/".$participant_team['team_logo'];
@@ -82,8 +85,20 @@ class TournamentApiController extends ApiBaseController
                      // $match['team_full_status'] = true;
                 // }
                 $match['match_id'] = $match['id'];
-				$match['match_result']=array();
-                $match['players_details']=array();
+                $match_sub_detail['match_id'] = $match['id'];
+                $match_sub_detail['opponent_team_id'] = $match['opponent_team_id'];
+                $match_sub_detail['address'] = $match['address'];
+                $match_sub_detail['ground_status'] = $match['ground_status'];
+                $match_sub_detail['match_end_status'] = $match['match_end_status'];
+                $match_sub_detail['match_end_status_for_opponent_team'] = $match['match_end_status_for_opponent_team'];
+                $match_sub_detail['team_full_status'] = $match['team_full_status'];
+                $match_sub_detail['kit_color'] = $match['kit_color'];
+                $match_sub_detail['opponent_team'] = $match['opponent_team'];
+                $match_sub_detail['opponent_team_logo'] = $match['opponent_team_logo'];
+				
+				
+				$match['match_result'] = array();
+                $match['players_details'] = array();
 				
                 $match_players = $this->db->table('tbl_match_team')->where('match_id', $match['match_id'])->get()->getResultArray();
                 $match_winning_score = $this->db->table('tbl_tournament_match_result')->where('match_id', $match['match_id'])->get()->getRowArray();
@@ -100,6 +115,7 @@ class TournamentApiController extends ApiBaseController
 							$match_winning_score_array['winner_team_id'] = $match_winning_score['winner_team_id'];
 						}
 						$match['match_result'] = $match_winning_score_array;
+						$match_sub_detail['match_result'] = $match['match_result'];
 					}
 				
                 foreach($match_players as $m_player){
@@ -113,30 +129,67 @@ class TournamentApiController extends ApiBaseController
 					$player_details_match['score'] = $player_details_match1;
 					// print_r($m_player);
                     array_push( $match['players_details'],$player_details_match);
+					$match_sub_detail['players_details'] = $match['players_details'];
                 }
+				$match['match_sub_detail'] = $match_sub_detail;
                 // unset($match['players_details']);
                 unset($match['id']);
-                if($match['datetime'] > date('Y-m-d H:i:s') && $match['match_end_status'] == 0){
-					unset($match['players_details']);
+                unset($match['match_result']);
+				if($match['datetime'] > date('Y-m-d H:i:s') && $match['match_end_status'] == 0){
+					// unset($match['players_details']);
+					unset($match['match_sub_detail']);
+					// unset($match['match_id']);
+					// unset($match['kit_color']);
+					// unset($match['opponent_team_id']);
+					// unset($match['address']);
+					// unset($match['ground_status']);
+					// unset($match['match_end_status']);
+					// unset($match['match_end_status_for_opponent_team']);
+					// unset($match['team_full_status']);
+					// unset($match['opponent_team']);
+					// unset($match['opponent_team_logo']);
                     array_push($future_match, $match);
                 } else {
                     if($match['datetime'] < date('Y-m-d H:i:s') && $match['match_end_status'] == 1){
-						
+						unset($match['match_id']);
+						unset($match['kit_color']);
+						unset($match['opponent_team_id']);
+						unset($match['address']);
+						unset($match['ground_status']);
+						unset($match['match_end_status']);
+						unset($match['match_end_status_for_opponent_team']);
+						unset($match['team_full_status']);
+						unset($match['opponent_team']);
+						unset($match['opponent_team_logo']);
+						unset($match['players_details']);
+						unset($match['match_result']);
                         array_push($past_match, $match);
                     } else {
-						unset($match['players_details']);
+						// unset($match['players_details']);
+						unset($match['match_sub_detail']);
+						// unset($match['match_id']);
+						// unset($match['kit_color']);
+						// unset($match['opponent_team_id']);
+						// unset($match['address']);
+						// unset($match['ground_status']);
+						// unset($match['match_end_status']);
+						// unset($match['match_end_status_for_opponent_team']);
+						// unset($match['team_full_status']);
+						// unset($match['opponent_team']);
+						// unset($match['opponent_team_logo']);
                         array_push($future_match, $match);
                     }
                 }
             }
-            $traning = $this->db->table('tbl_traning')->where('team_id', $coachs['team_id'])->orderBy('date')->get()->getResultArray();
+            $traning = $this->db->table('tbl_traning')->select('tbl_traning.*, tbl_traning.traningdatetime as datetime ')->where('team_id', $coachs['team_id'])->orderBy('date')->get()->getResultArray();
             foreach($traning as $trannie){
+				$match_sub_detail_tranning = [];
                 $trannie['tournament_name'] = $this->db->table('tbl_tournament')->select('name')->where('id', 1)->get()->getRowArray()['name'];
                 $participant_team =  $this->db->table('tbl_team')->select('team_name, team_logo')->where('team_id', $trannie['team_id'])->get()->getRowArray();
                 $trannie['participant_team'] = $participant_team['team_name'];
                 $trannie['participant_team_logo'] = base_url()."/public/uploads/team_images/".$trannie['team_id']."/".$participant_team['team_logo'];
                 $trannie['ground_name'] = $this->db->table('tbl_traning_ground')->where('id', $trannie['ground'])->get()->getRowArray()['ground_name'];
-               
+				$match_sub_detail_tranning['ground_name'] = $trannie['ground_name'];
                 $trannie["tournament_id"] =  $this->db->table('tbl_tournament')->select('id')->where('slug', "traning")->get()->getRowArray()['id'];
                 $trannie['time'] = $this->time_format_list($trannie['traningdatetime']);
                 if($this->ifexistscustom('tbl_traning_attendance', array("traning_id"=>$trannie['id'], "player_id"=>$user_id))){
@@ -144,6 +197,7 @@ class TournamentApiController extends ApiBaseController
                 } else {
                     $trannie['attandance_status'] = false;
                 }
+				$match_sub_detail_tranning['attandance_status'] = $trannie['attandance_status'];
                 $trannie['attendance'] = array();
                 $attendence=$this->db->table('tbl_team_member_relation')->select('tbl_team_member_relation.user_id, first_name, last_name, tbl_position.position')->join('tbl_user', 'tbl_user.user_id = tbl_team_member_relation.user_id')->join('tbl_position', 'tbl_position.p_id=tbl_user.position')->where( array('team_id'=> $trannie['team_id'], 'designation'=> 1, 'deletestatus' => 0))->get()->getResultArray();
                 foreach($attendence as $key => $attend){
@@ -153,19 +207,47 @@ class TournamentApiController extends ApiBaseController
                     else{
                         $attend['attend']="no";
                     }
+					$match_sub_detail_tranning['match_result'] = (object)array();
                     array_push($trannie['attendance'], $attend);
                 }
+				$match_sub_detail_tranning['attendance'] = $trannie['attendance'];
+				$match_sub_detail_tranning['created_timestamp'] = $trannie['created_timestamp'];
+				$match_sub_detail_tranning['traningdatetime'] = $trannie['traningdatetime'];
+				$match_sub_detail_tranning['ground'] = $trannie['ground'];
+				$match_sub_detail_tranning['traning_id'] = $trannie['id'];
+				// $trannie['match_sub_detail'] = $match_sub_detail_tranning;
                // array_push($trannie['attendance'], $attendence);
                 $trannie['traning_id']=$trannie['id'];
-                unset($trannie['id']);
+                
+                // unset($trannie['traningdatetime']);
                 if($trannie['date'] > date('Y-m-d')){
                      if($this->ifexistscustom('tbl_user', array( 'user_id' => $user_id, 'user_type' => 0 ))){
                         $trannie['attendance'] = array();
                     }
                     $trannie['date'] = $this->date_format_list($trannie['date']);
+					unset($trannie['id']);
+					unset($trannie['traningdatetime']);
+					unset($trannie['created_timestamp']);
+					unset($match_sub_detail_tranning['attendance']);
+					unset($trannie['ground_name']);
+					unset($trannie['attandance_status']);
+					unset($trannie['traning_id']);
+					unset($trannie['participant_team']);
+					unset($trannie['participant_team_logo']);
+					$trannie['match_sub_detail'] = $match_sub_detail_tranning;
                     array_push($future_match, $trannie);
                 } else {
                     $trannie['date'] = $this->date_format_list($trannie['date']);
+					unset($trannie['id']);
+					unset($trannie['traningdatetime']);
+					unset($trannie['created_timestamp']);
+					unset($trannie['attendance']);
+					unset($trannie['ground_name']);
+					unset($trannie['attandance_status']);
+					unset($trannie['traning_id']);
+					unset($trannie['participant_team']);
+					unset($trannie['participant_team_logo']);
+					$trannie['match_sub_detail'] = $match_sub_detail_tranning;
                     array_push($past_match, $trannie);
                }
             }
@@ -510,10 +592,16 @@ class TournamentApiController extends ApiBaseController
              */
             $players = $this->db->table('tbl_team_member_relation')->where(array("team_id"=> $team['team_id'], "designation"=>1, "deletestatus"=>0))->get()->getResultArray();
             $result = array();
+			
 			$result['match_start_flag'] = 0;
             $result['in_match']=array();
             $result['not_in_match']=array();
-			
+
+			$fielding_list = $this->db->table("tbl_formation")->get()->getResultArray();
+			$result['formation'] = array_column($fielding_list, 'formation');
+			$result['fielding_list'] = $result['formation'];
+			$result_match['fielding_list'] = $result['formation'];
+
 			$match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
 			$result['kit_color'] = $match_tournament['kit_color'];
 			$result_match['kit_color'] = $match_tournament['kit_color'];
@@ -562,6 +650,7 @@ class TournamentApiController extends ApiBaseController
 				}
 			}
             if(!empty($result)){
+				
                 $response['status']  ="success";
                 $response['message'] = "successfully got all players";
                 $response['data']    = $result;
@@ -765,7 +854,7 @@ class TournamentApiController extends ApiBaseController
 				}
 				if(!empty($update_data)){
 					$update = $this->db->table('tbl_tournament_match')->where($where)->set($update_data)->update();
-					$response['status'] = "Success";
+					$response['status'] = "success";
 					$response['message'] = "Something Wrong Data not updated";
 					if($update)
 						$response['message'] = "Data update Successfully";
@@ -833,7 +922,7 @@ class TournamentApiController extends ApiBaseController
 						$tbl_tournament_match_result_data['team_id_score'] = $match_team_goal['Total_g']; 
 						$tbl_tournament_match_result_data['opponent_team_id_score'] = $match_opponent_team_goal['Total_g']; 
 						$tbl_tournament_match_result_data['winner_team_id'] = $winner_team_id;
-						$response['status'] = "Success";
+						$response['status'] = "success";
 						$table_name = 'tbl_tournament_match_result';
 						$id = $match_id;
 						$fild_to_check = 'match_id';
@@ -886,7 +975,7 @@ class TournamentApiController extends ApiBaseController
 					$tbl_tournament_match_result_data['team_id_score'] = $match_team_goal['Total_g']; 
 					$tbl_tournament_match_result_data['opponent_team_id_score'] = $match_opponent_team_goal['Total_g']; 
 					$tbl_tournament_match_result_data['winner_team_id'] = $winner_team_id;
-					$response['status'] = "Success";
+					$response['status'] = "success";
 					$table_name = 'tbl_tournament_match_result';
 					$id = $match_id;
 					$fild_to_check = 'match_id';

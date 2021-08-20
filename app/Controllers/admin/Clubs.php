@@ -3,8 +3,7 @@
 namespace App\Controllers\Admin;
 use App\Controllers\ApiBaseController;
 use App\Models\Admin_model;
-use App\Models\Club_model;
-use App\Models\Team_model;
+use App\Models\Club_model;use App\Models\Team_model;
 class Clubs extends ApiBaseController
 {
 	/**
@@ -15,7 +14,6 @@ class Clubs extends ApiBaseController
 	public function index()
 	{
 		$club_model = new Club_model();
-		$view['view'] = array('title'=>"Club Details");
         $view['content'] = "clubs/index";
 		$view['data'] = array("club_details" => $club_model->getallclubs());
 		return view('default', $view);
@@ -184,6 +182,18 @@ class Clubs extends ApiBaseController
 		}
 		}
 	}
+	public function view_members(){
+		$club_id = $this->request->getVar('club_id');
+		$team_model = new Team_model();
+		if($club_id){
+			$data = $team_model->view_club_members($club_id);
+			if($data)
+				echo $this->sendResponse(array('success' => true, 'error'=>'', 'data' => $data));
+		}
+		
+		echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+		
+	}
 	/**
 	 * Join request
 	 * @param club_id : club_id
@@ -197,6 +207,7 @@ class Clubs extends ApiBaseController
 		return view('default', $view);
 	}
 	public function join_request_action($tm_id='',$action=''){
+		
 		helper(['form', 'url']);
 		$tm_id = $this->request->getVar("tm_id");
 		$action = $this->request->getVar("action");
@@ -213,16 +224,5 @@ class Clubs extends ApiBaseController
 			return redirect()->back();
 		}
 	}
-	public function view_members(){
-		$club_id = $this->request->getVar('club_id');
-		$team_model = new Team_model();
-		if($club_id){
-			$data = $team_model->view_club_members($club_id);
-			if($data)
-				echo $this->sendResponse(array('success' => true, 'error'=>'', 'data' => $data));
-		}
-		
-		echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
-		
-	}
+
 }
