@@ -119,6 +119,8 @@ $routes->add('/admin/team/team_match_detail', 'admin/Team::team_match_detail');
  $routes->get('/admin/logout', 'Home::logout');
 $routes->add('/admin/profile', 'admin/AdminController::profile');
 $routes->add('/admin/edit', 'admin/AdminController::edit_admin');
+$routes->add('/admin/pass', 'admin/AdminController::pass');
+$routes->add('/admin/pass/update', 'admin/AdminController::pass_update');
 
 
 

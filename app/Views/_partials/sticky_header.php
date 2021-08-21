@@ -26,8 +26,8 @@
               <div class="dropdown-title">Hello Sarah Smith</div>
               <a href="<?= base_url().'/admin/profile'?>" class="dropdown-item has-icon"> <i class="far
 										fa-user"></i> Profile
-              </a> <a href="timeline.html" class="dropdown-item has-icon"> <i class="fas fa-bolt"></i>
-                Activities
+              </a> <a href="<?= base_url("admin/pass")?>" class="dropdown-item has-icon"> <i class="fas fa-bolt"></i>
+                Update Password
               </a> <a href="#" class="dropdown-item has-icon"> <i class="fas fa-cog"></i>
                 Settings
               </a>

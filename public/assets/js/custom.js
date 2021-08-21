@@ -898,7 +898,49 @@ $( document ).ready(function() {
                         console.log( data.error );
                         toastr['error']( data.error );
                     }
+					setTimeout(function () {
+						window.location = sports.config.base_url+'/admin/profile';
+					   }, 1000);
                     // window.location = sports.config.base_url+'/admin/league';
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	/*
+	* Admin  Update password
+	*
+	*/
+	$( '#update_password_form' ).on( 'submit', function ( e )
+    {
+        e.preventDefault();
+        var formData = new FormData( $( '#update_password_form' )[0] );
+        console.log( "formdata => "+formData );
+        url = base_url+'/admin/pass/update';
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Updated" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    setTimeout(function () {
+						window.location = sports.config.base_url+'/admin/profile';
+					   }, 1000);
                 } else
                 {
                     console.log( data.error );

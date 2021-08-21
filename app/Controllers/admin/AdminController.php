@@ -57,5 +57,71 @@ class AdminController extends ApiBaseController
 		echo $this->sendResponse(array('success' => true, 'id'=>(isset($update) ? $update : ""), 'error'=>$error));
         
 	}
+	public function pass()
+	{
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}	
+		
+		$view['view'] = array('title'=>'Update Password');
+        $view['content'] = '/admin/updatepassword';
+		$view['data'] = array('admin_data'=>'');
+		return view('default', $view);
+	}
+	public function pass_update()
+	{
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>"please login first"));
+		}
+		$error = null;
+		helper(['form', 'url']);
+		$validation=array(			
+			"old_password"=>array(
+				"label"=>"old_password",
+				"rules"=>'required'
+			),
+			"confirm-password"=>array(
+				"label"=>"Password",
+				"rules"=>'required|min_length[8]'
+			),
+			"password"=>array(
+				"label"=>"Password",
+				"rules"=>'required|min_length[8]|matches[confirm-password]'
+			)
+
+		);
+		if ($this->validate($validation)) {
+			$old_pass=$this->request->getPost('old_password');
+			$old_pass=md5($old_pass);
+			$new_pass=$this->request->getPost('password');
+			$confirm_pass=$this->request->getPost('confirm-password');
+			$id = session()->get('id');
+			$email = session()->get('email');
+			$query = $this->db->table('tbl_admin')->where(array("email" => $email, "password" => $old_pass));
+			// $que=$this->db->query("select * from user_login where id='$session_id'");
+			// $row=$que->row();
+			if ($query->countAllResults() > 0){
+				$data_update['password'] = md5($new_pass);
+				$update = $this->db->table('tbl_admin')->where("id", $id)->set($data_update)->update();
+				$message = "Somthing wrong";
+				if($update){
+					$message = "Password changed successfully !";
+				}
+				echo $this->sendResponse(array('success' => true, 'message' => $message,'error'=>$error));
+			}
+			else{
+				$message = "Please Enter valid old Password";
+				$error = "Please Enter valid old Password";
+				echo $this->sendResponse(array('success' => false, 'message' => $message,'error'=>$error));
+			}
+			
+		}else{
+		
+			echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+		
+		}
+		
+        
+	}
 
 }
