@@ -287,6 +287,17 @@ class Team extends ApiBaseController
 	public function team_id_to_team_name_team_logo($team_id){
 		return $this->db->table('tbl_team')->where('team_id',$team_id)->get()->getRowArray();
 	}
+	public function match_player_score($match_id,$player_id){
+		$where['match_id'] = $match_id;
+		$where['player_id'] = $player_id;
+		return $this->db->table('tbl_match_team')->select('sum(g) as total_g, sum(a) as total_a, sum(yc) as total_yc, sum(rc) as total_rc')->where($where)->get()->getRowArray();
+	}
+	public function match_player_list($match_id){
+		return $this->db->table('tbl_match_team')->where('match_id',$match_id)->get()->getResultArray();
+	}
+	public function club_id_to_clubdetail($club_id){
+		return $this->db->table('tbl_club')->where('club_id',$club_id)->get()->getRowArray();
+	}
 	public function match_result($match_id){
 		return $this->db->table('tbl_tournament_match_result')->where('match_id',$match_id)->get()->getRowArray();
 	}
@@ -330,6 +341,75 @@ class Team extends ApiBaseController
 			}
 		}
 		
+	}
+	public function team_match_detail($match_id = ''){
+		$view['view'] = array('title'=>"Match List");
+		$view['content'] = "match/match";
+		$team_id = $this->request->getVar('team_id');
+		$view['data'] = array("data" => array());
+		
+		$match_id = $this->request->getVar('match_id');
+		if($match_id){
+			
+			$team_match = $this->db->table('tbl_tournament_match');
+			// $team_match = $team_match->select('tbl_tournament_match');
+			$team_match = $team_match->join('tbl_tournament','tbl_tournament.id = tbl_tournament_match.tournament_id','left');
+			$team_match = $team_match->where('tbl_tournament_match.id',$match_id);
+			$team_match = $team_match->get()->getRowArray();
+			if($team_match){
+				$match = [];
+				$team = [];
+				$opponent_team = [];
+				
+				$match['datetime'] = $team_match['datetime'];
+				$match['tournament'] = $team_match['name'];
+				$match['team_id'] = $team_match['team_id'];
+				$match['opponent_team_id'] = $team_match['opponent_team_id'];
+				$team1 = $this->team_id_to_team_name_team_logo($team_match['team_id']);
+				if($team1){
+					$match['club_name'] = $this->club_id_to_clubdetail($team1['club_id'])['club_name'];
+					$match['team_name'] = $team1['team_name'];
+					$match['team_logo'] = $team1['team_logo'];
+					
+				}				
+				$team2 = $this->team_id_to_team_name_team_logo($team_match['opponent_team_id']);
+				if($team1){
+					$match['opponent_team_name'] = $team2['team_name'];
+					$match['opponent_team_logo'] = $team2['team_logo'];
+				}
+				$result = $this->match_result($match_id);
+				if($result){
+					$match['team_id_score'] = $result['team_id_score'];
+					$match['opponent_team_id_score'] = $result['opponent_team_id_score'];
+					$match['winner_team_id'] = $result['winner_team_id'];
+				}
+				$player_list = $this->match_player_list($match_id);
+				if($player_list){
+					$player_list_detail = [];
+					foreach($player_list as $key => $value){
+						$user_info = $this->getUserInfo($value['player_id']);
+						$player_list_detail[$key] = $user_info;
+						$player_list_detail[$key]['match_id'] = $value['match_id'];
+						$player_list_detail[$key]['player_id'] = $value['player_id'];
+						$player_list_detail[$key]['jursey_no'] = $value['jursey_no'];
+						$player_list_detail[$key]['total_g'] = $value['g'];
+						$player_list_detail[$key]['total_a'] = $value['a'];
+						$player_list_detail[$key]['total_yc'] = $value['yc'];
+						$player_list_detail[$key]['total_rc'] = $value['rc'];		
+						
+					}
+					$match['player_list'] = $player_list_detail;
+				}
+				
+				
+				
+			}
+		}
+		$view['data'] = array("data" => $match);
+		return view('default', $view);
+		// echo "<pre>";
+		// print_r($match);
+		// die();
 	}
 	
 

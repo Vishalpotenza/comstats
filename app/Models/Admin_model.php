@@ -18,7 +18,18 @@ class Admin_model extends Model {
     {
         $query = $this->db->table($this->table)->where(array("email" => $email, "password" => $password));
         if ($query->countAllResults() > 0){
-            return true;
+			
+            $session = session();
+			$data = $this->db->table($this->table)->where(array("email" => $email, "password" => $password))->get()->getRowArray();
+			$ses_data['id'] = $data['id'];
+			$ses_data['first_name'] = $data['first_name'];
+			$ses_data['last_name'] = $data['last_name'];
+			$ses_data['email'] = $data['email'];
+			$ses_data['image'] = $data['image'];
+			$ses_data['created'] = $data['created'];
+			$ses_data['logged_in'] = TRUE;
+			$session->set($ses_data);
+			return true;
         }
         else{
             return false;

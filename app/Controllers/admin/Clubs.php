@@ -13,6 +13,9 @@ class Clubs extends ApiBaseController
 	 */
 	public function index()
 	{
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$club_model = new Club_model();
         $view['content'] = "clubs/index";
 		$view['data'] = array("club_details" => $club_model->getallclubs());

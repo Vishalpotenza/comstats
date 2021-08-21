@@ -54,6 +54,11 @@ class Home extends ApiBaseController
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
         }
 	}
+	public function logout(){
+		$session = session();
+        $session->destroy();
+        return redirect()->to('/');
+	}
 	/**
 	 * Load register function
 	 *

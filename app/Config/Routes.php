@@ -109,6 +109,18 @@ $routes->add('/admin/team/edit_team', 'admin/Team::edit_team');
 $routes->add('/admin/team/club_team', 'admin/Team::club_team');
 $routes->add('/admin/team/team_match', 'admin/Team::team_match');
 $routes->add('/admin/team/get_user', 'admin/Team::get_user');
+$routes->add('/admin/team/team_match_detail', 'admin/Team::team_match_detail');
+
+/**
+ * Admin
+ */
+ $routes->get('/', 'Home::index');
+ // $routes->get('/admin', 'Home::index');
+ $routes->get('/admin/logout', 'Home::logout');
+$routes->add('/admin/profile', 'admin/AdminController::profile');
+$routes->add('/admin/edit', 'admin/AdminController::edit_admin');
+
+
 
 /**
  * Country
