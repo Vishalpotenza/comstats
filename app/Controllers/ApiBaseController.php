@@ -477,7 +477,10 @@ class ApiBaseController extends BaseController
         );
         }
         // Firebase API Key
-        $headers = array('Authorization:key=cOLPQoT0SzWXz3czKWREax:APA91bE8_iqt1qJ60ncV1chQZENWR4UioCqUNeCRO0yvyCyK_WwSZ8rn2Ztpd9XSUlEWUonIkFJeRsnUlg2m0vzzV7gKVQRKJQ8ecPT0eC-MIcswTz7H6G3LA8p-0HNCsfRLmnbnNhEN','Content-Type:application/json');
+        // $headers = array('Authorization:key=cOLPQoT0SzWXz3czKWREax:APA91bE8_iqt1qJ60ncV1chQZENWR4UioCqUNeCRO0yvyCyK_WwSZ8rn2Ztpd9XSUlEWUonIkFJeRsnUlg2m0vzzV7gKVQRKJQ8ecPT0eC-MIcswTz7H6G3LA8p-0HNCsfRLmnbnNhEN','Content-Type:application/json');
+		$result = $this->db->table('tbl_credential')->where('credential_key', 'firebase_server_key')->get()->getRowArray();
+		$key=$result['credential_value'];
+        $headers = array('Authorization:key='.$key,'Content-Type:application/json');
         // Open connection
         $ch = curl_init();
         // Set the url, number of POST vars, POST data

@@ -15,6 +15,9 @@ class Team extends ApiBaseController
 	 */
 	public function index()
 	{
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$team_model = new Team_model();
 		$club_model = new Club_model();
 		$view['view'] = array('title'=>'team Details');
@@ -89,6 +92,9 @@ class Team extends ApiBaseController
 	 */
 	public function edit_team()
 	{
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$club_id = $this->request->getPost('club_id');       
 		$team_logo = $this->request->getFile('team_logo');       
 		$team_name = $this->request->getPost('team_name');
@@ -136,6 +142,9 @@ class Team extends ApiBaseController
 	 * @param team_id : team_id
 	 */
 	public function delete_team(){
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$team_id = $this->request->getVar('team_id');
 		if(!empty($team_id)){
 			$error = null;
@@ -153,6 +162,9 @@ class Team extends ApiBaseController
 	 * @param team_id : team_id
 	 */
 	public function get_team_details(){
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$team_id = $this->request->getVar('team_id');
 		if(!empty($team_id)){
 			$error = null;
@@ -166,6 +178,9 @@ class Team extends ApiBaseController
 		}
 	}
 	public function club_team($club_id=''){
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$team_model = new Team_model();
 		$view['view'] = array('title'=>"Team List");
 		$view['content'] = "match/team";

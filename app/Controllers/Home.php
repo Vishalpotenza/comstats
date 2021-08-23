@@ -142,6 +142,8 @@ class Home extends ApiBaseController
             if($admin_model->eamil_exist_admin($email) == true) {
 				
 				$email = \Config\Services::email();
+				
+				
 
 				$email->setFrom('your@example.com', 'Your Name');
 				$email->setTo('someone@example.com');

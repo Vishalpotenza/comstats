@@ -110,18 +110,15 @@
               <div class="modal-body">
                    <form class="edit_firebasesetting_form" id="edit_firebasesetting_form" method="POST" enctype="multipart/form-data">
                     
-					<div class="form-group">
-                      <label for="f_key">Key</label>
-                        <input type="text" class="form-control" id="f_key2" name="f_key" placeholder="Firebase Key">
-                    </div>
+					
                     <div class="form-group">
 						<input type="hidden" id="edit_data_id2" name="edit_data_id" value="">
-                      <label for="f_value">Value</label>
-                        <input type="text" class="form-control" id="f_value2" name="f_value" placeholder="Firebase value">
-                    </div>					
+                      <label for="f_value">Server Key</label>
+                        <input type="text" class="form-control" id="firebase_server_key" name="firebase_server_key" placeholder="Firebase value">
+                    </div>			
                     
                     <button type="submit" role="button" form="edit_firebasesetting_form"  id="btneditfirebase" class="btn btn-primary btn-lg btn-block">
-                      Update Firebase
+                      Update
                     </button>
                   <!-- m-t-15 waves-effect -->
                 </form>

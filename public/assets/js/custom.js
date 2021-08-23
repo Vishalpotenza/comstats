@@ -1122,9 +1122,8 @@ $( document ).ready(function() {
             {
                 if ( data != null )
                 {
-                    $( "#f_key2" ).val( data.f_key );
                     $( "#edit_data_id2" ).val( data.id );
-                    $( "#f_value2" ).val( data.f_value );
+                    $( "#firebase_server_key" ).val( data.credential_value );
                 }
                 $( '.bd-edit-firebasesetting-lg' ).modal( 'show' );				
                 

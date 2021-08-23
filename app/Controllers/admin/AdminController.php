@@ -12,7 +12,7 @@ class AdminController extends ApiBaseController
 	 * @return view
 	 */
 	public function profile()
-	{
+	{				
 		if(! session()->get('logged_in')){
 			return redirect()->to('/'); 
 		}	
@@ -255,7 +255,7 @@ class AdminController extends ApiBaseController
 		$error = null;
 		$firebase = new Firebase_model();
 		// $result = $firebase->get()->getRowArray();
-		$result = $firebase->first();
+		$result = $this->db->table('tbl_credential')->where('credential_key', 'firebase_server_key')->get()->getRowArray();
 		if(!empty($result)){
 			echo $this->sendResponse($result);
 		}else{
@@ -271,35 +271,22 @@ class AdminController extends ApiBaseController
 		// echo "<pre>";
 		// print_r($this->request->getPost());
 		// die();
-		$id = $this->request->getPost('edit_data_id');       
-		$f_key = $this->request->getPost('f_key');       
-		$f_value = $this->request->getPost('f_value');       
-		
+		$firebase_server_key = $this->request->getPost('firebase_server_key');       
 		helper(['form', 'url']);
 		$validation=array(
-			"f_key"=>array(
-				"rules"=> 'required'
-			),
-			"f_value"=>array(
+			"firebase_server_key"=>array(
 				"rules"=> 'required'
 			)
 		);
 		
 		if ($this->validate($validation)) {
 			$error = null;
-			$firebase = new Firebase_model();
 			$data = array(
-				'f_key'    => $f_key,               
-				'f_value'    => $f_value,               
+				'credential_value'    => $firebase_server_key,               
 			);
-			$update='';
-			$insert='';
-			if($id){
-				$update = $firebase->where('id',$id)->set($data)->update();
-			}else{
-				$insert = $firebase->insert($data);
-			}				
-            echo $this->sendResponse(array('success' => true, 'id'=>(!empty($update) ? $update : $insert), 'error'=>$error));
+			$update = $this->db->table('tbl_credential')->where('credential_key', 'firebase_server_key')->set($data)->update();
+						
+            echo $this->sendResponse(array('success' => true, 'id'=>$update, 'error'=>$error));
         }else{
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
         }
