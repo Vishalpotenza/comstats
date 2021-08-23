@@ -103,6 +103,13 @@ $routes->add('/admin/team/add_team', 'admin/Team::add_team');
 $routes->add('/admin/team/delete_team', 'admin/Team::delete_team');
 $routes->add('/admin/team/get_team_details', 'admin/Team::get_team_details');
 $routes->add('/admin/team/edit_team', 'admin/Team::edit_team');
+
+
+$routes->add('/admin/firebase', 'admin/AdminController::firebase');
+$routes->add('/admin/firebase/add_firebase', 'admin/AdminController::add_firebase');
+$routes->add('/admin/firebase/delete_firebase', 'admin/AdminController::delete_firebase');
+$routes->add('/admin/firebase/get_firebase_details', 'admin/AdminController::get_firebase_details');
+$routes->add('/admin/firebase/edit_firebase', 'admin/AdminController::edit_firebase');
 /**
  * Team
  */

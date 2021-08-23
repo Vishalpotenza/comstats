@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 use App\Controllers\ApiBaseController;
 use App\Models\Admin_model;
+use App\Models\Firebase_model;
 class AdminController extends ApiBaseController
 {
 	/**
@@ -123,5 +124,128 @@ class AdminController extends ApiBaseController
 		
         
 	}
+	public function firebase(){
+		$firebase = new Firebase_model();
+		$view['view'] = array('title'=>'team Details');
+        $view['content'] = '/firebase/index';
+		$view['data'] = array('firebases'=>$firebase->getallfirebase());
+		return view('default', $view); 
+	}
+	/**
+	 * Add Team callbacks
+	 * @return  json
+	 */
+	public function add_firebase()
+	{
+		$firebase = new Firebase_model();
+		$f_key = $this->request->getPost('f_key');       
+		$f_value = $this->request->getPost('f_value');       
+		
+		helper(['form', 'url']);
+		$validation=array(
+			"f_key"=>array(
+				"label"=>"f_key",
+				"rules"=> 'required'
+			),
+			"f_value"=>array(
+				"label"=>"f_value",
+				"rules"=> 'required'
+			)
+		);
+		$check_team_exist = $firebase->check_firebase_exist($f_key);
+		if($check_team_exist){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Aleredy Exist'));
+		}
+		$team_logo = 'null';	
+		if ($this->validate($validation)) {
+			
+            $data = array(
+				'f_key'    => $f_key,               
+				'f_value'    => $f_value,               
+			);
+			// echo "<pre>";
+			// print_r($data);
+			$error = null;
+			$insert_id = $firebase->insert($data);		
+            echo $this->sendResponse(array('success' => true, 'id'=>isset($insert_id) ? $insert_id : ''));
+        }else{
+            echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+        }
+	}
+	/**
+	 * Delete the Firebase
+	 * @param id : id
+	 */
+	public function delete_firebase(){
+		
+		$id = $this->request->getVar('id');
+		
+		if(!empty($id)){
+			$error = null;
+			$firebase = new Firebase_model();
+			$id = $firebase->where("id", $id)->set(array('deletestatus'=>1))->update();
+			if(!empty($id)){
+				echo $this->sendResponse(array('success' => true, 'id'=>$id, 'error'=>$error));
+			}else{
+				echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+			}
+		}
+		echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+	}
+	/**
+	 * Get Firebase details
+	 * @param id : id
+	 */
+	public function get_firebase_details(){
+		$id = $this->request->getVar('id');
+		if(!empty($id)){
+			$error = null;
+			$firebase = new Firebase_model();
+			$result = $firebase->where("id", $id)->first();
+			if(!empty($result)){
+				echo $this->sendResponse($result);
+			}else{
+				echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+			}
+		}
+		echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+	}
+	/**Edit firebase callback
+	 * @return json
+	 */
+	public function edit_firebase()
+	{
+		$id = $this->request->getPost('edit_data_id');       
+		$f_key = $this->request->getPost('f_key');       
+		$f_value = $this->request->getPost('f_value');       
+		
+		helper(['form', 'url']);
+		$validation=array(
+			"f_key"=>array(
+				"label"=>"f_key",
+				"rules"=> 'required'
+			),
+			"f_value"=>array(
+				"label"=>"f_value",
+				"rules"=> 'required'
+			)
+		);
+		
+		if ($this->validate($validation)) {
+			$error = null;
+			$firebase = new Firebase_model();
+			$data = array(
+				'f_key'    => $f_key,               
+				'f_value'    => $f_value,               
+			);
+			$update='';
+			if($id){
+				$update = $firebase->where('id',$id)->set($data)->update();
+			}			
+            echo $this->sendResponse(array('success' => true, 'data'=>$data, 'id1'=>$id, 'id'=>$update, 'error'=>$error));
+        }else{
+            echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+        }
+	}	
 
 }

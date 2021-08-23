@@ -4,19 +4,37 @@
             <a href="<?= base_url().ADMIN ?>/dashboard" > <img alt="image" src="<?=  base_url().IMGPATH ?>/logo.png" class="header-logo" /> 
             </a>
           </div>
-          <ul class="sidebar-menu">
-            <li class="menu-header">Main</li>
-            <!-- <li class="dropdown active">
-              <a href= "<?= base_url().ADMIN ?>/dashboard" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
-            </li> -->
-             <li class="dropdown">
-              <a href="#" class="menu-toggle nav-link has-dropdown"><i
-                  class="fas fa-futbol"></i><span>Clubs</span></a>
-              <ul class="dropdown-menu">
-                <li><a class="nav-link" href="<?= base_url().ADMIN ?>/clubs">Manage Clubs</a></li>
-				<li><a class="nav-link" href="<?= base_url().ADMIN ?>/team">Manage Team</a></li>
-              </ul>
-            </li>						<li class="dropdown">							<a href="#" class="menu-toggle nav-link has-dropdown"><i                  class="fas fa-futbol"></i><span>League</span></a>				<ul class="dropdown-menu">					<li><a class="nav-link" href="<?= base_url().ADMIN ?>/league">Manage League</a></li>				</ul>				            </li>
-          </ul>
+			<ul class="sidebar-menu">
+				<li class="menu-header">Main</li>
+				<!-- <li class="dropdown active">
+				  <a href= "<?= base_url().ADMIN ?>/dashboard" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
+				</li> -->
+				 <li class="dropdown">
+				  <a href="#" class="menu-toggle nav-link has-dropdown"><i
+					  class="fas fa-futbol"></i><span>Clubs</span></a>
+				  <ul class="dropdown-menu">
+					<li><a class="nav-link" href="<?= base_url().ADMIN ?>/clubs">Manage Clubs</a></li>
+					<li><a class="nav-link" href="<?= base_url().ADMIN ?>/team">Manage Team</a></li>
+				  </ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="menu-toggle nav-link has-dropdown"><i class="fas fa-futbol"></i><span>League</span>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a class="nav-link" href="<?= base_url().ADMIN ?>/league">Manage League</a>
+						</li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="menu-toggle nav-link has-dropdown"><i class="fas fa-futbol"></i><span>Firebase</span>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a class="nav-link" href="<?= base_url().ADMIN ?>/firebase">Manage Firebase</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
         </aside>
       </div>

@@ -949,4 +949,160 @@ $( document ).ready(function() {
             }
         } );
     } );
+	
+	
+	/**
+	 * =======================================================================
+	 *  Add Firebase ajax
+	 * =======================================================================
+	 */
+	$( '#add_firebase' ).on( 'submit', function ( e ){
+        e.preventDefault();
+        var formData = new FormData( $( '#add_firebase' )[0] );
+        url = base_url+'/admin/firebase/add_firebase';
+		console.log('formData => ');
+		console.log(formData);
+		console.log('add_firebase => '+url);
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Added" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+					setTimeout(function () {
+						window.location = sports.config.base_url + "/admin/firebase";
+					   }, 1000);
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	/**
+	 * ==========================================================
+	 * Delete Firebase
+	 * ================================================================
+	 */
+	 
+	$( '.deletefirebase' ).on( 'click', function ( e ){
+        e.preventDefault();
+        console.log( $( this ).attr( 'id' ) );
+        // alert( $( this ).attr( 'id' ) );
+        var id = $( this ).attr( 'id' );
+        url = base_url+'/admin/firebase/delete_firebase';
+		console.log('url = '+url);
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { id: id },
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "team Deleted Successfully" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+					setTimeout(function () {
+						window.location = sports.config.base_url + "/admin/firebase";
+					   }, 1500);
+                    
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	
+	/**
+	 * =========================================
+	 * Edit team
+	 * ============================================
+	 */
+	$( '.edit_firebase' ).on( 'click', function ( e ){
+        e.preventDefault();
+        console.log( $( this ).attr( 'id' ) );
+        var id = $( this ).attr( 'id' );
+        url = base_url+'/admin/firebase/get_firebase_details';
+		 console.log( 'url = '+ url );
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: { id: id },
+            success: function ( data )
+            {
+                console.log( "edit show " );
+				 if ( data != null )
+                {
+                    $( "#f_key1" ).val( data.f_key );
+                    $( "#edit_data_id" ).val( data.id );
+                    $( "#f_value1" ).val( data.f_value );
+                }
+                $( '.bd-edit-firebase-lg' ).modal( 'show' );				
+                
+            }
+        } );
+	} );
+	
+	$( '#edit_firebase_form' ).on( 'submit', function ( e )
+    {
+        e.preventDefault();
+        var formData = new FormData( $( '#edit_firebase_form' )[0] );
+        console.log( "formdata => "+formData );
+        url = base_url+'/admin/firebase/edit_firebase';
+		console.log( 'url = '+ url );
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Updated" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    setTimeout(function () {
+						window.location = sports.config.base_url + "/admin/firebase";
+					   }, 1500);
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	
+	
+	
+	
+	
 });
