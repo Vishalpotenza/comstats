@@ -27,6 +27,9 @@ class Clubs extends ApiBaseController
 	 */
 	public function add_club()
 	{
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$clubname = $this->request->getPost('clubname');
         $contactno = $this->request->getPost('contactno');
         $inputAddress = $this->request->getPost('inputAddress');
@@ -86,6 +89,9 @@ class Clubs extends ApiBaseController
 	 */
 	public function edit_club()
 	{
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$clubname = $this->request->getPost('clubname1');
         $contactno = $this->request->getPost('contactno1');
         $inputAddress = $this->request->getPost('inputAddress1');
@@ -156,6 +162,9 @@ class Clubs extends ApiBaseController
 	 * @param club_id : club_id
 	 */
 	public function delete_club(){
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$club_id = $this->request->getVar('club_id');
 		if(!empty($club_id)){
 		$error = null;
@@ -173,6 +182,9 @@ class Clubs extends ApiBaseController
 	 * @param club_id : club_id
 	 */
 	public function get_club_details(){
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$club_id = $this->request->getVar('club_id');
 		if(!empty($club_id)){
 		$error = null;
@@ -186,6 +198,9 @@ class Clubs extends ApiBaseController
 		}
 	}
 	public function view_members(){
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$club_id = $this->request->getVar('club_id');
 		$team_model = new Team_model();
 		if($club_id){
@@ -202,6 +217,9 @@ class Clubs extends ApiBaseController
 	 * @param club_id : club_id
 	 */
 	public function join_request($club_id=''){		
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$club_id = $this->request->getVar('club_id');
 		$club_model = new Club_model();
 		$view['view'] = array('title'=>"View request");
@@ -210,6 +228,9 @@ class Clubs extends ApiBaseController
 		return view('default', $view);
 	}
 	public function join_request_action($tm_id='',$action=''){
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		
 		helper(['form', 'url']);
 		$tm_id = $this->request->getVar("tm_id");

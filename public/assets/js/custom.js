@@ -604,7 +604,8 @@ $( document ).ready(function() {
                     $( "#leaguename1" ).val( data.name );
                     $( "#edit_data_id" ).val( data.id );
                 }
-                $( '.bd-edit-League-lg' ).modal( 'show' );				
+				
+				$( '.bd-edit-League-lg' ).modal( 'show' );				
                 
             }
         } );
@@ -1125,6 +1126,9 @@ $( document ).ready(function() {
                     $( "#edit_data_id2" ).val( data.id );
                     $( "#firebase_server_key" ).val( data.credential_value );
                 }
+				if(data.error != null){
+					toastr['error']( data.error );
+				}
                 $( '.bd-edit-firebasesetting-lg' ).modal( 'show' );				
                 
             }

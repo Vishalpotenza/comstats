@@ -14,6 +14,9 @@ class League extends ApiBaseController
 	 */
 	public function index()
 	{
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$league_model = new League_model();
 		$view['view'] = array('title'=>"League Details");
         $view['content'] = "league/index";
@@ -26,6 +29,9 @@ class League extends ApiBaseController
 	 */
 	public function add_league()
 	{
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$league_model = new League_model();
 		$leaguename = $this->request->getPost('leaguename');       
 		$leaguename = trim($leaguename);       
@@ -61,7 +67,9 @@ class League extends ApiBaseController
 	 */
 	public function edit_league()
 	{
-		
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$leaguename = $this->request->getPost('leaguename');
 		// $leaguename = $this->request->getPost('leaguename');
 		$leaguename = trim($leaguename);
@@ -102,6 +110,9 @@ class League extends ApiBaseController
 	 * @param id : id
 	 */
 	public function delete_League(){
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$id = $this->request->getVar('id');
 		if(!empty($id)){
 			$error = null;
@@ -119,16 +130,19 @@ class League extends ApiBaseController
 	 * @param id : id
 	 */
 	public function get_league_details(){
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$id = $this->request->getVar('id');
 		if(!empty($id)){
-		$error = null;
-		$League_model = new League_model();
-		$result = $League_model->where("id", $id)->first();
-		if(!empty($result)){
-			echo $this->sendResponse($result);
-		}else{
-			echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
-		}
+			$error = null;
+			$League_model = new League_model();
+			$result = $League_model->where("id", $id)->first();
+			if(!empty($result)){
+				echo $this->sendResponse($result);
+			}else{
+				echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+			}
 		}
 	}
 	

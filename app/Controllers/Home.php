@@ -11,6 +11,9 @@ class Home extends ApiBaseController
 	 */
 	public function index()
 	{
+		if(session()->get('logged_in')){
+			// return redirect()->to('/admin/club');
+		}
 		return view('login');
 	}
 	/**

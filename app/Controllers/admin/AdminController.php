@@ -12,7 +12,7 @@ class AdminController extends ApiBaseController
 	 * @return view
 	 */
 	public function profile()
-	{				
+	{
 		if(! session()->get('logged_in')){
 			return redirect()->to('/'); 
 		}	
@@ -125,6 +125,9 @@ class AdminController extends ApiBaseController
         
 	}
 	public function firebase(){
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		$firebase = new Firebase_model();
 		$view['view'] = array('title'=>'team Details');
         $view['content'] = '/firebase/index';
@@ -137,6 +140,9 @@ class AdminController extends ApiBaseController
 	 */
 	public function add_firebase()
 	{
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>"please login first"));
+		}
 		$firebase = new Firebase_model();
 		$f_key = $this->request->getPost('f_key');       
 		$f_value = $this->request->getPost('f_value');       
@@ -178,6 +184,10 @@ class AdminController extends ApiBaseController
 	 */
 	public function delete_firebase(){
 		
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>"please login first"));
+		}
+		
 		$id = $this->request->getVar('id');
 		
 		if(!empty($id)){
@@ -197,6 +207,9 @@ class AdminController extends ApiBaseController
 	 * @param id : id
 	 */
 	public function get_firebase_details(){
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>"please login first"));
+		}
 		$id = $this->request->getVar('id');
 		if(!empty($id)){
 			$error = null;
@@ -215,6 +228,9 @@ class AdminController extends ApiBaseController
 	 */
 	public function edit_firebase()
 	{
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>"please login first"));
+		}
 		$id = $this->request->getPost('edit_data_id');       
 		$f_key = $this->request->getPost('f_key');       
 		$f_value = $this->request->getPost('f_value');       
@@ -252,6 +268,9 @@ class AdminController extends ApiBaseController
 	 * @param id : id
 	 */
 	public function get_firebase_details1(){
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>"please login first"));
+		}
 		$error = null;
 		$firebase = new Firebase_model();
 		// $result = $firebase->get()->getRowArray();
@@ -268,9 +287,9 @@ class AdminController extends ApiBaseController
 	 */
 	public function edit_firebase1()
 	{
-		// echo "<pre>";
-		// print_r($this->request->getPost());
-		// die();
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>"please login first"));
+		}
 		$firebase_server_key = $this->request->getPost('firebase_server_key');       
 		helper(['form', 'url']);
 		$validation=array(

@@ -32,6 +32,9 @@ class Team extends ApiBaseController
 	 */
 	public function add_team()
 	{
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$team_model = new Team_model();
 		$club_id = $this->request->getPost('club_id');       
 		$team_logo = $this->request->getFile('team_logo');       
@@ -93,7 +96,7 @@ class Team extends ApiBaseController
 	public function edit_team()
 	{
 		if(! session()->get('logged_in')){
-			return redirect()->to('/'); 
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
 		}
 		$club_id = $this->request->getPost('club_id');       
 		$team_logo = $this->request->getFile('team_logo');       
@@ -143,7 +146,7 @@ class Team extends ApiBaseController
 	 */
 	public function delete_team(){
 		if(! session()->get('logged_in')){
-			return redirect()->to('/'); 
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
 		}
 		$team_id = $this->request->getVar('team_id');
 		if(!empty($team_id)){
@@ -163,7 +166,7 @@ class Team extends ApiBaseController
 	 */
 	public function get_team_details(){
 		if(! session()->get('logged_in')){
-			return redirect()->to('/'); 
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
 		}
 		$team_id = $this->request->getVar('team_id');
 		if(!empty($team_id)){
@@ -197,7 +200,9 @@ class Team extends ApiBaseController
 	public function team_match($team_id='', $sort_by="all"){
 		
 	// date_default_timezone_set("Asia/Kolkata");
-		
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
 		
 		$sort_by = $this->request->getVar('sort_by');
 		$team_model = new Team_model();
@@ -317,6 +322,9 @@ class Team extends ApiBaseController
 		return $this->db->table('tbl_tournament_match_result')->where('match_id',$match_id)->get()->getRowArray();
 	}
 	public function get_user(){
+		if(! session()->get('logged_in')){
+			echo $this->sendResponse(array('success' => false, 'error'=>'Please login First'));
+		}
 		$user_id = $this->request->getVar('user_id');
 		if(!empty($user_id)){
 			$error = null;
@@ -358,6 +366,10 @@ class Team extends ApiBaseController
 		
 	}
 	public function team_match_detail($match_id = ''){
+		if(! session()->get('logged_in')){
+			return redirect()->to('/'); 
+		}
+		
 		$view['view'] = array('title'=>"Match List");
 		$view['content'] = "match/match";
 		$team_id = $this->request->getVar('team_id');
