@@ -30,27 +30,25 @@
                            <th>Action</th>
                           </tr>
                         </thead>
-                        <tbody>
-							<?php							
-                           $i=0;
-						   foreach ($data['firebases'] as $firebase):
-                             
-                          ?>
-							  <tr>
-								<td class="align-middle">
-								  <?= ++$i ?>
+                        <tbody><?php	
+							if(isset($data) && isset($data['firebases']) && !empty($data['firebases'])){
+								$i=0;
+								foreach ($data['firebases'] as $firebase){ ?>
+									<tr>
+										<td class="align-middle">
+										  <?= ++$i ?>
 
-								</td>
-								<td><?= $firebase['f_key'] ?></td>
-								<td><?= $firebase['f_value'] ?></td>
-								<td>
-									
-									<a href="#" class="btn btn-primary edit_firebase" id=<?= $firebase['id'] ?>  >Edit</a>
-									<a href="#" class="btn btn-danger deletefirebase" id=<?= $firebase['id'] ?> >Delete</a>
-								</td>
-							  </tr>
-                          <?php  endforeach;  ?>
-                          
+										</td>
+										<td><?= $firebase['f_key'] ?></td>
+										<td><?= $firebase['f_value'] ?></td>
+										<td>
+											
+											<a href="#" class="btn btn-primary edit_firebase" id=<?= $firebase['id'] ?>  >Edit</a>
+											<a href="#" class="btn btn-danger deletefirebase" id=<?= $firebase['id'] ?> >Delete</a>
+										</td>
+									</tr><?php 
+								}
+							} ?>                          
                         </tbody>
                       </table>                     
                     </div>

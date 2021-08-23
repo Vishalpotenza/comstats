@@ -246,6 +246,63 @@ class AdminController extends ApiBaseController
         }else{
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
         }
-	}	
+	}
+	/**
+	 * Get Firebase details (admin setting)
+	 * @param id : id
+	 */
+	public function get_firebase_details1(){
+		$error = null;
+		$firebase = new Firebase_model();
+		// $result = $firebase->get()->getRowArray();
+		$result = $firebase->first();
+		if(!empty($result)){
+			echo $this->sendResponse($result);
+		}else{
+			echo $this->sendResponse(array('success' => false, 'error'=>"Something went wrong!"));
+		}
+		
+	}
+	/**Edit firebase callback
+	 * @return json
+	 */
+	public function edit_firebase1()
+	{
+		// echo "<pre>";
+		// print_r($this->request->getPost());
+		// die();
+		$id = $this->request->getPost('edit_data_id');       
+		$f_key = $this->request->getPost('f_key');       
+		$f_value = $this->request->getPost('f_value');       
+		
+		helper(['form', 'url']);
+		$validation=array(
+			"f_key"=>array(
+				"rules"=> 'required'
+			),
+			"f_value"=>array(
+				"rules"=> 'required'
+			)
+		);
+		
+		if ($this->validate($validation)) {
+			$error = null;
+			$firebase = new Firebase_model();
+			$data = array(
+				'f_key'    => $f_key,               
+				'f_value'    => $f_value,               
+			);
+			$update='';
+			$insert='';
+			if($id){
+				$update = $firebase->where('id',$id)->set($data)->update();
+			}else{
+				$insert = $firebase->insert($data);
+			}				
+            echo $this->sendResponse(array('success' => true, 'id'=>(!empty($update) ? $update : $insert), 'error'=>$error));
+        }else{
+            echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+        }
+	}
 
 }

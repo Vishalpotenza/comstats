@@ -26,15 +26,15 @@
 						</li>
 					</ul>
 				</li>
-				<li class="dropdown">
+				<!--<li class="dropdown">
 					<a href="#" class="menu-toggle nav-link has-dropdown"><i class="fas fa-futbol"></i><span>Firebase</span>
 					</a>
 					<ul class="dropdown-menu">
 						<li>
-							<a class="nav-link" href="<?= base_url().ADMIN ?>/firebase">Manage Firebase</a>
+							<a class="nav-link" href="<?php //echo base_url().ADMIN ?>/firebase">Manage Firebase</a>
 						</li>
 					</ul>
-				</li>
+				</li>-->
 			</ul>
         </aside>
       </div>

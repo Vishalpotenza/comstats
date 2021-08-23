@@ -28,8 +28,8 @@
 										fa-user"></i> Profile
               </a> <a href="<?= base_url("admin/pass")?>" class="dropdown-item has-icon"> <i class="fas fa-bolt"></i>
                 Update Password
-              </a> <a href="#" class="dropdown-item has-icon"> <i class="fas fa-cog"></i>
-                Settings
+              </a> <a href="#" class="dropdown-item has-icon firebase_setting"> <i class="fas fa-cog"></i>
+                Firebase
               </a>
               <div class="dropdown-divider"></div>
               <a href="<?= base_url("/admin/logout")?>" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>

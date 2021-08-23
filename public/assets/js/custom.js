@@ -1035,7 +1035,7 @@ $( document ).ready(function() {
 	
 	/**
 	 * =========================================
-	 * Edit team
+	 * Edit firebase
 	 * ============================================
 	 */
 	$( '.edit_firebase' ).on( 'click', function ( e ){
@@ -1063,7 +1063,11 @@ $( document ).ready(function() {
             }
         } );
 	} );
-	
+	/**
+	 * =========================================
+	 * Update firebase
+	 * ============================================
+	 */
 	$( '#edit_firebase_form' ).on( 'submit', function ( e )
     {
         e.preventDefault();
@@ -1092,6 +1096,74 @@ $( document ).ready(function() {
                     setTimeout(function () {
 						window.location = sports.config.base_url + "/admin/firebase";
 					   }, 1500);
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	/**
+	 * =========================================
+	 * Edit firebase
+	 * ============================================
+	 */
+	$( '.firebase_setting' ).on( 'click', function ( e ){
+        e.preventDefault();
+        url = base_url+'/admin/firebase/get_firebase_details1';
+		 console.log( 'url = '+ url );
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: {},
+            success: function ( data )
+            {
+                if ( data != null )
+                {
+                    $( "#f_key2" ).val( data.f_key );
+                    $( "#edit_data_id2" ).val( data.id );
+                    $( "#f_value2" ).val( data.f_value );
+                }
+                $( '.bd-edit-firebasesetting-lg' ).modal( 'show' );				
+                
+            }
+        } );
+	} );
+	/**
+	 * =========================================
+	 * Update firebase
+	 * ============================================
+	 */
+	$( '#edit_firebasesetting_form' ).on( 'submit', function ( e )
+    {
+        e.preventDefault();
+        var formData = new FormData( $( '#edit_firebasesetting_form' )[0] );
+        console.log( "formdata => "+formData );
+        url = base_url+'/admin/firebase/edit_firebase1';
+		console.log( 'url = '+ url );
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Updated" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+                    // setTimeout(function () {
+						// window.location = sports.config.base_url + "/admin/firebase";
+					   // }, 1500);
                 } else
                 {
                     console.log( data.error );

@@ -110,6 +110,9 @@ $routes->add('/admin/firebase/add_firebase', 'admin/AdminController::add_firebas
 $routes->add('/admin/firebase/delete_firebase', 'admin/AdminController::delete_firebase');
 $routes->add('/admin/firebase/get_firebase_details', 'admin/AdminController::get_firebase_details');
 $routes->add('/admin/firebase/edit_firebase', 'admin/AdminController::edit_firebase');
+
+$routes->add('/admin/firebase/get_firebase_details1', 'admin/AdminController::get_firebase_details1');
+$routes->add('/admin/firebase/edit_firebase1', 'admin/AdminController::edit_firebase1');
 /**
  * Team
  */
