@@ -1106,7 +1106,7 @@ $( document ).ready(function() {
     } );
 	/**
 	 * =========================================
-	 * Edit firebase
+	 * Edit firebase admin setting
 	 * ============================================
 	 */
 	$( '.firebase_setting' ).on( 'click', function ( e ){
@@ -1133,7 +1133,7 @@ $( document ).ready(function() {
 	} );
 	/**
 	 * =========================================
-	 * Update firebase
+	 * Update firebase  admin setting
 	 * ============================================
 	 */
 	$( '#edit_firebasesetting_form' ).on( 'submit', function ( e )
