@@ -11,9 +11,6 @@ class Home extends ApiBaseController
 	 */
 	public function index()
 	{
-		if(session()->get('logged_in')){
-			// return redirect()->to('/admin/club');
-		}
 		return view('login');
 	}
 	/**
@@ -125,16 +122,16 @@ class Home extends ApiBaseController
 	{		
         return view('forgot-password');
 	}
-	public function forgot_password()
+	public function forgot_password($d='')
 	{
-        $email = $this->request->getPost('email');
-        // $email = $this->request->getVar('email');
+        // $email = $this->request->getPost('email');
+        $email = $this->request->getVar('email');
        
         helper(['form', 'url']);
 		$validation=array(
 			
 			"email"=>array(	
-				"label"=>"email",
+				// "label"=>"email",
 				"rules"=>'required'
 			)
 		);
@@ -143,26 +140,29 @@ class Home extends ApiBaseController
             $error = null;
 			$admin_model = new Admin_model();
             if($admin_model->eamil_exist_admin($email) == true) {
+				$email_id = $email;
+				$email_send = \Config\Services::email();	
 				
+				$message = 'Testing pourpose only';
+				$message = '<a href="'.base_url().'/admin/auth-reset-password?email='.$email.'" > Reset Password </a>';
 				$email = \Config\Services::email();
+			   $email->setFrom('tester123456test123456@gmail.com', 'Tester');
+			   // $email->setTo('Vishal.Patel@potenzaglobalsolutions.com');
+			   $email->setTo($email_id);
+			   $email->setSubject('testing');
+			   $email->setMessage($message);//your message here  
 				
+			   $email->send();
 				
 
-				$email->setFrom('your@example.com', 'Your Name');
-				$email->setTo('someone@example.com');
-				$email->setCC('another@another-example.com');
-				$email->setBCC('them@their-example.com');
-
-				$email->setSubject('Email Test');
-				$email->setMessage('Testing the email class.');
-
-				$email->send();
-
-				$message = "Mail sent";
-				echo $this->sendResponse(array('success' => true, 'responce'=>$status, 'message' => $message,'error'=>$error));
+				$message = "Successfully Mail sent";
+				$status = "Successfully Mail sent";
+				
+				$message = $email->printDebugger(['headers']);
+				echo $this->sendResponse(array('success' => true, 'responce'=>$status, 'message' => $status,'error'=>$message));
 			}
 			else{
-				$message = "Account does not exist".$email."-";
+				$message = "Account does not exist email : ".$email;
 				echo $this->sendResponse(array('success' => false, 'responce'=>1, 'message' => $message,'error'=>$error));
 			}
            
@@ -171,6 +171,6 @@ class Home extends ApiBaseController
         }
 	}
 	public function reset_password(){
-		
+		return view('reset-password');
 	}
 }

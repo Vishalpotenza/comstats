@@ -23,8 +23,7 @@ class App extends BaseConfig
 	 *
 	 * @var string
 	 */
-	public $baseURL = 'http://localhost/comstats/';
-	// public $baseURL = 'https://localhost/comstats/';
+	public $baseURL = 'http://localhost/comstats';
 
 	/**
 	 * --------------------------------------------------------------------------

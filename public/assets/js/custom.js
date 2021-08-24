@@ -604,8 +604,7 @@ $( document ).ready(function() {
                     $( "#leaguename1" ).val( data.name );
                     $( "#edit_data_id" ).val( data.id );
                 }
-				
-				$( '.bd-edit-League-lg' ).modal( 'show' );				
+                $( '.bd-edit-League-lg' ).modal( 'show' );				
                 
             }
         } );
@@ -842,31 +841,14 @@ $( document ).ready(function() {
             data: { user_id: user_id },
             success: function ( data )
             {
-                console.log( "edit show " );
+                // console.log( "edit show " );
                 console.log( data.result );
 				 if ( data.result != null )
                 {
-					console.log("profile_images_path = "+profile_images_path);
-                    $( "#first_name" ).val( data.result.first_name );
-                     $( "#last_name" ).val( data.result.last_name );
-                     $( "#address" ).val( data.result.address );
-                     $( "#nationality" ).val( data.result.nationality );
-                     // $( "#flag_image" ).val( data.result.flag_image );
-                      // $( "#flag_image" ).attr( 'src', base_url+'/public/uploads/flags/'+data.result.nationality_id+'/'+data.result.flag_image );
-                     $( "#flag_image" ).attr( 'src', base_url+'/public/uploads/flags/'+data.result.nationality_id+'/'+data.result.flag_image );
-                     $( "#age" ).val( data.result.age );
-                     $( "#gender" ).val( data.result.gender );
-                     $( "#height" ).val( data.result.height );
-                     $( "#weight" ).val( data.result.weight );
-					 // $( "#img" ).attr( 'src', data.result.img );
-					 if(data.result.image != ''){
-						$( "#profile_img" ).attr( 'src', profile_images_path+data.result.user_id+'/'+data.result.image );
-					 }else{
-						 $( "#profile_img" ).attr( 'src', 'https://kctherapy.com/wp-content/uploads/2019/09/default-user-avatar-300x293.png' );
-					 }
+					 					$( "#first_name" ).val( data.result.first_name );                     $( "#last_name" ).val( data.result.last_name );                     $( "#address" ).val( data.result.address );                     $( "#nationality" ).val( data.result.nationality );                                          $( "#flag_image" ).attr( 'src', base_url+'/public/uploads/flags/'+data.result.nationality_id+'/'+data.result.flag_image );                     $( "#age" ).val( data.result.age );                     $( "#gender" ).val( data.result.gender );                     $( "#height" ).val( data.result.height );                     $( "#weight" ).val( data.result.weight );					 console.log('weight ='+data.result.weight);					 if(data.result.image != ''){						$( "#profile_img" ).attr( 'src', profile_images_path+data.result.user_id+'/'+data.result.image );					 }else{						 $( "#profile_img" ).attr( 'src', 'https://kctherapy.com/wp-content/uploads/2019/09/default-user-avatar-300x293.png' );					 }					 
                    
-                }
-                $( '.bd-View-User-lg' ).modal( 'show' ).delay( 2000 );					
+                }				
+                $( '.bd-View-User-lg' ).modal( 'show' ).delay( 2000 );				
                 
             }
         } );
@@ -899,10 +881,9 @@ $( document ).ready(function() {
                         console.log( data.error );
                         toastr['error']( data.error );
                     }
-					setTimeout(function () {
+                    setTimeout(function () {
 						window.location = sports.config.base_url+'/admin/profile';
 					   }, 1000);
-                    // window.location = sports.config.base_url+'/admin/league';
                 } else
                 {
                     console.log( data.error );
@@ -939,7 +920,7 @@ $( document ).ready(function() {
                         console.log( data.error );
                         toastr['error']( data.error );
                     }
-                    setTimeout(function () {
+					setTimeout(function () {
 						window.location = sports.config.base_url+'/admin/profile';
 					   }, 1000);
                 } else
@@ -950,7 +931,6 @@ $( document ).ready(function() {
             }
         } );
     } );
-	
 	
 	/**
 	 * =======================================================================
@@ -1167,6 +1147,85 @@ $( document ).ready(function() {
                     // setTimeout(function () {
 						// window.location = sports.config.base_url + "/admin/firebase";
 					   // }, 1500);
+                } else
+                {
+                    console.log( data.error );
+                    toastr['error']( data.error );
+                }
+            }
+        } );
+    } );
+	/**
+	 * =========================================
+	 * Forgot password
+	 * ============================================
+	 */
+	$( '.btn_forgot_pass' ).on( 'click', function ( e ){ 
+        e.preventDefault();
+		var formData = new FormData( $( '#forgot_form' )[0] );
+        url = base_url+'/admin/forgot-password';
+		 console.log( 'url = '+ url );
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            dataType: "json",
+            data: formData,
+			async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+				console.log("success");
+				console.log(data);
+                if ( data != null )
+                {
+					if(data.success && data.success != null){
+						toastr['success']( data.message );
+					}
+						
+						
+                }
+				if(data.error != null && data.message == null){
+					toastr['error']( data.error );
+				}
+                				
+                
+            }
+        } );
+	} );
+	/*
+	* Admin forgot password reset Update password
+	*
+	*/
+	$( '#forgot_reset_password_form' ).on( 'submit', function ( e )
+    {
+        e.preventDefault();
+        var formData = new FormData( $( '#forgot_reset_password_form' )[0] );
+        console.log( "formdata => ");
+		console.log(formData );
+        url = base_url+'/admin/forgot/update';
+        jQuery.ajax( {
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function ( data )
+            {
+                if ( data.success )
+                {
+                    toastr['success']( "Updated" );
+                    if ( data.error )
+                    {
+                        console.log( data.error );
+                        toastr['error']( data.error );
+                    }
+					setTimeout(function () {
+						window.location = base_url;
+					   }, 1500);
                 } else
                 {
                     console.log( data.error );

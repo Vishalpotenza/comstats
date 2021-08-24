@@ -310,5 +310,55 @@ class AdminController extends ApiBaseController
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
         }
 	}
+	
+	public function forgot_pass_update()
+	{
+		$error = null;
+		helper(['form', 'url']);
+		$validation=array(			
+			"email"=>array(
+				"label"=>"Email",
+				"rules"=>'required'
+			),
+			"confirm-password"=>array(
+				"label"=>"Password",
+				"rules"=>'required|min_length[8]'
+			),
+			"password"=>array(
+				"label"=>"Password",
+				"rules"=>'required|min_length[8]|matches[confirm-password]'
+			)
+
+		);
+		if ($this->validate($validation)) {
+			$email=$this->request->getPost('email');
+			$new_pass=$this->request->getPost('password');
+			$confirm_pass=$this->request->getPost('confirm-password');
+			
+			$query = $this->db->table('tbl_admin')->where(array("email" => $email));
+			
+			if ($query->countAllResults() > 0){
+				$data_update['password'] = md5($new_pass);
+				$update = $this->db->table('tbl_admin')->where("email", $email)->set($data_update)->update();
+				$message = "Somthing wrong";
+				if($update){
+					$message = "Password changed successfully !";
+				}
+				echo $this->sendResponse(array('success' => true, 'message' => $message,'error'=>$error));
+			}
+			else{
+				$message = "Admin not available";
+				$error = "Admin not available";
+				echo $this->sendResponse(array('success' => false, 'message' => $message,'error'=>$error));
+			}
+			
+		}else{
+		
+			echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+		
+		}
+		
+        
+	}
 
 }

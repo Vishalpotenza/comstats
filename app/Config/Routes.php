@@ -81,7 +81,11 @@ $routes->add('/api/player-attendance', 'TraningApiController::players_attendance
 $routes->add('/admin/forgot-password-view', 'Home::forgot');
 $routes->add('/admin/forgot-password', 'Home::forgot_password');
 $routes->add('/admin/auth-reset-password', 'Home::reset_password');
-$routes->add('/admin/dashboard', 'admin/Dashboard::index');
+$routes->add('/admin/forgot/update', 'admin/AdminController::forgot_pass_update');
+
+$routes->add('/admin/pass', 'admin/AdminController::pass');
+$routes->add('/admin/pass/update', 'admin/AdminController::pass_update');
+
 $routes->add('/admin/dashboard', 'admin/Dashboard::index');
 $routes->add('/admin/clubs', 'admin/Clubs::index');
 $routes->add('/admin/clubs/add_club', 'admin/Clubs::add_club');
@@ -104,7 +108,6 @@ $routes->add('/admin/team/delete_team', 'admin/Team::delete_team');
 $routes->add('/admin/team/get_team_details', 'admin/Team::get_team_details');
 $routes->add('/admin/team/edit_team', 'admin/Team::edit_team');
 
-
 $routes->add('/admin/firebase', 'admin/AdminController::firebase');
 $routes->add('/admin/firebase/add_firebase', 'admin/AdminController::add_firebase');
 $routes->add('/admin/firebase/delete_firebase', 'admin/AdminController::delete_firebase');
@@ -113,6 +116,7 @@ $routes->add('/admin/firebase/edit_firebase', 'admin/AdminController::edit_fireb
 
 $routes->add('/admin/firebase/get_firebase_details1', 'admin/AdminController::get_firebase_details1');
 $routes->add('/admin/firebase/edit_firebase1', 'admin/AdminController::edit_firebase1');
+
 /**
  * Team
  */
@@ -120,19 +124,14 @@ $routes->add('/admin/team/club_team', 'admin/Team::club_team');
 $routes->add('/admin/team/team_match', 'admin/Team::team_match');
 $routes->add('/admin/team/get_user', 'admin/Team::get_user');
 $routes->add('/admin/team/team_match_detail', 'admin/Team::team_match_detail');
-
 /**
  * Admin
  */
- $routes->get('/', 'Home::index');
- // $routes->get('/admin', 'Home::index');
- $routes->get('/admin/logout', 'Home::logout');
+$routes->get('/', 'Home::index');
+ // $routes->get('/admin/forgot', 'Home::forgot_password');
+$routes->get('/admin/logout', 'Home::logout');
 $routes->add('/admin/profile', 'admin/AdminController::profile');
 $routes->add('/admin/edit', 'admin/AdminController::edit_admin');
-$routes->add('/admin/pass', 'admin/AdminController::pass');
-$routes->add('/admin/pass/update', 'admin/AdminController::pass_update');
-
-
 
 /**
  * Country
