@@ -1178,17 +1178,19 @@ $( document ).ready(function() {
             {
 				console.log("success");
 				console.log(data);
-                if ( data != null )
-                {
-					if(data.success && data.success != null){
+                // if ( data != null )
+                // {
+					if(data.status && data.status == 'success'){
 						toastr['success']( data.message );
+					}
+					if(data.status && data.status == 'error'){
+						toastr['error']( data.message );
 					}
 						
 						
-                }
-				if(data.error != null && data.message == null){
-					toastr['error']( data.error );
-				}
+                // }else{				
+					// toastr['error']( 'Something wrong' );
+				// }
                 				
                 
             }
@@ -1215,22 +1217,20 @@ $( document ).ready(function() {
             processData: false,
             success: function ( data )
             {
-                if ( data.success )
-                {
-                    toastr['success']( "Updated" );
-                    if ( data.error )
+                
+                    if ( data.status && data.status == 'success')
                     {
-                        console.log( data.error );
-                        toastr['error']( data.error );
+                        toastr['success']( data.message );
+						setTimeout(function () {
+							window.location = base_url;
+						}, 1500);
                     }
-					setTimeout(function () {
-						window.location = base_url;
-					   }, 1500);
-                } else
-                {
-                    console.log( data.error );
-                    toastr['error']( data.error );
-                }
+					if ( data.status && data.status == 'error')
+                    {
+                       toastr['error']( data.message );
+                    }
+					
+                
             }
         } );
     } );

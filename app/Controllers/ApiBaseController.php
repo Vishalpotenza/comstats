@@ -355,6 +355,32 @@ class ApiBaseController extends BaseController
 		}    
 	}
 	/**
+     * match cancel status update
+	 * match_id : match_id
+     */
+	public function match_cancel_update($match_id){        
+		$match_tournament = $this->db->table('tbl_tournament_match')->where('id',$match_id)->get()->getRowArray();
+		
+		$result['datetime'] = $match_tournament['datetime'];
+		date_default_timezone_set("Asia/Kolkata");
+		$match_time_date = strtotime($match_tournament['datetime']);		
+		$current_time_date = strtotime(date("Y-m-d H:i:s", strtotime("+12 hours")));
+		
+		if(  $current_time_date >= $match_time_date){
+			$query_result_check = $this->db->table('tbl_tournament_match_result')->where('match_id',$match_id);
+			$status_update['cancel_match_status'] = 0;
+			if ($query_result_check->countAllResults() == 0){
+				$status_update['cancel_match_status'] = 1;
+			}
+			$this->db->table('tbl_tournament_match')->where('id',$match_id)->set($status_update)->update();
+			return true;
+		}else{
+			// echo "not cancel";
+			return false; 
+		}
+		   
+	}
+	/**
      * CHECK IF match time current or past :  current or past match time => true,  match future match time => false
      * match_id : match_id
      */
@@ -496,5 +522,95 @@ class ApiBaseController extends BaseController
         die('Curl failed: ' . curl_error($ch));
         }
         curl_close($ch);
-    }	
+    }
+	/**
+	*
+	*	Player check formation wise
+	*	attaker-midfilder-difender 433 array(0,1,2)
+	*   Database :  4 - Attecker, 3 - Midfilder, 2 - Defender, 1 - Goalkeeper	
+	*
+	*/
+	public function match_formation_check($match_id,$player_id){
+		$match_tournament = $this->db->table('tbl_tournament_match')->select('tbl_tournament_match.id, tbl_formation.formation as formation')->join('tbl_formation','tbl_formation.id = tbl_tournament_match.formation','left')->where('tbl_tournament_match.id', $match_id)->get()->getRowArray();
+		
+		if($match_tournament['formation'] != 0){
+			$positions = explode("-",$match_tournament['formation']);			
+			if($positions){
+				$result['status']= "success";
+				$attecker_count = $midfilder_count = $difender_count = $golkeeper_count = 0;
+				$max_attecker = $positions[0];
+				$max_midfilder = $positions[1];
+				$max_difender = $positions[2];
+				$max_golkeeper = isset($positions[3]) ? $positions[3] : '';
+				
+				$player_list = $this->db->table('tbl_match_team');
+				$player_list = $player_list->join('tbl_user','tbl_user.user_id=tbl_match_team.player_id','left');
+				$player_list = $player_list->where('tbl_match_team.match_id',$match_id)->get()->getResultArray();
+				
+				if($player_list){
+					
+					foreach($player_list as $player){
+						if($player['position'] == 1){
+							$golkeeper_count++;
+						}
+						if($player['position'] == 2){
+							$difender_count++;
+						}
+						if($player['position'] == 3){
+							$midfilder_count++;
+						}
+						if($player['position'] == 4){
+							$attecker_count++;
+						}
+					}
+				}
+				
+				// $result['player_id']= $player_id;
+				$where_new_player['user_id'] = $player_id;
+				$new_player = $this->db->table('tbl_user');
+				$new_player = $new_player->where($where_new_player)->get()->getRowArray();
+				// $result['new_player']= $new_player;
+				if($new_player){
+					if($player['position'] == 1){
+							$golkeeper_count++;
+						}
+						if($player['position'] == 2){
+							$difender_count++;
+						}
+						if($player['position'] == 3){
+							$midfilder_count++;
+						}
+						if($player['position'] == 4){
+							$attecker_count++;
+						}
+					
+				}
+				
+				if($max_attecker < $attecker_count){
+					$result['status']= "error";
+					$result['message']= "Attecker Limit reach";
+				}
+				if($max_midfilder < $midfilder_count){
+					$result['status']= "error";
+					$result['message']= "Midfeilder Limit reach";
+				}
+				if($max_difender < $difender_count){
+					$result['status']= "error";
+					$result['message']= "Difender Limit reach";
+				}
+				if($max_golkeeper && !empty($max_golkeeper)){
+					if($max_golkeeper < $golkeeper_count){
+						$result['status']= "error";
+						$result['message']= "Goalkeeper Limit reach";
+					}
+				}
+				
+				return $result;			
+			}			
+		}else{
+			$result['status']= "error";
+			$result['message']= "Select formation first";
+			return $result;
+		}
+	}
 }

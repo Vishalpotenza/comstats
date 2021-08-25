@@ -20,6 +20,7 @@ class Team extends ApiBaseController
 		}
 		$team_model = new Team_model();
 		$club_model = new Club_model();
+		$view['title'] = "Team";
 		$view['view'] = array('title'=>'team Details');
         $view['content'] = '/team/index';
 		$view['data'] = $team_model->getallteam();
@@ -185,6 +186,7 @@ class Team extends ApiBaseController
 			return redirect()->to('/'); 
 		}
 		$team_model = new Team_model();
+		$view['title'] = "Club Team List";
 		$view['view'] = array('title'=>"Team List");
 		$view['content'] = "match/team";
 		$club_id = $this->request->getVar('club_id');
@@ -206,6 +208,7 @@ class Team extends ApiBaseController
 		
 		$sort_by = $this->request->getVar('sort_by');
 		$team_model = new Team_model();
+		$view['title'] = "Team Match List";
 		$view['view'] = array('title'=>"Match List");
 		$view['content'] = "match/tournaments";
 		$team_id = $this->request->getVar('team_id');
@@ -369,7 +372,7 @@ class Team extends ApiBaseController
 		if(! session()->get('logged_in')){
 			return redirect()->to('/'); 
 		}
-		
+		$view['title'] = "Match Detail";
 		$view['view'] = array('title'=>"Match List");
 		$view['content'] = "match/match";
 		$team_id = $this->request->getVar('team_id');

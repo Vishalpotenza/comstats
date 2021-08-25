@@ -66,6 +66,7 @@ class TournamentApiController extends ApiBaseController
             $future_match =array();
             $past_match =array();
             foreach($matches as $key => $match){
+				$this->match_cancel_update($match['id']);
 				$match_sub_detail = [];
                 $opponent_team = $this->db->table('tbl_team')->select('team_name, team_logo')->where('team_id', $match['opponent_team_id'])->get()->getRowArray();
                 $match['opponent_team'] = $opponent_team['team_name'];
@@ -98,7 +99,11 @@ class TournamentApiController extends ApiBaseController
 				
 				
 				$match['match_result'] = array();
-                $match['players_details'] = array();
+				$match['match_result']['team_id_score'] = null;
+				$match['match_result']['opponent_team_id_score'] = null;
+				$match['match_result']['match_status'] = null;
+				$match['match_result']['winner_team_id'] = null;
+				$match['players_details'] = array();
 				
                 $match_players = $this->db->table('tbl_match_team')->where('match_id', $match['match_id'])->get()->getResultArray();
                 $match_winning_score = $this->db->table('tbl_tournament_match_result')->where('match_id', $match['match_id'])->get()->getRowArray();
@@ -114,6 +119,14 @@ class TournamentApiController extends ApiBaseController
 							$match_winning_score_array['match_status'] = "lose";
 							$match_winning_score_array['winner_team_id'] = $match_winning_score['winner_team_id'];
 						}
+						$match['match_result'] = $match_winning_score_array;
+						$match_sub_detail['match_result'] = $match['match_result'];
+					}else{
+						$match_winning_score_array['team_id_score'] = null;
+						$match_winning_score_array['opponent_team_id_score'] = null;
+						$match_winning_score_array['match_status'] = null;
+						$match_winning_score_array['winner_team_id'] =null;
+						
 						$match['match_result'] = $match_winning_score_array;
 						$match_sub_detail['match_result'] = $match['match_result'];
 					}
@@ -184,6 +197,13 @@ class TournamentApiController extends ApiBaseController
             $traning = $this->db->table('tbl_traning')->select('tbl_traning.*, tbl_traning.traningdatetime as datetime ')->where('team_id', $coachs['team_id'])->orderBy('date')->get()->getResultArray();
             foreach($traning as $trannie){
 				$match_sub_detail_tranning = [];
+				
+				$match1 = array();
+				$match1['team_id_score'] = null;
+				$match1['opponent_team_id_score'] = null;
+				$match1['match_status'] = null;
+				$match1['winner_team_id'] = null;
+				
                 $trannie['tournament_name'] = $this->db->table('tbl_tournament')->select('name')->where('id', 1)->get()->getRowArray()['name'];
                 $participant_team =  $this->db->table('tbl_team')->select('team_name, team_logo')->where('team_id', $trannie['team_id'])->get()->getRowArray();
                 $trannie['participant_team'] = $participant_team['team_name'];
@@ -207,7 +227,7 @@ class TournamentApiController extends ApiBaseController
                     else{
                         $attend['attend']="no";
                     }
-					$match_sub_detail_tranning['match_result'] = (object)array();
+					$match_sub_detail_tranning['match_result'] = (object)$match1;
                     array_push($trannie['attendance'], $attend);
                 }
 				$match_sub_detail_tranning['attendance'] = $trannie['attendance'];
@@ -454,13 +474,15 @@ class TournamentApiController extends ApiBaseController
      */
     public function add_player_to_match(){
         if($this->authenticate_api())
-        {  								
+        {  	
+			
             $response = array( "status" => "error" );
             $required_fields = array("match_id", "players");
             $status = $this->verifyRequiredParams($required_fields);
             $match_id = $this->request->getVar("match_id");
             $players = $this->request->getVar("players");
 			$kit_color = $this->request->getVar("kit_color");
+			$formation = $this->request->getVar("formation");
 			// $result['team_size'] = $this->match_team_size($match_id);
             //user
             if($this->ifempty($match_id, "match id")!== true){
@@ -482,12 +504,29 @@ class TournamentApiController extends ApiBaseController
 				$color_update = array("kit_color" =>$kit_color);
 				$this->db->table('tbl_tournament_match')->where('id',$match_id)->set($color_update)->update();
 			}
+			if($formation && !empty($formation)){
+				$formation_update['formation'] = $formation;
+				$formation_update_data = $this->db->table('tbl_tournament_match')->where('id',$match_id)->set($formation_update)->update();
+			}
             $player_details = json_decode($players, true);
            
             $i=0;
+			$player_record_count = 0;
             foreach($player_details as $player){
+				$response_formation_check = $this->match_formation_check($match_id,$player['player_id']);
+				if($response_formation_check){
+					if($response_formation_check['status'] == 'error'){
+						$this->sendResponse($response_formation_check);
+					}
+				}
+				// $this->sendResponse($response);
+				$this->match_cancel_update($match_id);
 				if($this->ifteamfull($match_id)){				
-					$response['message']  = "Team is full ";				
+					$response['message']  = "Team is full ";
+					if($player_record_count > 0){
+						$response['status']="success";
+						$response['message']  = $player_record_count." Player added";
+					}
 					$response['flag'] = 1;				
 					$response['match_id'] = $match_id;				
 					$flag = array("team_full_status" =>1);		
@@ -599,14 +638,20 @@ class TournamentApiController extends ApiBaseController
 
 			$fielding_list = $this->db->table("tbl_formation")->get()->getResultArray();
 			$result['formation'] = array_column($fielding_list, 'formation');
+			$result['formation_id'] = array_column($fielding_list, 'id');
+			// $result['formation'] = $fielding_list;
+			
 			$result['fielding_list'] = $result['formation'];
+			$result['fielding_list_id'] = $result['formation_id'];
 			$result_match['fielding_list'] = $result['formation'];
+			$result_match['fielding_list_id'] = $result['formation_id'];
 
 			$match_tournament = $this->db->table('tbl_tournament_match')->where('id', $match_id)->get()->getRowArray();
 			$result['kit_color'] = $match_tournament['kit_color'];
 			$result_match['kit_color'] = $match_tournament['kit_color'];
 			$result['team_size'] = $this->match_team_size($match_id);
             foreach ($players as $player){
+				
                 $details = $this->getUserInfo($player['user_id'], $match_id);
                 $details["players_id"]=$player['user_id'];
                 unset($details['position']);

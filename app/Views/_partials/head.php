@@ -14,7 +14,7 @@
 
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
 
-  <title><?=  $title  ?></title>
+  <title><?php echo (isset($title) ? $title : '');  ?></title>
 
   <!-- General CSS Files -->
 

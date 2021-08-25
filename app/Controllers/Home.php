@@ -122,10 +122,24 @@ class Home extends ApiBaseController
 	{		
         return view('forgot-password');
 	}
+	/** For api
+	* Forgot Password 
+	* @endpoint forgot-password
+	* @url: http://yourdomain.com/api/forgot password
+	* @param email : email
+	* @param user: user (for Player : user, for coach : user) Both are user
+	*/
+	/** For admin
+	*  Admin Panal
+	* @param email : email
+	*/
 	public function forgot_password($d='')
 	{
         // $email = $this->request->getPost('email');
         $email = $this->request->getVar('email');
+        $user = $this->request->getVar('user');
+		$email =trim($email);
+		$user = trim($user);
        
         helper(['form', 'url']);
 		$validation=array(
@@ -139,35 +153,42 @@ class Home extends ApiBaseController
         if ($this->validate($validation)) {
             $error = null;
 			$admin_model = new Admin_model();
-            if($admin_model->eamil_exist_admin($email) == true) {
+            if($admin_model->eamil_exist_admin($email, $user) == true) {
 				$email_id = $email;
 				$email_send = \Config\Services::email();	
 				
-				$message = 'Testing pourpose only';
 				$message = '<a href="'.base_url().'/admin/auth-reset-password?email='.$email.'" > Reset Password </a>';
+				if($user){
+					$data_update['token'] = md5($email.date("Y-m-d H:i:s"));
+					$token_update = $this->db->table('tbl_user_login')->where("email", $email)->set($data_update)->update();
+					if($token_update)
+						$message = 'Token : '.$data_update['token'];
+				}
 				$email = \Config\Services::email();
-			   $email->setFrom('tester123456test123456@gmail.com', 'Tester');
-			   // $email->setTo('Vishal.Patel@potenzaglobalsolutions.com');
-			   $email->setTo($email_id);
-			   $email->setSubject('testing');
-			   $email->setMessage($message);//your message here  
+				$email->setFrom('tester123456test123456@gmail.com', 'Tester');
+				// $email->setTo('Vishal.Patel@potenzaglobalsolutions.com');
+				$email->setTo($email_id);
+				$email->setSubject('Forgot Password');
+				$email->setMessage($message);//your message here  
 				
-			   $email->send();
-				
+				$email->send();				
 
-				$message = "Successfully Mail sent";
-				$status = "Successfully Mail sent";
+				$response['message'] = "Please check your email for reset password";
 				
-				$message = $email->printDebugger(['headers']);
-				echo $this->sendResponse(array('success' => true, 'responce'=>$status, 'message' => $status,'error'=>$message));
+				
+				// $message = $email->printDebugger(['headers']);
+				echo $this->sendResponse(array('status' => "success", 'message' => $response['message']));
 			}
 			else{
-				$message = "Account does not exist email : ".$email;
-				echo $this->sendResponse(array('success' => false, 'responce'=>1, 'message' => $message,'error'=>$error));
+				$message = "email dosen't exist";
+				echo $this->sendResponse(array('status' => "error", 'message' => $message));
 			}
            
         }else{
-            echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+			if($user && !empty($user)){
+				echo $this->sendResponse(array('status' => "error", 'message'=>''));
+			}
+            echo $this->sendResponse(array('status' => "error", 'message'=>$this->validation->listErrors()));
         }
 	}
 	public function reset_password(){

@@ -18,13 +18,21 @@ $view = array('title' => "Forgot Password");
                 <p class="text-muted">We will send a link to reset your password</p>
                 <form method="POST" id="forgot_form" action="#">
                   <div class="form-group">
-                    <label for="Email">Email</label>
+                    <label for="email">Email</label>
                     <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus>
                   </div>
                   <div class="form-group">
                     <button type="submit" class="btn btn-primary btn-lg btn-block btn_forgot_pass" tabindex="4">
                       Forgot Password
                     </button>
+					<?php
+					// echo date_default_timezone_get();
+					// date_default_timezone_set("Asia/Calcutta");
+					// echo "<br>";
+					 // echo date("Y-m-d H:i:s", strtotime("+12 hours"));
+					 // echo "<br>";
+					 // echo date("Y-m-d H:i:s");
+					?>
                   </div>
                 </form>
               </div>

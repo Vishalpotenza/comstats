@@ -20,6 +20,8 @@ class AdminController extends ApiBaseController
 		// echo "id = ".$id;
 		// die();
 		$admin_data = $this->db->table('tbl_admin')->where('id', $id)->get()->getRowArray();
+		$admin_data['firebase_server_key'] = $this->db->table('tbl_credential')->where('credential_key', 'firebase_server_key')->get()->getRowArray()['credential_value'];
+		$view['title'] = "Admin Profile";
 		$view['view'] = array('title'=>'team Details');
         $view['content'] = '/admin/profile';
 		$view['data'] = array('admin_data'=>$admin_data);
@@ -52,8 +54,15 @@ class AdminController extends ApiBaseController
 		}
 		$error = null;
 		if(!empty($data)){
-			if($id)
+			if($id){
+				$firebase_server_key = $this->request->getPost('firebase_server_key');
+				$data_server_key = array(
+					'credential_value'    => $firebase_server_key,               
+				);
+				$update_server_key = $this->db->table('tbl_credential')->where('credential_key', 'firebase_server_key')->set($data_server_key)->update();
 				$update = $this->db->table('tbl_admin')->where("id", $id)->set($data)->update();
+				
+			}
 		}
 		echo $this->sendResponse(array('success' => true, 'id'=>(isset($update) ? $update : ""), 'error'=>$error));
         
@@ -63,7 +72,7 @@ class AdminController extends ApiBaseController
 		if(! session()->get('logged_in')){
 			return redirect()->to('/'); 
 		}	
-		
+		$view['title'] = "Change Password";
 		$view['view'] = array('title'=>'Update Password');
         $view['content'] = '/admin/updatepassword';
 		$view['data'] = array('admin_data'=>'');
@@ -129,6 +138,7 @@ class AdminController extends ApiBaseController
 			return redirect()->to('/'); 
 		}
 		$firebase = new Firebase_model();
+		$view['title'] = "Firebase";
 		$view['view'] = array('title'=>'team Details');
         $view['content'] = '/firebase/index';
 		$view['data'] = array('firebases'=>$firebase->getallfirebase());
@@ -310,11 +320,27 @@ class AdminController extends ApiBaseController
             echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
         }
 	}
-	
+	/** For api
+	* Forgot Password Update 
+	* @endpoint forgot-password-update
+	* @url: http://yourdomain.com/api/forgot-password-update
+	* @param email : email
+	* @param password: password
+	* @param confirm-password: confirm-password
+	* @param token: token
+	* @param user: user (for Player : user, for coach : user) Both are user
+	*/
+	/** For admin
+	*  Admin Panal
+	* @param email : email
+	* @param password: password
+	* @param confirm-password: confirm-password
+	*/
 	public function forgot_pass_update()
 	{
 		$error = null;
 		helper(['form', 'url']);
+		$user=$this->request->getPost('user');
 		$validation=array(			
 			"email"=>array(
 				"label"=>"Email",
@@ -331,30 +357,55 @@ class AdminController extends ApiBaseController
 
 		);
 		if ($this->validate($validation)) {
+			
 			$email=$this->request->getPost('email');
 			$new_pass=$this->request->getPost('password');
 			$confirm_pass=$this->request->getPost('confirm-password');
 			
-			$query = $this->db->table('tbl_admin')->where(array("email" => $email));
+			$table = 'tbl_admin';
+			if($user == 'user'){
+				$table = 'tbl_user_login';
+			}
+			
+			$query = $this->db->table($table)->where(array("email" => $email));
 			
 			if ($query->countAllResults() > 0){
 				$data_update['password'] = md5($new_pass);
-				$update = $this->db->table('tbl_admin')->where("email", $email)->set($data_update)->update();
+				$where['email'] = $email;
+				if($user == 'user'){
+					$token=$this->request->getPost('token');
+					if($token && !empty($token)){
+						$where['token'] = $token;
+						$where_check['token'] = $token;
+						$where_check['email'] = $email;
+					}else{
+						echo $this->sendResponse(array('status' => 'error', 'message' => "Somthing Wrong ! token"));
+					}
+					$query_check = $this->db->table($table)->where($where_check);
+					if ($query_check->countAllResults() < 1){
+						echo $this->sendResponse(array('status' => 'error', 'message' => "Not authorised"));
+					}
+					
+				}
+				$update = $this->db->table($table)->where($where)->set($data_update)->update();
 				$message = "Somthing wrong";
 				if($update){
-					$message = "Password changed successfully !";
+					$message = "Password changed successfully";
 				}
-				echo $this->sendResponse(array('success' => true, 'message' => $message,'error'=>$error));
+				echo $this->sendResponse(array('status' => 'success', 'message' => $message));
 			}
 			else{
-				$message = "Admin not available";
-				$error = "Admin not available";
-				echo $this->sendResponse(array('success' => false, 'message' => $message,'error'=>$error));
+				
+				$message = "email dosen't exist";
+				echo $this->sendResponse(array('status' => 'error', 'message' => $message));
 			}
 			
 		}else{
+			if($user && !empty($user)){
+				echo $this->sendResponse(array('status' => "error", 'message'=>''));
+			}
 		
-			echo $this->sendResponse(array('success' => false, 'error'=>$this->validation->listErrors()));
+			echo $this->sendResponse(array('status' => 'error', 'message'=>$this->validation->listErrors()));
 		
 		}
 		

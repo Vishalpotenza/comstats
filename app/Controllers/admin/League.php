@@ -18,6 +18,7 @@ class League extends ApiBaseController
 			return redirect()->to('/'); 
 		}
 		$league_model = new League_model();
+		$view['title'] = "League";
 		$view['view'] = array('title'=>"League Details");
         $view['content'] = "league/index";
 		$view['data'] = array("league_details" => $league_model->getallleague());

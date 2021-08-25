@@ -17,6 +17,7 @@ class Clubs extends ApiBaseController
 			return redirect()->to('/'); 
 		}
 		$club_model = new Club_model();
+        $view['title'] = "Clubs";
         $view['content'] = "clubs/index";
 		$view['data'] = array("club_details" => $club_model->getallclubs());
 		return view('default', $view);
@@ -154,6 +155,7 @@ class Clubs extends ApiBaseController
 	public function club_request($club_id){
 		$club_model = new Club_model();
 			$view['content'] = "clubs/index";
+			$view['title'] = "Request";
 		$view['data'] = array("club_details" => $club_model->getallclubs());
 		return view('default', $view);
 	}
@@ -222,6 +224,7 @@ class Clubs extends ApiBaseController
 		}
 		$club_id = $this->request->getVar('club_id');
 		$club_model = new Club_model();
+		$view['title'] = "Request";
 		$view['view'] = array('title'=>"View request");
 		$view['content'] = "clubs/view-request";
 		$view['data'] = array("team_requests" => $club_model->getclubrequest($club_id));

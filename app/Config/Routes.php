@@ -40,6 +40,9 @@ $routes->add('/api/register', 'ApiController::register');
 $routes->add('/api/user-login', 'ApiController::user_login');
 $routes->add('/api/user-info', 'ApiController::user_info');
 $routes->add('/api/update-user', 'ApiController::update_user');
+
+$routes->add('/api/forgot-password', 'Home::forgot_password');
+$routes->add('/api/forgot-password-update', 'admin/AdminController::forgot_pass_update');
 /**
  * Season 
  */
